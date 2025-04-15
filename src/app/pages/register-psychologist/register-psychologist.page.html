@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Registro Profesional</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="onRegister()">
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input [(ngModel)]="psychologistData.name" name="name" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Apellidos</ion-label>
+      <ion-input [(ngModel)]="psychologistData.last_name" name="last_name" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="email" [(ngModel)]="psychologistData.email" name="email" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" [(ngModel)]="psychologistData.password" name="password" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">DNI</ion-label>
+      <ion-input [(ngModel)]="psychologistData.dni" name="dni" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Titulación</ion-label>
+      <ion-input [(ngModel)]="psychologistData.qualification" name="qualification" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Especialidad</ion-label>
+      <ion-input [(ngModel)]="psychologistData.specialty" name="specialty" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Ubicación</ion-label>
+      <ion-input [(ngModel)]="psychologistData.location" name="location" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Documento (URL o ID)</ion-label>
+      <ion-input [(ngModel)]="psychologistData.document" name="document" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" type="submit">Registrarse como psicólogo</ion-button>
+  </form>
+
+  <ion-text color="danger" *ngIf="message">
+    <p>{{ message }}</p>
+  </ion-text>
+</ion-content>
