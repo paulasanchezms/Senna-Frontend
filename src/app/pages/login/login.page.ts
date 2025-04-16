@@ -1,33 +1,48 @@
-import { Component } from '@angular/core';
-import { AuthService, AuthRequest, AuthResponse } from 'src/app/services/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService, AuthResponse } from 'src/app/services/auth.service';
 
 @Component({
-  standalone:false,
+  standalone: false,
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage {
-  loginData: AuthRequest = {
-    email: '',
-    password: ''
-  };
-
+export class LoginPage implements OnInit {
+  loginForm!: FormGroup;
+  formSubmitted = false;
   message: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]]
+    });
+  }
 
   onLogin(): void {
-    this.authService.login(this.loginData).subscribe({
+    this.formSubmitted = true;
+    if (this.loginForm.invalid) return;
+
+    this.authService.login(this.loginForm.value).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
-        this.message = '';
-        this.router.navigate(['/home']); // Redirige tras login
+        this.router.navigate(['/home']);
       },
       error: (error) => {
-        this.message = 'Error en el login: ' + (error.error?.message || error.message);
+        this.message = 'Error en el inicio de sesión: ' + (error.error?.message || error.message);
       }
     });
+  }
+
+  get email() {
+    return this.loginForm.get('email');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
   }
 }
