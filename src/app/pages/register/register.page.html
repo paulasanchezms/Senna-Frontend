@@ -5,8 +5,8 @@
       <div class="text-4xl text-lavender">Senna</div>
 
       <div>
-        <h2 class="text-xl text-peach font-semibold">Create your account</h2>
-        <p class="text-md text-lavender">Your wellness journey begins here</p>
+        <h2 class="text-xl text-peach font-semibold">Crea tu cuenta</h2>
+        <p class="text-md text-lavender">EL camino hacia el bienestar comienza aquí</p>
       </div>
 
       <!-- Formulario reactivo -->
@@ -15,13 +15,13 @@
         <div class="flex flex-col space-y-1">
           <input type="text" formControlName="name" placeholder="Nombre" class="input"
             [ngClass]="{ 'border-red-500': name?.invalid && formSubmitted }" />
-          <p *ngIf="name?.invalid && formSubmitted" class="error">Nombre requerido (solo letras)</p>
+          <p *ngIf="name?.invalid && formSubmitted" class="error">Nombre requerido</p>
         </div>
 
         <div class="flex flex-col space-y-1">
           <input type="text" formControlName="last_name" placeholder="Apellidos" class="input"
             [ngClass]="{ 'border-red-500': last_name?.invalid && formSubmitted }" />
-          <p *ngIf="last_name?.invalid && formSubmitted" class="error">Apellidos requeridos (solo letras)</p>
+          <p *ngIf="last_name?.invalid && formSubmitted" class="error">Apellidos requeridos</p>
         </div>
 
         <div class="flex flex-col space-y-1">
@@ -47,7 +47,7 @@
       <!-- Separador -->
       <div class="flex items-center justify-center gap-2 text-sm text-peach">
         <div class="flex-1 border-t border-lavender"></div>
-        <span>or</span>
+        <span>o</span>
         <div class="flex-1 border-t border-lavender"></div>
       </div>
 

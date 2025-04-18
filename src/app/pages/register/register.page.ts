@@ -29,15 +29,7 @@ export class RegisterPage implements OnInit {
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, this.onlyLettersValidator]],
-      last_name: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(
-            /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)?$/
-          ),
-        ],
-      ],
+      last_name: ['', [Validators.required, this.twoLastNamesValidator]],
       email: [
         '',
         [Validators.required, Validators.email, this.customEmailValidator],
@@ -57,13 +49,7 @@ export class RegisterPage implements OnInit {
       }
     });
 
-    this.registerForm.get('last_name')!.valueChanges.subscribe((value) => {
-      if (typeof value === 'string') {
-        this.registerForm
-          .get('last_name')!
-          .setValue(value.trim(), { emitEvent: false });
-      }
-    });
+
   }
 
   onRegister(): void {
@@ -103,6 +89,14 @@ export class RegisterPage implements OnInit {
       return { onlyLetters: true };
     }
     return null;
+  }
+
+  twoLastNamesValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value?.trim();
+    if (!value) return null;
+  
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/;
+    return regex.test(value) ? null : { invalidLastName: true };
   }
 
   customEmailValidator(control: AbstractControl): ValidationErrors | null {

@@ -5,8 +5,8 @@
       <div class="text-4xl text-lavender">Senna</div>
 
       <div>
-        <h2 class="text-xl text-peach font-semibold">Your journey starts here</h2>
-        <p class="text-md text-lavender">Take the first step</p>
+        <h2 class="text-xl text-peach font-semibold">Tu camino empieza aquí</h2>
+        <p class="text-md text-lavender">Da el primer paso</p>
       </div>
 
       <!-- Formulario login reactivo -->
@@ -15,7 +15,7 @@
           <input
             type="email"
             formControlName="email"
-            placeholder="E-mail"
+            placeholder="Email"
             class="input"
             [ngClass]="{ 'border-red-500': email?.invalid && formSubmitted }"
           />
@@ -26,7 +26,7 @@
           <input
             type="password"
             formControlName="password"
-            placeholder="Password"
+            placeholder="Contraseña"
             class="input"
             [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }"
           />
@@ -37,7 +37,7 @@
           type="submit"
           class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition"
         >
-          Sign in
+          Inicia sesión
         </button>
 
         <p *ngIf="message" class="text-red-500 text-center text-sm">
@@ -48,14 +48,14 @@
       <!-- Separador -->
       <div class="flex items-center justify-center gap-2 text-sm text-peach">
         <div class="flex-1 border-t border-lavender"></div>
-        <span>or</span>
+        <span>o</span>
         <div class="flex-1 border-t border-lavender"></div>
       </div>
 
       <!-- Link a registro -->
       <p class="text-sm text-lavender">
-        Don't have an account?
-        <a routerLink="/register" class="font-medium underline">Sign up</a>
+        ¿No tienes cuenta?
+        <a routerLink="/register" class="font-medium underline">Regístrate aquí</a>
       </p>
     </div>
   </div>
