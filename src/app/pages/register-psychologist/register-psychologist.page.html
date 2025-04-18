@@ -108,21 +108,21 @@
           </p>
         </div>
 
-        <div class="flex flex-col space-y-1">
-          <input
-            type="text"
-            formControlName="location"
-            placeholder="Ubicación"
-            class="input"
-            [ngClass]="{ 'border-red-500': location?.invalid && formSubmitted }"
-          />
-          <p *ngIf="location?.invalid && formSubmitted" class="error">
-            Ubicación requerida
-          </p>
-        </div>
+        <input
+          type="text"
+          id="autocomplete"
+          placeholder="Ubicación"
+          class="input"
+          [ngClass]="{ 'border-red-500': location?.invalid && formSubmitted }"
+        />
+        <p *ngIf="location?.invalid && formSubmitted" class="error">
+          Ubicación requerida
+        </p>
 
         <div class="flex flex-col space-y-1 md:col-span-2">
-          <label for="document" class="text-peach font-medium">Documento acreditativo</label>
+          <label for="document" class="text-peach font-medium"
+            >Documento acreditativo</label
+          >
           <input
             type="file"
             id="document"
@@ -130,7 +130,9 @@
             (change)="onFileSelected($event)"
             class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lavender file:text-white hover:file:bg-purple-400 bg-white/90 border border-lavender rounded-xl text-peach px-4 py-2.5 transition"
           />
-          <p *ngIf="formSubmitted && !selectedFile" class="error">Por favor, sube un archivo PDF o Word</p>
+          <p *ngIf="formSubmitted && !selectedFile" class="error">
+            Por favor, sube un archivo PDF o Word
+          </p>
         </div>
 
         <button

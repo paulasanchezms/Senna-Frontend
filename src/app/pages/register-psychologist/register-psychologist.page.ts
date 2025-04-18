@@ -9,6 +9,8 @@ import {
 import { Router } from '@angular/router';
 import { AuthService, AuthResponse } from 'src/app/services/auth.service';
 
+declare var google: any; // Importante para acceder a la API de Google fuera de TypeScript
+
 @Component({
   standalone: false,
   selector: 'app-register-psychologist',
@@ -56,6 +58,25 @@ export class RegisterPsychologistPage implements OnInit {
     });
 
     this.checkScreenSize();
+  }
+
+  // Aquí se carga el autocompletado de Google Places
+  ngAfterViewInit(): void {
+    const input = document.getElementById('autocomplete') as HTMLInputElement;
+
+    if (input) {
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ['geocode'],
+        componentRestrictions: { country: 'es' },
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        const location = place.formatted_address;
+
+        this.registerForm.patchValue({ location });
+      });
+    }
   }
 
   onRegister(): void {
@@ -118,12 +139,11 @@ export class RegisterPsychologistPage implements OnInit {
   twoLastNamesValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value?.trim();
     if (!value) return null;
-  
-    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)?$/;
-  
+
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)+$/;
     return regex.test(value) ? null : { invalidLastName: true };
   }
-  
+
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.checkScreenSize();
