@@ -55,9 +55,14 @@ export class RegisterPage implements OnInit {
   onRegister(): void {
     this.formSubmitted = true;
     if (this.registerForm.invalid) return;
-
-    const formData = this.registerForm.value;
-
+  
+    const raw = this.registerForm.value;
+  
+    const formData = new FormData();
+    Object.entries(raw).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
+  
     this.authService.register(formData).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
@@ -65,9 +70,8 @@ export class RegisterPage implements OnInit {
         this.router.navigate(['/home']);
       },
       error: (error) => {
-        this.message =
-          'Error en el registro: ' + (error.error?.message || error.message);
-      },
+        this.message = 'Error en el registro: ' + (error.error?.message || error.message);
+      }
     });
   }
 
