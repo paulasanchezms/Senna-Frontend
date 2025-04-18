@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, AuthResponse } from 'src/app/services/auth.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 
 @Component({
   standalone: false,
@@ -14,26 +20,48 @@ export class RegisterPage implements OnInit {
   formSubmitted = false;
   message: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, this.onlyLettersValidator]],
-      last_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/)]],
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
-      password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
-      role: ['PATIENT']
+      last_name: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)?$/
+          ),
+        ],
+      ],
+      email: [
+        '',
+        [Validators.required, Validators.email, this.customEmailValidator],
+      ],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(6), this.passwordValidator],
+      ],
+      role: ['PATIENT'],
     });
 
-    this.registerForm.get('name')!.valueChanges.subscribe(value => {
+    this.registerForm.get('name')!.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
-        this.registerForm.get('name')!.setValue(value.trim(), { emitEvent: false });
+        this.registerForm
+          .get('name')!
+          .setValue(value.trim(), { emitEvent: false });
       }
     });
 
-    this.registerForm.get('last_name')!.valueChanges.subscribe(value => {
+    this.registerForm.get('last_name')!.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
-        this.registerForm.get('last_name')!.setValue(value.trim(), { emitEvent: false });
+        this.registerForm
+          .get('last_name')!
+          .setValue(value.trim(), { emitEvent: false });
       }
     });
   }
@@ -51,8 +79,9 @@ export class RegisterPage implements OnInit {
         this.router.navigate(['/home']);
       },
       error: (error) => {
-        this.message = 'Error en el registro: ' + (error.error?.message || error.message);
-      }
+        this.message =
+          'Error en el registro: ' + (error.error?.message || error.message);
+      },
     });
   }
 
@@ -86,8 +115,16 @@ export class RegisterPage implements OnInit {
     return null;
   }
 
-  get name() { return this.registerForm.get('name'); }
-  get last_name() { return this.registerForm.get('last_name'); }
-  get email() { return this.registerForm.get('email'); }
-  get password() { return this.registerForm.get('password'); }
+  get name() {
+    return this.registerForm.get('name');
+  }
+  get last_name() {
+    return this.registerForm.get('last_name');
+  }
+  get email() {
+    return this.registerForm.get('email');
+  }
+  get password() {
+    return this.registerForm.get('password');
+  }
 }

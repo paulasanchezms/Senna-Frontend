@@ -1,5 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, AuthResponse } from 'src/app/services/auth.service';
 
@@ -13,32 +19,39 @@ export class RegisterPsychologistPage implements OnInit {
   registerForm!: FormGroup;
   formSubmitted = false;
   isMobile = false;
+  selectedFile: File | null = null;
+  message: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, this.onlyLettersValidator]],
-      last_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/)]],
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
-      password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
+      last_name: ['', [Validators.required, this.twoLastNamesValidator]],
+      email: [
+        '',
+        [Validators.required, Validators.email, this.customEmailValidator],
+      ],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(6), this.passwordValidator],
+      ],
       dni: ['', [Validators.required]],
       qualification: ['', [Validators.required]],
       specialty: ['', [Validators.required]],
       location: ['', [Validators.required]],
-      document: ['', [Validators.required]],
-      role: ['PSYCHOLOGIST']
+      role: ['PSYCHOLOGIST'],
     });
 
-    this.registerForm.get('name')!.valueChanges.subscribe(value => {
+    this.registerForm.get('name')!.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
-        this.registerForm.get('name')!.setValue(value.trim(), { emitEvent: false });
-      }
-    });
-
-    this.registerForm.get('last_name')!.valueChanges.subscribe(value => {
-      if (typeof value === 'string') {
-        this.registerForm.get('last_name')!.setValue(value.trim(), { emitEvent: false });
+        this.registerForm
+          .get('name')!
+          .setValue(value.trim(), { emitEvent: false });
       }
     });
 
@@ -48,12 +61,17 @@ export class RegisterPsychologistPage implements OnInit {
   onRegister(): void {
     this.formSubmitted = true;
 
-    if (this.registerForm.invalid) {
-      console.log('Formulario inválido');
+    if (this.registerForm.invalid || !this.selectedFile) {
       return;
     }
 
-    const formData = this.registerForm.value;
+    const formData = new FormData();
+
+    Object.entries(this.registerForm.value).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
+
+    formData.append('document', this.selectedFile!);
 
     this.authService.register(formData).subscribe({
       next: (response: AuthResponse) => {
@@ -61,8 +79,9 @@ export class RegisterPsychologistPage implements OnInit {
         this.router.navigate(['/home']);
       },
       error: (error) => {
-        console.error('Error en el registro:', error);
-      }
+        this.message =
+          'Error en el registro: ' + (error.error?.message || error.message);
+      },
     });
   }
 
@@ -96,6 +115,15 @@ export class RegisterPsychologistPage implements OnInit {
     return null;
   }
 
+  twoLastNamesValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value?.trim();
+    if (!value) return null;
+  
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)?$/;
+  
+    return regex.test(value) ? null : { invalidLastName: true };
+  }
+  
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.checkScreenSize();
@@ -105,13 +133,46 @@ export class RegisterPsychologistPage implements OnInit {
     this.isMobile = window.innerWidth <= 768;
   }
 
-  get name() { return this.registerForm.get('name'); }
-  get last_name() { return this.registerForm.get('last_name'); }
-  get email() { return this.registerForm.get('email'); }
-  get password() { return this.registerForm.get('password'); }
-  get dni() { return this.registerForm.get('dni'); }
-  get qualification() { return this.registerForm.get('qualification'); }
-  get specialty() { return this.registerForm.get('specialty'); }
-  get location() { return this.registerForm.get('location'); }
-  get document() { return this.registerForm.get('document'); }
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+
+    if (file && allowedTypes.includes(file.type)) {
+      this.selectedFile = file;
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  get name() {
+    return this.registerForm.get('name');
+  }
+  get last_name() {
+    return this.registerForm.get('last_name');
+  }
+  get email() {
+    return this.registerForm.get('email');
+  }
+  get password() {
+    return this.registerForm.get('password');
+  }
+  get dni() {
+    return this.registerForm.get('dni');
+  }
+  get qualification() {
+    return this.registerForm.get('qualification');
+  }
+  get specialty() {
+    return this.registerForm.get('specialty');
+  }
+  get location() {
+    return this.registerForm.get('location');
+  }
+  get document() {
+    return this.registerForm.get('document');
+  }
 }
