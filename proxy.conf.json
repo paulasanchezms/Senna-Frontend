@@ -1,0 +1,8 @@
+{
+    "/api": {
+      "target": "senna-frontend-production.up.railway.app",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }

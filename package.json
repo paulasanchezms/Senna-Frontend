@@ -5,8 +5,8 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "http-server ./dist/Senna-Frontend -p $PORT",
-    "build": "ng build --configuration production",
+    "start": "ng serve --proxy-config proxy.conf.json",
+        "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
