@@ -1,0 +1,63 @@
+<ion-content class="h-screen w-screen bg-lightPeach md:bg-white font-peachy px-4">
+  <div class="flex items-center justify-center h-full w-full">
+    <div class="w-full md:max-w-md md:bg-lightPeach md:rounded-2xl md:shadow-xl md:p-8 p-6 space-y-6 text-center">
+
+      <div class="text-4xl text-lavender">Senna</div>
+
+      <div>
+        <h2 class="text-xl text-peach font-semibold">Tu camino empieza aquí</h2>
+        <p class="text-md text-lavender">Da el primer paso</p>
+      </div>
+
+      <!-- Formulario login reactivo -->
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-4 text-left">
+        <div class="flex flex-col space-y-1">
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Email"
+            class="input"
+            [ngClass]="{ 'border-red-500': email?.invalid && formSubmitted }"
+          />
+          <p *ngIf="email?.invalid && formSubmitted" class="error">Introduce un email válido</p>
+        </div>
+
+        <div class="flex flex-col space-y-1">
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Contraseña"
+            class="input"
+            [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }"
+          />
+          <p *ngIf="password?.invalid && formSubmitted" class="error">Contraseña requerida</p>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition"
+        >
+          Inicia sesión
+        </button>
+
+        <p *ngIf="message" class="text-red-500 text-center text-sm">
+          {{ message }}
+        </p>
+      </form>
+
+      <!-- Separador -->
+      <div class="flex items-center justify-center gap-2 text-sm text-peach">
+        <div class="flex-1 border-t border-lavender"></div>
+        <span>o</span>
+        <div class="flex-1 border-t border-lavender"></div>
+      </div>
+
+      <!-- Link a registro -->
+      <p class="text-sm text-lavender">
+        ¿No tienes cuenta?
+        <a routerLink="/register" class="font-medium underline">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+</ion-content>
+

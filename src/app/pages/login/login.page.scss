@@ -1,0 +1,6 @@
+.input {
+    @apply w-full px-4 py-2.5 rounded-xl bg-white/90 placeholder-peach text-peach border border-lavender focus:outline-none focus:ring-2 focus:ring-lavender transition;
+  }
+  .error {
+    @apply text-sm text-red-500;
+  }
