@@ -30,8 +30,7 @@ export class AuthService {
     if (window.location.hostname === 'localhost') {
       this.baseUrl = 'http://localhost:8080/api/auth';
     } else {
-      this.baseUrl = 'https://senna-back-production.up.railway.app/api/auth'; 
-    }
+      this.baseUrl = 'https://senna-production-45cb.up.railway.app/api/auth';    }
   }
 
   register(data: FormData): Observable<AuthResponse> {
