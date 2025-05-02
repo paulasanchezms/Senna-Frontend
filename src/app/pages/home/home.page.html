@@ -1,33 +1,61 @@
 <ion-content class="bg-lightPeach font-peachy">
-  <div class="p-6">
-    <h2 class="text-2xl font-bold text-lavender mb-2">Hola, {{ name }}</h2>
-    <p class="text-sm text-peach mb-6">{{ today | date: 'fullDate' }}</p>
-
-    <!-- Calendario semanal -->
-    <div class="flex overflow-x-auto space-x-4 mb-8">
-      <div
-        *ngFor="let day of weekDays"
-        class="flex flex-col items-center justify-center min-w-[60px]"
-      >
-        <div
-          class="w-12 h-12 rounded-full flex items-center justify-center font-semibold"
-          [ngClass]="{
-            'bg-mint text-black': isToday(day),
-            'bg-white text-gray-600': !isToday(day),
-            'border-2 border-salmon': isToday(day)
-          }"
-        >
-          {{ day.getDate() }}
-        </div>
-        <div class="text-xs mt-1 text-gray-500">
-          {{ day | date: 'EEE' }}
-        </div>
-      </div>
+  <div class="p-4 space-y-6">
+    <!-- Header -->
+    <div class="text-center">
+      <h2 class="text-2xl font-bold text-lavender">Hola de nuevo!</h2>
+      <p class="text-sm text-peach">{{ today | date: 'fullDate' }}</p>
     </div>
 
-    <!-- Registro -->
-    <ion-button expand="block" class="bg-salmon text-white font-bold rounded-full" (click)="openLogModal()">
-      Registrar día
-    </ion-button>
+    <!-- Calendario semanal lunes-domingo -->
+    <div class="grid grid-cols-7 gap-2 mb-6">
+      <div
+      *ngFor="let day of weekDays"
+      class="flex flex-col items-center cursor-pointer"
+      [ngClass]="{
+        'cursor-not-allowed opacity-50': isFuture(day)
+      }"
+      (click)="canRegister(day) && selectDay(day)"
+    >
+      <span class="text-xs text-gray-500 uppercase">{{ day | date: 'EEE' }}</span>
+    
+      <div
+        class="w-10 h-10 rounded-full flex items-center justify-center font-semibold"
+        [ngClass]="{
+          'bg-coral text-white': isRegistered(day),                                                  
+          'bg-lavender text-white': !isToday(day) && isSelected(day) && !isRegistered(day),    
+          'bg-mint text-black': isToday(day) && !isRegistered(day),                          
+          'bg-white text-gray-600 border': !isToday(day) && !isRegistered(day) && !isSelected(day)  
+        }"
+      >
+        {{ day.getDate() }}
+      </div>
+    </div>
+    </div>
+
+    <!-- Imagen + frase -->
+    <div class="rounded-xl shadow p-4 text-center space-y-2 bg-white">
+      <img
+        src="assets/img/mood.svg"
+        alt="Mood image"
+        class="w-20 h-20 mx-auto"
+      />
+      <p class="text-peach text-lg font-semibold">
+        {{ selectedDay | date: 'fullDate' }}
+      </p>
+      <p class="text-gray-600 text-sm">
+        Registra tu día y cuida tu bienestar emocional.
+      </p>
+    </div>
+    <!-- Botón fijo abajo -->
+    <div class="fixed bottom-12 left-1/2 transform -translate-x-1/2">
+      <div class="min-w-[120px] min-h-[48px] flex items-center justify-center">
+        <ion-button
+          class="bg-salmon text-white font-bold rounded-full text-lg px-6 py-2"
+          (click)="openLogModal(selectedDay)"
+        >
+          Registrar mi día
+        </ion-button>
+      </div>
+    </div>
   </div>
 </ion-content>
