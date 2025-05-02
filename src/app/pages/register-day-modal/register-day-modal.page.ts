@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { DiaryService } from 'src/app/Services/diary.service';
+import { DiaryService } from 'src/app/services/diary.service';
 
 @Component({
   standalone: false,
