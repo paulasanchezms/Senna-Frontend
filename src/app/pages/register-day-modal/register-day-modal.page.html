@@ -1,60 +1,70 @@
-<ion-header class="bg-lightPeach">
-  <ion-toolbar class="bg-peach">
-    <ion-title class="text-white">Registro del día</ion-title>
+<ion-header>
+  <ion-toolbar class="bg-peach text-white">
+    <ion-title class="font-peachy">Registro del día</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="close()">
-        <ion-icon name="close-outline" class="text-white text-xl"></ion-icon>
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline" class="text-white"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding bg-lightPeach">
-  <ion-card class="bg-white rounded-xl shadow p-4">
-    <ion-card-header>
-      <ion-card-title class="text-peach text-lg font-bold">
-        {{ selectedDate | date: 'fullDate' }}
-      </ion-card-title>
-    </ion-card-header>
+<ion-content class="bg-lightPeach font-peachy">
+  <div class="p-4 space-y-4">
 
-    <ion-card-content>
-      <!-- Moods -->
-      <ion-label class="block text-sm font-semibold text-gray-700 mb-2">Estado de ánimo</ion-label>
-      <div class="flex flex-wrap gap-2 mb-4">
-        <ion-chip *ngFor="let mood of moods"
-                  [ngClass]="isSelectedMood(mood.id) ? 'bg-peach text-white' : 'bg-gray-200 text-gray-700'"
-                  class="rounded-full px-3 py-1 cursor-pointer transition"
-                  (click)="toggleMood(mood.id)">
+    <!-- Card Fecha -->
+    <div class="bg-white rounded-xl shadow p-4">
+      <p class="text-lavender font-semibold text-center text-lg">
+        {{ selectedDate | date: 'fullDate' }}
+      </p>
+    </div>
+
+    <!-- Card Mood -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Estado de ánimo</h3>
+      <div class="flex flex-wrap gap-2">
+        <ion-chip
+          *ngFor="let mood of moods"
+          [color]="isSelectedMood(mood.id) ? 'primary' : 'medium'"
+          (click)="toggleMood(mood.id)"
+        >
           <ion-label>{{ mood.name }}</ion-label>
         </ion-chip>
       </div>
+    </div>
 
-      <!-- Symptoms -->
-      <ion-label class="block text-sm font-semibold text-gray-700 mb-2">Síntomas</ion-label>
-      <div class="flex flex-wrap gap-2 mb-4">
-        <ion-chip *ngFor="let symptom of symptoms"
-                  [ngClass]="isSelectedSymptom(symptom.id) ? 'bg-lavender text-white' : 'bg-gray-200 text-gray-700'"
-                  class="rounded-full px-3 py-1 cursor-pointer transition"
-                  (click)="toggleSymptom(symptom.id)">
+    <!-- Card Síntomas -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Síntomas</h3>
+      <div class="flex flex-wrap gap-2">
+        <ion-chip
+          *ngFor="let symptom of symptoms"
+          [color]="isSelectedSymptom(symptom.id) ? 'secondary' : 'medium'"
+          (click)="toggleSymptom(symptom.id)"
+        >
           <ion-label>{{ symptom.name }}</ion-label>
         </ion-chip>
       </div>
+    </div>
 
-      <!-- Notes -->
-      <ion-item class=" rounded-lg mb-4">
-        <ion-label position="stacked" class="text-gray-700">Notas</ion-label>
-        <ion-textarea [(ngModel)]="notes"
-                      placeholder="Escribe cómo te sientes hoy..."
-                      class="bg-white p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-peach"></ion-textarea>
-      </ion-item>
+    <!-- Card Notas -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Notas</h3>
+      <ion-textarea
+        class="w-full"
+        placeholder="Escribe tus notas aquí..."
+        [(ngModel)]="notes"
+      ></ion-textarea>
+    </div>
 
-      <!-- Save Button -->
-      <ion-button expand="block"
-                  shape="round"
-                  class="bg-salmon text-white font-semibold hover:bg-coral transition"
-                  (click)="saveEntry()">
+    <!-- Botón Guardar -->
+    <div class="min-w-[120px] min-h-[48px] flex items-center justify-center">
+      <ion-button
+        class="bg-salmon text-white font-bold rounded-full text-lg px-6 py-2"
+        (click)="saveEntry()"
+      >
         Guardar registro
       </ion-button>
-    </ion-card-content>
-  </ion-card>
+    </div>
+  </div>
 </ion-content>
