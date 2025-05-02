@@ -23,6 +23,10 @@ const routes: Routes = [
   {
     path: 'register-psychologist',
     loadChildren: () => import('./pages/register-psychologist/register-psychologist.module').then( m => m.RegisterPsychologistPageModule)
+  },
+  {
+    path: 'register-day-modal',
+    loadChildren: () => import('./pages/register-day-modal/register-day-modal.module').then( m => m.RegisterDayModalPageModule)
   }
 ];
 

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 export interface DiaryEntryDTO {
-  date: string; // formato ISO: '2025-04-18'
-  mood: string;
-  symptoms: string;
-  notes: string;
-}
+  date: string;
+  moodIds: number[];
+  symptomIds: number[];
+  notes: string;}
 
 export interface DiaryEntryResponseDTO {
   id: number;
@@ -23,7 +23,6 @@ export interface UserResponseDTO {
   last_name: string;
   email: string;
   role: string;
-
   dni?: string;
   qualification?: string;
   specialty?: string;
@@ -34,17 +33,41 @@ export interface UserResponseDTO {
 @Injectable({
   providedIn: 'root'
 })
-
 export class DiaryService {
-  private baseUrl = 'http://localhost:8080/api/diary-entries';
+  private baseUrl = 'http://localhost:8080/api/diary';
+  private moodsUrl = 'http://localhost:8080/api/moods';
+  private symptomsUrl = 'http://localhost:8080/api/symptoms';
 
   constructor(private http: HttpClient) {}
 
-  getEntryByDate(date: string): Observable<DiaryEntryResponseDTO> {
-    return this.http.get<DiaryEntryResponseDTO>(`${this.baseUrl}/by-date/${date}`);
+  getAllEntries(): Observable<DiaryEntryResponseDTO[]> {
+    return this.http.get<DiaryEntryResponseDTO[]>(this.baseUrl);
   }
 
-  createEntry(entry: DiaryEntryDTO): Observable<any> {
-    return this.http.post(this.baseUrl, entry);
+  getEntryByDate(date: string): Observable<DiaryEntryResponseDTO> {
+    return this.http.get<DiaryEntryResponseDTO>(`${this.baseUrl}/date/${date}`);
   }
+
+  createEntry(entry: DiaryEntryDTO): Observable<DiaryEntryResponseDTO> {
+    return this.http.post<DiaryEntryResponseDTO>(this.baseUrl, entry);
+  }
+
+  updateEntry(id: number, entry: DiaryEntryDTO): Observable<DiaryEntryResponseDTO> {
+    return this.http.put<DiaryEntryResponseDTO>(`${this.baseUrl}/entry/${id}`, entry);
+  }
+
+  deleteEntry(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/entry/${id}`);
+
+  }
+
+  getMoods(): Observable<any[]> {
+    return this.http.get<any[]>(this.moodsUrl);
+  }
+
+  getSymptoms(): Observable<any[]> {
+    return this.http.get<any[]>(this.symptomsUrl);
+  }
+
+
 }

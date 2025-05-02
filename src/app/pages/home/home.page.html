@@ -9,27 +9,28 @@
     <!-- Calendario semanal lunes-domingo -->
     <div class="grid grid-cols-7 gap-2 mb-6">
       <div
-      *ngFor="let day of weekDays"
-      class="flex flex-col items-center cursor-pointer"
-      [ngClass]="{
-        'cursor-not-allowed opacity-50': isFuture(day)
-      }"
-      (click)="canRegister(day) && selectDay(day)"
-    >
-      <span class="text-xs text-gray-500 uppercase">{{ day | date: 'EEE' }}</span>
-    
-      <div
-        class="w-10 h-10 rounded-full flex items-center justify-center font-semibold"
+        *ngFor="let day of weekDays"
+        class="flex flex-col items-center"
         [ngClass]="{
-          'bg-coral text-white': isRegistered(day),                                                  
-          'bg-lavender text-white': !isToday(day) && isSelected(day) && !isRegistered(day),    
-          'bg-mint text-black': isToday(day) && !isRegistered(day),                          
-          'bg-white text-gray-600 border': !isToday(day) && !isRegistered(day) && !isSelected(day)  
+          'cursor-not-allowed opacity-50': isFuture(day),
+          'cursor-pointer': !isFuture(day)
         }"
+        (click)="canRegister(day) && openLogModal(day)"
       >
-        {{ day.getDate() }}
+        <span class="text-xs text-gray-500 uppercase">{{ day | date: 'EEE' }}</span>
+
+        <div
+          class="w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors duration-300"
+          [ngClass]="{
+            'bg-coral text-white': isRegistered(day),
+            'bg-lavender text-white': !isToday(day) && isSelected(day) && !isRegistered(day),
+            'bg-mint text-black': isToday(day) && !isRegistered(day),
+            'bg-white text-gray-600 border': !isToday(day) && !isRegistered(day) && !isSelected(day)
+          }"
+        >
+          {{ day.getDate() }}
+        </div>
       </div>
-    </div>
     </div>
 
     <!-- Imagen + frase -->
@@ -46,6 +47,7 @@
         Registra tu día y cuida tu bienestar emocional.
       </p>
     </div>
+
     <!-- Botón fijo abajo -->
     <div class="fixed bottom-12 left-1/2 transform -translate-x-1/2">
       <div class="min-w-[120px] min-h-[48px] flex items-center justify-center">

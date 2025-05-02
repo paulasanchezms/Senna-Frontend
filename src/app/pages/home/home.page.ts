@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { RegisterDayModalPage } from '../register-day-modal/register-day-modal.page';
+import { DiaryService } from 'src/app/Services/diary.service';
 
 @Component({
   standalone: false,
@@ -11,7 +14,12 @@ export class HomePage implements OnInit {
   today: Date = new Date();
   weekDays: Date[] = [];
   registeredDates: string[] = []; // formato: 'YYYY-MM-DD'
-  selectedDay: Date = this.today; // por defecto es hoy
+  selectedDay: Date = this.today;
+
+  constructor(
+    private modalController: ModalController,
+    private diaryService: DiaryService
+  ) {}
 
   ngOnInit(): void {
     this.loadRegisteredDays();
@@ -19,9 +27,15 @@ export class HomePage implements OnInit {
   }
 
   loadRegisteredDays(): void {
-    // ⚠ Aquí traerías del backend las fechas ya registradas
-    // De momento mock:
-    this.registeredDates = ['2025-04-29', '2025-04-30']; // días simulados registrados
+    this.diaryService.getAllEntries().subscribe({
+      next: (entries) => {
+        this.registeredDates = entries.map((e) => e.date);
+        console.log('Fechas cargadas del backend:', this.registeredDates);
+      },
+      error: (err) => {
+        console.error('Error cargando días registrados:', err);
+      },
+    });
   }
 
   generateWeek(): void {
@@ -53,10 +67,31 @@ export class HomePage implements OnInit {
     return !this.isFuture(date);
   }
 
-  openLogModal(date: Date): void {
-    console.log(`Abriendo registro para: ${date.toDateString()}`);
-    // Aquí abrirías el modal o navegarías al formulario
+async openLogModal(date: Date): Promise<void> {
+  const dateString = date.toISOString().split('T')[0];
+
+  let existingEntry = null;
+  if (this.isRegistered(date)) {
+    existingEntry = await this.diaryService.getEntryByDate(dateString).toPromise();
   }
+
+  const modal = await this.modalController.create({
+    component: RegisterDayModalPage,
+    componentProps: {
+      selectedDate: dateString,
+      existingEntry: existingEntry
+    },
+  });
+
+  await modal.present();
+
+  const { data, role } = await modal.onWillDismiss();
+  if (role === 'confirm' && data) {
+    if (!this.registeredDates.includes(data)) {
+      this.registeredDates.push(data);
+    }
+  }
+}
 
   selectDay(day: Date): void {
     if (!this.isFuture(day)) {
