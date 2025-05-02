@@ -1,8 +1,8 @@
 {
-    "/api": {
-      "target": "senna-frontend-production.up.railway.app",
-      "secure": false,
-      "changeOrigin": true,
-      "logLevel": "debug"
-    }
+  "/api": {
+    "target": "https://senna-back-production.up.railway.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
+}

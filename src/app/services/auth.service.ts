@@ -1,4 +1,3 @@
-// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -24,9 +23,15 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/api/auth';
+  private baseUrl: string;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Detectamos si estamos en localhost o en producción
+    if (window.location.hostname === 'localhost') {
+      this.baseUrl = 'http://localhost:8080/api/auth';
+    } else {
+      this.baseUrl = 'https://senna-production-45cb.up.railway.app/api/auth';    }
+  }
 
   register(data: FormData): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/register`, data);

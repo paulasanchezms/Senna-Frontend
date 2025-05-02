@@ -7,7 +7,7 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, AuthResponse } from 'src/app/services/auth.service';
+import { AuthService, AuthResponse } from '../../services/auth.service';
 
 declare var google: any; // Importante para acceder a la API de Google fuera de TypeScript
 
