@@ -40,6 +40,50 @@
 @tailwind components;
 @tailwind utilities;
 
-ion-content {
-    --background: transparent;
-  }
+ion-content,
+ion-header,
+ion-footer,
+ion-toolbar,
+ion-title,
+ion-item,
+ion-label,
+ion-input,
+ion-button,
+ion-card,
+ion-card-header,
+ion-card-title,
+ion-card-content,
+ion-list,
+ion-grid,
+ion-row,
+ion-col {
+  --background: transparent;
+  --color: inherit;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --margin-start: 0;
+  --margin-end: 0;
+  --border-width: 0;
+  --border-color: transparent;
+  --box-shadow: none;
+  --border-radius: 0;
+  --ion-text-color: inherit;
+  --ion-background-color: transparent;
+  font-family: inherit;
+  --background-focused: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
+}
+
+/* Quitar el highlight gris de iOS/Safari al pulsar */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Quitar outline en focus/active para todos los elementos */
+*:focus {
+  outline: none;
+  box-shadow: none;
+}

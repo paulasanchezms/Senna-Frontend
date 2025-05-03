@@ -25,3 +25,13 @@
 #container a {
   text-decoration: none;
 }
+
+div:focus, div:active {
+  outline: none;
+  box-shadow: none;
+}
+
+button:focus, button:active {
+  outline: none;
+  box-shadow: none;
+}

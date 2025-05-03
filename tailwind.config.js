@@ -12,7 +12,7 @@ module.exports = {
           coral: '#ee9870',
         },
         fontFamily: {
-          peachy: ['Poppins', 'sans-serif'], // puedes cambiarlo si usas otra fuente
+          peachy: ['Poppins', 'sans-serif'],
         }
       },
     },

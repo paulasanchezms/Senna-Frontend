@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar class="bg-peach text-white">
+    <ion-title class="font-peachy">Registro del día</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline" class="text-white"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-lightPeach font-peachy">
+  <div class="p-4 space-y-4">
+
+    <!-- Card Fecha -->
+    <div class="bg-white rounded-xl shadow p-4">
+      <p class="text-lavender font-semibold text-center text-lg">
+        {{ selectedDate | date: 'fullDate' }}
+      </p>
+    </div>
+
+    <!-- Card Mood -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Estado de ánimo</h3>
+      <div class="flex flex-wrap gap-2">
+        <ion-chip
+          *ngFor="let mood of moods"
+          [color]="isSelectedMood(mood.id) ? 'primary' : 'medium'"
+          (click)="toggleMood(mood.id)"
+        >
+          <ion-label>{{ mood.name }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Card Síntomas -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Síntomas</h3>
+      <div class="flex flex-wrap gap-2">
+        <ion-chip
+          *ngFor="let symptom of symptoms"
+          [color]="isSelectedSymptom(symptom.id) ? 'secondary' : 'medium'"
+          (click)="toggleSymptom(symptom.id)"
+        >
+          <ion-label>{{ symptom.name }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Card Notas -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Notas</h3>
+      <ion-textarea
+        class="w-full"
+        placeholder="Escribe tus notas aquí..."
+        [(ngModel)]="notes"
+      ></ion-textarea>
+    </div>
+
+    <!-- Botón Guardar -->
+    <div class="min-w-[120px] min-h-[48px] flex items-center justify-center">
+      <ion-button
+        class="bg-salmon text-white font-bold rounded-full text-lg px-6 py-2"
+        (click)="saveEntry()"
+      >
+        Guardar registro
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
