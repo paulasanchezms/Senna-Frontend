@@ -8,7 +8,7 @@ export interface StatisticsResponse {
   symptomCounts: { [key: string]: number };
   weeklyMoodLevels: number[];
   monthlyMoodLevels: number[];
-}
+  daysInMonth: number;}
 
 @Injectable({
   providedIn: 'root'
