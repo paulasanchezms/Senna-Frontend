@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { RegisterDayModalPage } from '../register-day-modal/register-day-modal.page';
-import { DiaryService } from 'src/app/Services/diary.service';
+import { DiaryService } from 'src/app/services/diary.service';
 
 @Component({
   standalone: false,

@@ -1,0 +1,31 @@
+<ion-content class="bg-lightPeach font-peachy p-4">
+  <div class="space-y-6">
+    <h1 class="text-3xl font-bold text-lavender">Estadísticas</h1>
+
+    <!-- Semanal -->
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h2 class="text-xl font-bold text-coral mb-2">Semana actual</h2>
+      <canvas
+        baseChart
+        #weeklyChart="base-chart"
+        [data]="weeklyChartConfig.data"
+        [type]="weeklyChartConfig.type"
+        [options]="weeklyChartConfig.options"
+        class="w-full h-64"
+      ></canvas>
+    </div>
+
+    <!-- Mensual -->
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h2 class="text-xl font-bold text-coral mb-2">Mes actual</h2>
+      <canvas
+        baseChart
+        #monthlyChart="base-chart"
+        [data]="monthlyChartConfig.data"
+        [type]="monthlyChartConfig.type"
+        [options]="monthlyChartConfig.options"
+        class="w-full h-64"
+      ></canvas>
+    </div>
+  </div>
+</ion-content>

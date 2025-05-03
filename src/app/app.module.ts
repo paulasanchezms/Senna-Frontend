@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { NgChartsModule } from 'ng2-charts';
 
 registerLocaleData(localeEs);
 
@@ -23,6 +24,8 @@ registerLocaleData(localeEs);
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    NgChartsModule
+    
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

@@ -6,7 +6,10 @@ export interface DiaryEntryDTO {
   date: string;
   moodIds: number[];
   symptomIds: number[];
-  notes: string;}
+  notes: string;
+  moodLevel: number;
+}
+
 
 export interface DiaryEntryResponseDTO {
   id: number;

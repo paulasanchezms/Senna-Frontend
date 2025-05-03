@@ -10,42 +10,42 @@ import { DiaryService } from 'src/app/services/diary.service';
 })
 export class RegisterDayModalPage implements OnInit {
   @Input() selectedDate!: string;
+  @Input() existingEntry: any;
 
   moods: any[] = [];
   symptoms: any[] = [];
   selectedMoodIds: number[] = [];
   selectedSymptomIds: number[] = [];
   notes: string = '';
+  moodLevel: number = 3; 
 
   constructor(
     private modalCtrl: ModalController,
     private diaryService: DiaryService
   ) {}
 
-@Input() existingEntry: any; 
+  ngOnInit() {
+    this.diaryService.getMoods().subscribe(data => {
+      this.moods = data;
 
-ngOnInit() {
-  this.diaryService.getMoods().subscribe(data => {
-    this.moods = data;
+      if (this.existingEntry) {
+        this.selectedMoodIds = this.existingEntry.mood.map((m: any) => m.id);
+      }
+    });
 
-    // Si hay datos previos, marca los seleccionados
+    this.diaryService.getSymptoms().subscribe(data => {
+      this.symptoms = data;
+
+      if (this.existingEntry) {
+        this.selectedSymptomIds = this.existingEntry.symptoms.map((s: any) => s.id);
+      }
+    });
+
     if (this.existingEntry) {
-      this.selectedMoodIds = this.existingEntry.mood.map((m: any) => m.id);
+      this.notes = this.existingEntry.notes;
+      this.moodLevel = this.existingEntry.moodLevel || 3;  
     }
-  });
-
-  this.diaryService.getSymptoms().subscribe(data => {
-    this.symptoms = data;
-
-    if (this.existingEntry) {
-      this.selectedSymptomIds = this.existingEntry.symptoms.map((s: any) => s.id);
-    }
-  });
-
-  if (this.existingEntry) {
-    this.notes = this.existingEntry.notes;
   }
-}
 
   toggleMood(id: number) {
     const index = this.selectedMoodIds.indexOf(id);
@@ -78,7 +78,8 @@ ngOnInit() {
       date: this.selectedDate,
       moodIds: this.selectedMoodIds,
       symptomIds: this.selectedSymptomIds,
-      notes: this.notes
+      notes: this.notes,
+      moodLevel: this.moodLevel 
     };
 
     console.log('Enviando entrada al backend:', entry);
