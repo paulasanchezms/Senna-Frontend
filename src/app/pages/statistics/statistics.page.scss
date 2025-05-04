@@ -1,0 +1,29 @@
+/* statistics.page.scss */
+
+/* Tailwind @apply funciona también en SCSS si tienes PostCSS configurado */
+ion-datetime {
+  @apply text-salmon border border-salmon rounded-lg;
+
+  /* Ajustes internos */
+  .datetime-header {
+    @apply bg-salmon text-lightPeach;
+  }
+  .datetime-button {
+    @apply text-salmon;
+  }
+  .calendar-day-disabled {
+    @apply text-gray-400;
+  }
+  .calendar-day-selected {
+    @apply bg-salmon text-lightPeach;
+  }
+  .calendar-day-today {
+    @apply border-2 border-salmon;
+  }
+  .calendar-day {
+    @apply text-salmon;
+  }
+  .datetime-close {
+    @apply text-salmon;
+  }
+}
