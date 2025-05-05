@@ -27,6 +27,10 @@ const routes: Routes = [
   {
     path: 'register-day-modal',
     loadChildren: () => import('./pages/register-day-modal/register-day-modal.module').then( m => m.RegisterDayModalPageModule)
+  },
+  {
+    path: 'statistics',
+    loadChildren: () => import('./pages/statistics/statistics.module').then( m => m.StatisticsPageModule)
   }
 ];
 
