@@ -33,8 +33,9 @@ const routes: Routes = [
     loadChildren: () => import('./pages/statistics/statistics.module').then( m => m.StatisticsPageModule)
   },
   {
-    path: 'schedule-appointment',
-    loadChildren: () => import('./pages/schedule-appointment/schedule-appointment.module').then( m => m.ScheduleAppointmentPageModule)
+    path: 'schedule-appointment/:id',
+    loadChildren: () => import('./pages/schedule-appointment/schedule-appointment.module')
+                     .then(m => m.ScheduleAppointmentPageModule)
   },
   {
     path: 'search-psychologist',

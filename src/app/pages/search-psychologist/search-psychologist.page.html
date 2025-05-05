@@ -1,6 +1,6 @@
-<ion-content class="font-peachy bg-white">
-  <!-- Área de búsqueda -->
-  <div class="p-4 space-y-3">
+<ion-content class="font-peachy bg-lightPeach">
+  <!-- Área de búsqueda sticky -->
+  <div class="sticky top-0 z-10 bg-white p-4 space-y-3 shadow">
     <input
       type="text"
       [(ngModel)]="searchTerm"
@@ -17,14 +17,14 @@
     />
     <button
       (click)="search()"
-      class="w-full bg-salmon text-white font-bold py-3 rounded-full shadow hover:bg-coral transition"
+      class="w-full bg-lavender text-white font-bold py-3 rounded-full shadow hover:bg-coral transition"
     >
       Buscar
     </button>
   </div>
 
-  <!-- Listado -->
-  <div class="bg-lightPeach h-full p-4 space-y-4">
+  <!-- Listado dinámico (sin altura fija) -->
+  <div class="bg-lightPeach p-4 space-y-4">
     <div
       *ngFor="let psy of psychologists"
       (click)="goToPsychologistSchedule(psy.id_user)"
@@ -48,3 +48,4 @@
       </div>
     </div>
   </div>
+</ion-content>

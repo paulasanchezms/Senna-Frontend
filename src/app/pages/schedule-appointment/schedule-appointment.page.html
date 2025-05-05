@@ -1,39 +1,81 @@
 <ion-header>
-  <ion-toolbar color="lavender">
+  <ion-toolbar class="bg-lightPeach">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/search-psychologist"></ion-back-button>
+      <ion-back-button defaultHref="/search-psychologist" class="text-lavender"></ion-back-button>
     </ion-buttons>
-    <ion-title>Seleccionar Cita</ion-title>
+    <ion-title class="text-lavender font-bold">Reservar cita</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ psychologist?.name }} {{ psychologist?.last_name }}</ion-card-title>
-      <ion-card-subtitle>{{ psychologist?.specialty }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Ubicación: {{ psychologist?.location }}</p>
-      <p>Calificación: ⭐⭐⭐⭐☆</p>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="bg-lightPeach p-4 flex flex-col">
 
-  <ion-list>
-    <ion-item>
-      <ion-label>Selecciona día</ion-label>
-      <ion-datetime display-format="DD MMM YYYY" [(ngModel)]="selectedDate"></ion-datetime>
-    </ion-item>
+  <!-- 1) CALENDARIO -->
+  <div class="mb-4 flex justify-center">
+    <ion-datetime
+      presentation="date"
+      [(ngModel)]="selectedDate"
+      (ionChange)="onDateChange()"
+      class="mx-auto w-11/12 max-w-md rounded-2xl border-2 border-salmon bg-white text-gray-900"
+    ></ion-datetime>
+  </div>
 
-    <ion-item>
-      <ion-label>Selecciona hora</ion-label>
-      <ion-select [(ngModel)]="selectedTime">
-        <ion-select-option *ngFor="let time of availableTimes" [value]="time">{{ time }}</ion-select-option>
-      </ion-select>
-    </ion-item>
-  </ion-list>
+  <!-- Mensaje si no hay franjas disponibles -->
+  <div *ngIf="availableTimes.length === 0" class="text-center text-gray-600 mb-4">
+    No hay horas disponibles para esta fecha.
+  </div>
 
-  <ion-button expand="full" color="salmon" (click)="confirm()">
-    Confirmar Reserva
-  </ion-button>
+  <!-- 2) FRANJAS HORARIAS -->
+  <div class="mb-6" *ngIf="availableTimes.length > 0">
+    <div class="flex space-x-3 overflow-x-auto pb-2">
+      <button
+        *ngFor="let time of availableTimes"
+        (click)="selectedTime = time"
+        [ngClass]="
+          selectedTime === time
+            ? 'bg-lavender text-white'
+            : 'bg-white text-gray-900'
+        "
+        class="flex-none px-4 py-2 rounded-full border-2 border-lavender shadow-sm whitespace-nowrap"
+      >
+        {{ time }}
+      </button>
+    </div>
+  </div>
+
+  <!-- 3) TARJETA DE SERVICIO -->
+  <div class="bg-white rounded-2xl shadow p-4 flex justify-between items-center mb-4">
+    <div>
+      <p class="text-lg font-bold text-gray-900">
+        Consulta de {{ psychologist?.name }} {{ psychologist?.last_name }}
+      </p>
+      <p class="text-sm text-gray-600">
+        {{ selectedTime }} – {{ computeEndTime(selectedTime) }}
+      </p>
+    </div>
+    <div class="text-right">
+      <p class="text-xl font-bold text-salmon">23,50 €+</p>
+      <p class="text-xs text-gray-600">20 min</p>
+    </div>
+  </div>
+
+  <div class="flex-1"></div>
 </ion-content>
+
+<ion-footer translucent>
+  <ion-toolbar class="bg-white border-t-2 border-salmon">
+    <div class="flex justify-between items-center w-full p-4">
+      <div>
+        <p class="text-xl font-bold text-salmon">23,50 €+</p>
+        <p class="text-sm text-gray-600">20 min</p>
+      </div>
+      <ion-button
+        expand="block"
+        class="bg-salmon"
+        [disabled]="!selectedTime"
+        (click)="confirm()"
+      >
+        <span class="text-white font-bold">Continuar</span>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
