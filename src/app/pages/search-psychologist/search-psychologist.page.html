@@ -1,0 +1,50 @@
+<ion-content class="font-peachy bg-white">
+  <!-- Área de búsqueda -->
+  <div class="p-4 space-y-3">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onInputChange()"
+      placeholder="Buscar especialidad o nombre"
+      class="w-full bg-lightPeach p-3 rounded-xl border border-salmon"
+    />
+    <input
+      type="text"
+      [(ngModel)]="locationTerm"
+      (input)="onInputChange()"
+      placeholder="Ubicación"
+      class="w-full bg-lightPeach p-3 rounded-xl border border-salmon"
+    />
+    <button
+      (click)="search()"
+      class="w-full bg-salmon text-white font-bold py-3 rounded-full shadow hover:bg-coral transition"
+    >
+      Buscar
+    </button>
+  </div>
+
+  <!-- Listado -->
+  <div class="bg-lightPeach h-full p-4 space-y-4">
+    <div
+      *ngFor="let psy of psychologists"
+      (click)="goToPsychologistSchedule(psy.id_user)"
+      class="bg-white rounded-2xl shadow hover:shadow-lg cursor-pointer flex overflow-hidden"
+    >
+      <img
+        [src]="psy.profileImageUrl || 'assets/default-avatar.png'"
+        alt="Foto del psicólogo"
+        class="w-32 h-32 object-cover"
+      />
+      <div class="p-4 flex flex-col justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-gray-800">{{ psy.name }} {{ psy.last_name }}</h3>
+          <p class="text-sm text-gray-500">
+            {{ psy.location || 'Ubicación no disponible' }}
+          </p>
+        </div>
+        <div class="text-sm text-gray-600 mt-2">
+          ⭐⭐⭐⭐☆ 10 comentarios
+        </div>
+      </div>
+    </div>
+  </div>

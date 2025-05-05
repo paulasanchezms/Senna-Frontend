@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar color="lavender">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/psychologist-schedule"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Revisar y Confirmar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ appointmentSummary.psychologistName }}</ion-card-title>
+      <ion-card-subtitle>{{ appointmentSummary.specialty }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Fecha: {{ appointmentSummary.date | date: 'fullDate' }}</p>
+      <p>Hora: {{ appointmentSummary.time }}</p>
+      <p>Duración: {{ appointmentSummary.duration }} min</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="full" color="salmon" (click)="finalize()">
+    Confirmar Reserva
+  </ion-button>
+</ion-content>

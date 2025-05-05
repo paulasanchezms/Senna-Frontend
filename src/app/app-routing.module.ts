@@ -31,6 +31,18 @@ const routes: Routes = [
   {
     path: 'statistics',
     loadChildren: () => import('./pages/statistics/statistics.module').then( m => m.StatisticsPageModule)
+  },
+  {
+    path: 'schedule-appointment',
+    loadChildren: () => import('./pages/schedule-appointment/schedule-appointment.module').then( m => m.ScheduleAppointmentPageModule)
+  },
+  {
+    path: 'search-psychologist',
+    loadChildren: () => import('./pages/search-psychologist/search-psychologist.module').then( m => m.SearchPsychologistPageModule)
+  },
+  {
+    path: 'confirm-appointment',
+    loadChildren: () => import('./pages/confirm-appointment/confirm-appointment.module').then( m => m.ConfirmAppointmentPageModule)
   }
 ];
 

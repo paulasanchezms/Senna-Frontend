@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="lavender">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/search-psychologist"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Seleccionar Cita</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ psychologist?.name }} {{ psychologist?.last_name }}</ion-card-title>
+      <ion-card-subtitle>{{ psychologist?.specialty }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Ubicación: {{ psychologist?.location }}</p>
+      <p>Calificación: ⭐⭐⭐⭐☆</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>Selecciona día</ion-label>
+      <ion-datetime display-format="DD MMM YYYY" [(ngModel)]="selectedDate"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Selecciona hora</ion-label>
+      <ion-select [(ngModel)]="selectedTime">
+        <ion-select-option *ngFor="let time of availableTimes" [value]="time">{{ time }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="full" color="salmon" (click)="confirm()">
+    Confirmar Reserva
+  </ion-button>
+</ion-content>
