@@ -1,22 +1,24 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { WorkingHourService } from '../../services/working-hour.service';
-import { WorkingHour } from '../../models/working-hour';
+import { WorkingHourService, WorkingHourDTO } from '../../services/working-hour.service';
 
 @Component({
-  standalone:false,
+  standalone: false,
   selector: 'app-working-hour-modal',
   templateUrl: './working-hour-modal.page.html',
   styleUrls: ['./working-hour-modal.page.scss'],
 })
 export class WorkingHourModalPage implements OnInit {
   @Input() userId!: number;
-  @Input() dayOfWeek!: number;
-  @Input() workingHour?: WorkingHour;
+  @Input() allHours: WorkingHourDTO[] = [];
 
+  days: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  selectedDay = 0;
+
+  workingHoursForDay: WorkingHourDTO[] = [];
   hourForm!: FormGroup;
-  isEdit = false;
+  editingHourId?: number;
 
   constructor(
     private fb: FormBuilder,
@@ -25,41 +27,83 @@ export class WorkingHourModalPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isEdit = !!this.workingHour;
+    this.buildForm();
+    this.loadHoursForDay(this.selectedDay);
+  }
+
+  buildForm() {
     this.hourForm = this.fb.group({
-      dayOfWeek: [this.dayOfWeek],
-      startTime: [this.workingHour?.startTime || '', Validators.required],
-      endTime:   [this.workingHour?.endTime   || '', Validators.required],
+      startTime: ['', Validators.required],
+      endTime: ['', Validators.required]
     });
+  }
+
+  loadHoursForDay(dayIndex: number) {
+    this.workingHoursForDay = this.allHours.filter(wh => wh.dayOfWeek === dayIndex);
+    this.hourForm.reset();
+    this.editingHourId = undefined;
+  }
+
+  selectDay(index: number) {
+    this.selectedDay = index;
+    this.loadHoursForDay(index);
+  }
+
+  edit(hour: WorkingHourDTO) {
+    this.hourForm.patchValue({
+      startTime: hour.startTime.slice(0, 5),
+      endTime: hour.endTime.slice(0, 5)
+    });
+    this.editingHourId = (hour as any).id;
   }
 
   async save() {
     if (this.hourForm.invalid) return;
-    const dto = this.hourForm.value as WorkingHour;
-    if (this.isEdit && this.workingHour) {
-      await this.whService.updateWorkingHour(
-        this.userId,
-        (this.workingHour as any).id,
-        dto
-      ).toPromise();
+
+    const dto: WorkingHourDTO = {
+      dayOfWeek: this.selectedDay,
+      startTime: this.hourForm.value.startTime + ':00',
+      endTime: this.hourForm.value.endTime + ':00'
+    };
+
+    if (this.editingHourId) {
+      await this.whService.updateWorkingHour(this.userId, this.editingHourId, dto).toPromise();
     } else {
       await this.whService.createWorkingHour(this.userId, dto).toPromise();
     }
-    this.modalCtrl.dismiss('saved');
+
+    const updatedHours = await this.whService.getWorkingHours(this.userId).toPromise() ?? [];
+    this.allHours = updatedHours;
+    this.loadHoursForDay(this.selectedDay);
+
+    this.hourForm.reset();
+    this.editingHourId = undefined;
   }
 
-  delete() {
-    if (this.isEdit && this.workingHour) {
-      this.whService.deleteWorkingHour(
-        this.userId,
-        (this.workingHour as any).id
-      ).subscribe(() => this.modalCtrl.dismiss('deleted'));
-    } else {
-      this.modalCtrl.dismiss();
-    }
+  async delete(hourId: number) {
+    await this.whService.deleteWorkingHour(this.userId, hourId).toPromise();
+    const updatedHours = await this.whService.getWorkingHours(this.userId).toPromise() ?? [];
+    this.allHours = updatedHours;
+    this.loadHoursForDay(this.selectedDay);
   }
 
   close() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss('saved');
   }
+
+  // Igual que tenías pero añade esta función:
+
+async deleteHourByTime(hour: WorkingHourDTO) {
+  const existing = this.allHours.find(h => 
+    h.dayOfWeek === hour.dayOfWeek &&
+    h.startTime === hour.startTime &&
+    h.endTime === hour.endTime
+  );
+  if (existing && (existing as any).id) {
+    await this.whService.deleteWorkingHour(this.userId, (existing as any).id).toPromise();
+    const updatedHours = await this.whService.getWorkingHours(this.userId).toPromise() ?? [];
+    this.allHours = updatedHours;
+    this.loadHoursForDay(this.selectedDay);
+  }
+}
 }
