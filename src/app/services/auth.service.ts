@@ -54,6 +54,22 @@ export class AuthService {
     return localStorage.getItem('authToken');
   }
 
+  /** Extrae el ID de usuario del token JWT */
+  getUserId(): number | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // Ajusta la clave al claim que uses, e.g. 'sub' o 'userId'
+      return payload.userId ?? (payload.sub ? +payload.sub : null);
+    } catch (e) {
+      console.error('Error al decodificar JWT', e);
+      return null;
+    }
+  }
+
   logout(): void {
     localStorage.removeItem('authToken');
   }

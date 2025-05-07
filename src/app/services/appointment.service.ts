@@ -38,4 +38,15 @@ export class AppointmentService {
       { params }
     );
   }
+
+  getAvailableTimesForWeek(psychologistId: number, startDate: string, endDate: string): Observable<{ [date: string]: string[] }> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+  
+    return this.http.get<{ [date: string]: string[] }>(
+      `/api/psychologists/${psychologistId}/available-times/week`,
+      { params }
+    );
+  }
 }

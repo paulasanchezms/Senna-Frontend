@@ -44,6 +44,18 @@ const routes: Routes = [
   {
     path: 'confirm-appointment',
     loadChildren: () => import('./pages/confirm-appointment/confirm-appointment.module').then( m => m.ConfirmAppointmentPageModule)
+  },
+  {
+    path: 'weekly-schedule',
+    loadChildren: () => import('./pages/weekly-schedule/weekly-schedule.module').then( m => m.WeeklySchedulePageModule)
+  },
+  {
+    path: 'working-hour-modal',
+    loadChildren: () => import('./pages/working-hour-modal/working-hour-modal.module').then( m => m.WorkingHourModalPageModule)
+  },
+  {
+    path: 'calendar',
+    loadChildren: () => import('./pages/calendar/calendar.module').then( m => m.CalendarPageModule)
   }
 ];
 
