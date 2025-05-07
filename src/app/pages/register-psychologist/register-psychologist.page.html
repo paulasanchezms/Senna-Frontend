@@ -1,160 +1,184 @@
-<ion-content
-  class="h-screen w-screen bg-lightPeach md:bg-white font-peachy px-4"
->
-  <div class="flex items-center justify-center h-full w-full">
-    <div
-      class="w-full md:max-w-2xl md:bg-lightPeach md:rounded-2xl md:shadow-xl md:p-6 p-4 space-y-6 text-center"
-    >
-      <div class="text-4xl text-lavender">Senna</div>
-
-      <div>
-        <h2 class="text-xl text-peach font-semibold">Registro Profesional</h2>
-        <p class="text-md text-lavender">Crea tu cuenta como profesional de la salud mental</p>
-      </div>
-
-      <form
-        [formGroup]="registerForm"
-        (ngSubmit)="onRegister()"
-        class="grid gap-y-6 gap-x-4 md:grid-cols-2 text-left"
-      >
-        <div class="flex flex-col space-y-1">
-          <input
-            type="text"
-            formControlName="name"
-            placeholder="Nombre"
-            class="input"
-            [ngClass]="{ 'border-red-500': name?.invalid && formSubmitted }"
-          />
-          <p *ngIf="name?.invalid && formSubmitted" class="error">
-            Nombre requerido
-          </p>
+<ion-content class="bg-lightPeach md:bg-white font-peachy px-4">
+  <ion-grid class="h-full w-full">
+    <ion-row class="justify-center">
+      <ion-col size="12" size-md="8" class="md:rounded-2xl md:shadow-xl md:p-6 p-4 space-y-6 text-center bg-lightPeach">
+        
+        <ion-text class="block text-4xl text-lavender">Senna</ion-text>
+        
+        <div>
+          <ion-text class="block text-xl text-peach font-semibold">Registro Profesional</ion-text>
+          <ion-text class="block text-md text-lavender">Crea tu cuenta como profesional de la salud mental</ion-text>
         </div>
+        
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()"
+              class="grid gap-y-6 gap-x-4 md:grid-cols-2 text-left">
+          
+          <!-- Nombre -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="text"
+              formControlName="name"
+              placeholder="Nombre"
+              class="input placeholder:text-base"
+              [ngClass]="{ 'border-red-500': name?.invalid && formSubmitted }"
+            ></ion-input>
+            <ion-text *ngIf="name?.invalid && formSubmitted" class="error">
+              Nombre requerido
+            </ion-text>
+          </ion-item>
+          
+          <!-- Apellidos -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="text"
+              formControlName="last_name"
+              placeholder="Apellidos"
+              class="input placeholder:text-base"
+              [ngClass]="{ 'border-red-500': last_name?.invalid && formSubmitted }"
+            ></ion-input>
+            <ion-text *ngIf="last_name?.invalid && formSubmitted" class="error">
+              Apellidos requeridos
+            </ion-text>
+          </ion-item>
+          
+          <!-- Email -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="email"
+              formControlName="email"
+              placeholder="Email"
+              class="input placeholder:text-base"
+              [ngClass]="{ 'border-red-500': email?.invalid && formSubmitted }"
+            ></ion-input>
+            <ion-text *ngIf="email?.invalid && formSubmitted" class="error">
+              Correo inválido
+            </ion-text>
+          </ion-item>
+          
+          <!-- Contraseña -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="password"
+              formControlName="password"
+              placeholder="Contraseña"
+              class="input placeholder:text-base"
+              [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }"
+            ></ion-input>
+            <ion-text *ngIf="password?.invalid && formSubmitted" class="error">
+              Mínimo 6 caracteres, 1 mayúscula, número y símbolo
+            </ion-text>
+          </ion-item>
+          
+          <!-- DNI -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="text"
+              formControlName="dni"
+              placeholder="DNI"
+              class="input placeholder:text-base"
+              [ngClass]="{ 'border-red-500': dni?.invalid && formSubmitted }"
+            ></ion-input>
+            <ion-text *ngIf="dni?.invalid && formSubmitted" class="error">
+              DNI requerido
+            </ion-text>
+          </ion-item>
+          
+          <!-- Titulación -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="text"
+              formControlName="qualification"
+              placeholder="Titulación"
+              class="input placeholder:text-base"
+              [ngClass]="{ 'border-red-500': qualification?.invalid && formSubmitted }"
+            ></ion-input>
+            <ion-text *ngIf="qualification?.invalid && formSubmitted" class="error">
+              Titulación requerida
+            </ion-text>
+          </ion-item>
+          
+          <!-- Duración consulta (opcional) -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="number"
+              formControlName="consultationDuration"
+              placeholder="Duración consulta (min) — opcional"
+              class="input placeholder:text-base"
+            ></ion-input>
+          </ion-item>
+          
+          <!-- Precio consulta (opcional) -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="number"
+              formControlName="consultationPrice"
+              placeholder="Precio consulta (€) — opcional"
+              class="input placeholder:text-base"
+              step="0.01"
+              min="0"
+            ></ion-input>
+          </ion-item>
+          
+          <!-- Especialidad (opcional) -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <ion-input
+              type="text"
+              formControlName="specialty"
+              placeholder="Especialidad — opcional"
+              class="input placeholder:text-base"
+            ></ion-input>
+          </ion-item>
+          
+          <!-- Ubicación (opcional) -->
+          <ion-item lines="none" class="p-0 flex flex-col space-y-1">
+            <input
+              type="text"
+              id="autocomplete"
+              placeholder="Ubicación — opcional"
+              class="input placeholder:text-base"
+            />
+          </ion-item>
+          
+          <!-- Documento acreditativo (opcional) -->
+          <ion-label class="text-peach font-medium">
+            Documento acreditativo (PDF/Word) — opcional
+          </ion-label>
+          <ion-item lines="none" class="md:col-span-2 p-0 flex flex-col space-y-1 w-full">
+            <input
+              type="file"
+              id="document"
+              accept=".pdf,.doc,.docx"
+              (change)="onFileSelected($event)"
+              class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lavender file:text-white hover:file:bg-purple-400 bg-white/90 border border-lavender rounded-xl text-peach px-4 py-2.5 transition w-full"
+            />
+          </ion-item>
+          
+          <!-- Botón de envío -->
+          <ion-item lines="none" class="md:col-span-2 p-0 justify-center">
+            <ion-button
+              expand="block"
+              type="submit"
+              class="py-4 px-12 rounded-full bg-salmon text-white text-lg font-semibold hover:bg-coral transition mx-auto"
+            >
+              Registrarse
+            </ion-button>
+          </ion-item>
+        </form>
+        
+        <!-- Separador -->
+        <ion-grid class="flex items-center justify-center gap-2 text-sm text-peach">
+          <ion-row class="flex-1 border-t border-lavender"></ion-row>
+          <ion-text>o</ion-text>
+          <ion-row class="flex-1 border-t border-lavender"></ion-row>
+        </ion-grid>
+        
+        <!-- Link a login -->
+        <ion-text class="text-sm text-lavender">
+          ¿Ya tienes una cuenta?
+          <a routerLink="/login" class="font-medium underline">Inicia sesión aquí</a>
+        </ion-text>
 
-        <div class="flex flex-col space-y-1">
-          <input
-            type="text"
-            formControlName="last_name"
-            placeholder="Apellidos"
-            class="input"
-            [ngClass]="{ 'border-red-500': last_name?.invalid && formSubmitted }"
-          />
-          <p *ngIf="last_name?.invalid && formSubmitted" class="error">
-            Apellidos requeridos
-          </p>
-        </div>
-
-        <div class="flex flex-col space-y-1">
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="Email"
-            class="input"
-            [ngClass]="{ 'border-red-500': email?.invalid && formSubmitted }"
-          />
-          <p *ngIf="email?.invalid && formSubmitted" class="error">
-            Correo inválido
-          </p>
-        </div>
-
-        <div class="flex flex-col space-y-1">
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="Contraseña"
-            class="input"
-            [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }"
-          />
-          <p *ngIf="password?.invalid && formSubmitted" class="error">
-            Mínimo 6 caracteres, 1 mayúscula, número y símbolo
-          </p>
-        </div>
-
-        <div class="flex flex-col space-y-1">
-          <input
-            type="text"
-            formControlName="dni"
-            placeholder="DNI"
-            class="input"
-            [ngClass]="{ 'border-red-500': dni?.invalid && formSubmitted }"
-          />
-          <p *ngIf="dni?.invalid && formSubmitted" class="error">
-            DNI requerido
-          </p>
-        </div>
-
-        <div class="flex flex-col space-y-1">
-          <input
-            type="text"
-            formControlName="qualification"
-            placeholder="Titulación"
-            class="input"
-            [ngClass]="{ 'border-red-500': qualification?.invalid && formSubmitted }"
-          />
-          <p *ngIf="qualification?.invalid && formSubmitted" class="error">
-            Titulación requerida
-          </p>
-        </div>
-
-        <div class="flex flex-col space-y-1">
-          <input
-            type="text"
-            formControlName="specialty"
-            placeholder="Especialidad"
-            class="input"
-            [ngClass]="{ 'border-red-500': specialty?.invalid && formSubmitted }"
-          />
-          <p *ngIf="specialty?.invalid && formSubmitted" class="error">
-            Especialidad requerida
-          </p>
-        </div>
-
-        <input
-          type="text"
-          id="autocomplete"
-          placeholder="Ubicación"
-          class="input"
-          [ngClass]="{ 'border-red-500': location?.invalid && formSubmitted }"
-        />
-        <p *ngIf="location?.invalid && formSubmitted" class="error">
-          Ubicación requerida
-        </p>
-
-        <div class="flex flex-col space-y-1 md:col-span-2">
-          <label for="document" class="text-peach font-medium"
-            >Documento acreditativo</label
-          >
-          <input
-            type="file"
-            id="document"
-            accept=".pdf,.doc,.docx"
-            (change)="onFileSelected($event)"
-            class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lavender file:text-white hover:file:bg-purple-400 bg-white/90 border border-lavender rounded-xl text-peach px-4 py-2.5 transition"
-          />
-          <p *ngIf="formSubmitted && !selectedFile" class="error">
-            Por favor, sube un archivo PDF o Word
-          </p>
-        </div>
-
-        <button
-          type="submit"
-          class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition md:col-span-2"
-        >
-          Registrarse
-        </button>
-      </form>
-      <!-- Separador -->
-      <div class="flex items-center justify-center gap-2 text-sm text-peach">
-        <div class="flex-1 border-t border-lavender"></div>
-        <span>o</span>
-        <div class="flex-1 border-t border-lavender"></div>
-      </div>
-      <!-- Link a login -->
-      <p class="text-sm text-lavender">
-        ¿Ya tienes una cuenta?
-        <a routerLink="/login" class="font-medium underline"
-          >Inicia sesión aquí</a
-        >
-      </p>
-    </div>
-  </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

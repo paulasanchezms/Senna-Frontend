@@ -2,14 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface RegisterRequest {
-  name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  role: string;
-}
-
 export interface AuthRequest {
   email: string;
   password: string;
@@ -30,15 +22,32 @@ export class AuthService {
     if (window.location.hostname === 'localhost') {
       this.baseUrl = 'http://localhost:8080/api/auth';
     } else {
-      this.baseUrl = 'https://senna-production-45cb.up.railway.app/api/auth';    }
+      this.baseUrl = 'https://senna-production-45cb.up.railway.app/api/auth';
+    }
   }
 
+  /** Registro de paciente → POST /api/auth/register */
   register(data: FormData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, data);
+    return this.http.post<AuthResponse>(
+      `${this.baseUrl}/register`,
+      data
+    );
   }
 
+  /** Registro de psicólogo → POST /api/auth/register/psychologist */
+  registerPsychologist(data: FormData): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.baseUrl}/register/psychologist`,
+      data
+    );
+  }
+
+  /** Login común para todos los usuarios */
   login(data: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, data);
+    return this.http.post<AuthResponse>(
+      `${this.baseUrl}/login`,
+      data
+    );
   }
 
   getToken(): string | null {

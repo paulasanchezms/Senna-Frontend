@@ -21,7 +21,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'register-psychologist',
+    path: 'register/psychologist',
     loadChildren: () => import('./pages/register-psychologist/register-psychologist.module').then( m => m.RegisterPsychologistPageModule)
   },
   {
