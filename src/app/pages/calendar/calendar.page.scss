@@ -20,7 +20,7 @@
   
   /* BOTONES */
   .fc-button {
-    @apply bg-coral text-white px-3 py-1 rounded-md text-sm hover:bg-peach cursor-pointer;
+    @apply bg-coral text-white px-3 py-1 rounded-md text-sm hover:bg-peach cursor-pointer !important;
   }
   
   /* HEADER DE DÍAS */
@@ -52,3 +52,30 @@
   .fc-toolbar-title {
     @apply text-xl font-bold;
   }
+
+  /* BOTONES DE HEADER (prev, next, today, week, day) */
+.fc-button, .fc-button-primary {
+  @apply bg-coral text-white px-3 py-1 rounded-md text-sm shadow-none border-none;
+}
+
+.fc-button:hover {
+  @apply bg-peach;
+}
+
+.fc-button:disabled {
+  @apply bg-gray-300 text-gray-500 cursor-not-allowed;
+}
+
+.fc-button-active {
+  @apply bg-lavender text-white;
+}
+
+/* ICONOS DE FLECHAS */
+.fc-icon {
+  @apply text-xl font-bold;
+}
+
+.fc .fc-button-primary {
+  all: unset;
+  @apply bg-coral text-white px-3 py-1 rounded-md text-sm !important;
+}
