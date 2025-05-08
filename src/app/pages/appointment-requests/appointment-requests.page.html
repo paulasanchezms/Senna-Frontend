@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Solicitudes de Citas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="p-4 space-y-4">
+  <div *ngFor="let appt of pendingAppointments" class="p-4 border rounded-lg shadow bg-white space-y-1">
+    <div class="font-bold text-lg">{{ appt.patient.name }}</div>
+    <div>Fecha: {{ appt.dateTime | date: 'short' }}</div>
+    <div>Duración: {{ appt.duration }} min</div>
+
+    <div class="flex justify-end space-x-2 mt-2">
+      <ion-button fill="outline" color="success" size="small" (click)="accept(appt.id)">Aceptar</ion-button>
+      <ion-button fill="outline" color="danger" size="small" (click)="reject(appt.id)">Rechazar</ion-button>
+    </div>
+  </div>
+
+  <div *ngIf="pendingAppointments.length === 0" class="text-center text-gray-500">
+    No hay solicitudes pendientes.
+  </div>
+</ion-content>

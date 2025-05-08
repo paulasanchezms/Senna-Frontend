@@ -56,6 +56,14 @@ const routes: Routes = [
   {
     path: 'calendar',
     loadChildren: () => import('./pages/calendar/calendar.module').then( m => m.CalendarPageModule)
+  },
+  {
+    path: 'appointment-requests',
+    loadChildren: () => import('./pages/appointment-requests/appointment-requests.module').then( m => m.AppointmentRequestsPageModule)
+  },
+  {
+    path: 'psychologist-navbar',
+    loadChildren: () => import('./pages/psychologist-navbar/psychologist-navbar.module').then( m => m.PsychologistNavbarPageModule)
   }
 ];
 

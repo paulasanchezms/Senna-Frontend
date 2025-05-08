@@ -49,4 +49,16 @@ export class AppointmentService {
       { params }
     );
   }
+
+  getPendingAppointmentsForPsychologist(): Observable<AppointmentResponseDTO[]> {
+    return this.http.get<AppointmentResponseDTO[]>('/api/appointments/psychologist/pending');
+  }
+  
+  acceptAppointment(id: number): Observable<void> {
+    return this.http.post<void>(`/api/appointments/${id}/accept`, {});
+  }
+  
+  rejectAppointment(id: number): Observable<void> {
+    return this.http.post<void>(`/api/appointments/${id}/reject`, {});
+  }
 }
