@@ -15,6 +15,7 @@ import { PsychologistNavbarPage } from './psychologist-navbar.page';
     IonicModule,
     PsychologistNavbarPageRoutingModule
   ],
-  declarations: [PsychologistNavbarPage]
+  declarations: [PsychologistNavbarPage],
+  exports: [PsychologistNavbarPage] 
 })
 export class PsychologistNavbarPageModule {}

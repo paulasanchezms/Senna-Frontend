@@ -7,13 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { ConfirmAppointmentPageRoutingModule } from './confirm-appointment-routing.module';
 
 import { ConfirmAppointmentPage } from './confirm-appointment.page';
+import { PsychologistNavbarPageModule } from '../psychologist-navbar/psychologist-navbar.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ConfirmAppointmentPageRoutingModule
+    ConfirmAppointmentPageRoutingModule,
+    PsychologistNavbarPageModule
+
   ],
   declarations: [ConfirmAppointmentPage]
 })

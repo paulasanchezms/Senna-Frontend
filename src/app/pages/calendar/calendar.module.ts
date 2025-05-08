@@ -8,6 +8,7 @@ import { CalendarPageRoutingModule } from './calendar-routing.module';
 
 import { CalendarPage } from './calendar.page';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { PsychologistNavbarPageModule } from '../psychologist-navbar/psychologist-navbar.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     FormsModule,
     IonicModule,
     CalendarPageRoutingModule,
-    FullCalendarModule
+    FullCalendarModule,
+    PsychologistNavbarPageModule
   ],
   declarations: [CalendarPage]
 })

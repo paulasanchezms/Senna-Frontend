@@ -64,6 +64,10 @@ const routes: Routes = [
   {
     path: 'psychologist-navbar',
     loadChildren: () => import('./pages/psychologist-navbar/psychologist-navbar.module').then( m => m.PsychologistNavbarPageModule)
+  },
+  {
+    path: 'search-patient',
+    loadChildren: () => import('./pages/search-patient/search-patient.module').then( m => m.SearchPatientPageModule)
   }
 ];
 

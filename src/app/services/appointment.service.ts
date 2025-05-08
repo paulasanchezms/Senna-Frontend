@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppointmentDTO, AppointmentResponseDTO } from '../models/appointment';
+import { UserResponseDTO } from '../models/user';
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
@@ -60,5 +61,9 @@ export class AppointmentService {
   
   rejectAppointment(id: number): Observable<void> {
     return this.http.post<void>(`/api/appointments/${id}/reject`, {});
+  }
+
+  getPatientsForPsychologist(): Observable<UserResponseDTO[]> {
+    return this.http.get<UserResponseDTO[]>('/api/appointments/psychologist/patients');
   }
 }

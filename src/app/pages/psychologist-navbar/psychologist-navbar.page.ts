@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
+  standalone:false,
   selector: 'app-psychologist-navbar',
   templateUrl: './psychologist-navbar.page.html',
-  styleUrls: ['./psychologist-navbar.page.scss'],
+  styleUrls: ['./psychologist-navbar.page.scss']
 })
-export class PsychologistNavbarPage implements OnInit {
+export class PsychologistNavbarPage {
+  menuOpen = false;
 
-  constructor() { }
-
-  ngOnInit() {
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
   }
-
 }

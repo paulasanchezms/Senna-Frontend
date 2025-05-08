@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { AppointmentRequestsPageRoutingModule } from './appointment-requests-routing.module';
+import { SearchPatientPageRoutingModule } from './search-patient-routing.module';
 
-import { AppointmentRequestsPage } from './appointment-requests.page';
+import { SearchPatientPage } from './search-patient.page';
+import { PsychologistNavbarPage } from '../psychologist-navbar/psychologist-navbar.page';
 import { PsychologistNavbarPageModule } from '../psychologist-navbar/psychologist-navbar.module';
 
 @NgModule({
@@ -14,9 +15,9 @@ import { PsychologistNavbarPageModule } from '../psychologist-navbar/psychologis
     CommonModule,
     FormsModule,
     IonicModule,
-    AppointmentRequestsPageRoutingModule,
+    SearchPatientPageRoutingModule,
     PsychologistNavbarPageModule
   ],
-  declarations: [AppointmentRequestsPage]
+  declarations: [SearchPatientPage]
 })
-export class AppointmentRequestsPageModule {}
+export class SearchPatientPageModule {}
