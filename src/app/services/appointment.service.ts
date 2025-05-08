@@ -43,19 +43,19 @@ export class AppointmentService {
   
       return this.http.get<{ [date: string]: string[] }>(`${this.baseUrl}/psychologists/${psychologistId}/available-times/week`, { params });  }
 
-  getPendingAppointmentsForPsychologist(): Observable<AppointmentResponseDTO[]> {
-    return this.http.get<AppointmentResponseDTO[]>('/api/appointments/psychologist/pending');
-  }
+      getPendingAppointmentsForPsychologist(): Observable<AppointmentResponseDTO[]> {
+        return this.http.get<AppointmentResponseDTO[]>(`${this.baseUrl}/psychologist/pending`);
+      }
   
-  acceptAppointment(id: number): Observable<void> {
-    return this.http.post<void>(`/api/appointments/${id}/accept`, {});
-  }
-  
-  rejectAppointment(id: number): Observable<void> {
-    return this.http.post<void>(`/api/appointments/${id}/reject`, {});
-  }
-
-  getPatientsForPsychologist(): Observable<UserResponseDTO[]> {
-    return this.http.get<UserResponseDTO[]>('/api/appointments/psychologist/patients');
-  }
+      acceptAppointment(id: number): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/${id}/accept`, {});
+      }
+      
+      rejectAppointment(id: number): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/${id}/reject`, {});
+      }
+      
+      getPatientsForPsychologist(): Observable<UserResponseDTO[]> {
+        return this.http.get<UserResponseDTO[]>(`${this.baseUrl}/psychologist/patients`);
+      }
 }
