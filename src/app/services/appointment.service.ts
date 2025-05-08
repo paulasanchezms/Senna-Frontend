@@ -34,22 +34,14 @@ export class AppointmentService {
 
   getAvailableTimes(psychologistId: number, date: string): Observable<string[]> {
     const params = new HttpParams().set('date', date);
-    return this.http.get<string[]>(
-      `/api/psychologists/${psychologistId}/available-times`,
-      { params }
-    );
-  }
+    return this.http.get<string[]>(`${this.baseUrl}/psychologists/${psychologistId}/available-times`, { params });  }
 
   getAvailableTimesForWeek(psychologistId: number, startDate: string, endDate: string): Observable<{ [date: string]: string[] }> {
     const params = new HttpParams()
       .set('startDate', startDate)
       .set('endDate', endDate);
   
-    return this.http.get<{ [date: string]: string[] }>(
-      `/api/psychologists/${psychologistId}/available-times/week`,
-      { params }
-    );
-  }
+      return this.http.get<{ [date: string]: string[] }>(`${this.baseUrl}/psychologists/${psychologistId}/available-times/week`, { params });  }
 
   getPendingAppointmentsForPsychologist(): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>('/api/appointments/psychologist/pending');

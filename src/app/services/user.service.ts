@@ -16,7 +16,7 @@ export class UserService {
   }
 
   getPsychologistById(id: number): Observable<UserResponseDTO> {
-    return this.http.get<UserResponseDTO>(`${this.baseUrl}/${id}`);
+    return this.http.get<UserResponseDTO>(`${this.baseUrl}/by-id/${id}`);
   }
 
   searchPsychologistsBySpecialty(specialty: string): Observable<UserResponseDTO[]> {
