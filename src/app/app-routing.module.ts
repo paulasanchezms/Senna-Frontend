@@ -68,6 +68,10 @@ const routes: Routes = [
   {
     path: 'search-patient',
     loadChildren: () => import('./pages/search-patient/search-patient.module').then( m => m.SearchPatientPageModule)
+  },
+  {
+    path: 'upcoming-appointments',
+    loadChildren: () => import('./pages/upcoming-appointments/upcoming-appointments.module').then( m => m.UpcomingAppointmentsPageModule)
   }
 ];
 
