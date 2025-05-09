@@ -19,8 +19,7 @@ export class UpcomingAppointmentsPage implements OnInit {
   }
 
   loadAppointments() {
-    this.appointmentService.getPsychologistAppointments().subscribe({
-            next: (appointments) => {
+  this.appointmentService.getPatientAppointments().subscribe({            next: (appointments) => {
         const now = new Date();
         this.upcomingAppointments = appointments.filter(appt =>
           appt.status === 'CONFIRMADA' && new Date(appt.dateTime) >= now
