@@ -1,0 +1,81 @@
+/* RESET GENERAL */
+.fc {
+    all: unset;
+    display: block;
+    width: 100%;
+    @apply bg-white font-peachy text-salmon;
+  }
+  
+  /* ELIMINAR BORDES, BACKGROUNDS, SHADOWS */
+  .fc *, .fc ::before, .fc ::after {
+    all: unset;
+    box-sizing: border-box;
+    @apply font-peachy text-salmon;
+  }
+  
+  /* TOOLBAR */
+  .fc-toolbar {
+    @apply flex justify-between items-center bg-lightPeach p-3 rounded-lg shadow-sm;
+  }
+  
+  /* BOTONES */
+  .fc-button {
+    @apply bg-coral text-white px-3 py-1 rounded-md text-sm hover:bg-peach cursor-pointer !important;
+  }
+  
+  /* HEADER DE DÍAS */
+  .fc-col-header-cell {
+    @apply bg-lavender text-white text-center text-xs font-semibold p-1 border border-mint;
+  }
+  
+  /* CELDAS DE HORAS */
+  .fc-timegrid-slot {
+    @apply border-t border-mint h-12;
+  }
+  
+  /* EVENTOS */
+  .fc-event {
+    @apply bg-salmon text-white text-xs rounded-md shadow-md px-2 py-1;
+  }
+  
+  /* GRID PRINCIPAL */
+  .fc-timegrid {
+    @apply bg-lightPeach;
+  }
+  
+  /* QUITAR SCROLL EXTERNO */
+  .fc-scrollgrid {
+    overflow: hidden;
+  }
+  
+  /* TEXTO DE TITULO */
+  .fc-toolbar-title {
+    @apply text-xl font-bold;
+  }
+
+  /* BOTONES DE HEADER (prev, next, today, week, day) */
+.fc-button, .fc-button-primary {
+  @apply bg-coral text-white px-3 py-1 rounded-md text-sm shadow-none border-none;
+}
+
+.fc-button:hover {
+  @apply bg-peach;
+}
+
+.fc-button:disabled {
+  @apply bg-gray-300 text-gray-500 cursor-not-allowed;
+}
+
+.fc-button-active {
+  @apply bg-lavender text-white;
+}
+
+/* ICONOS DE FLECHAS */
+.fc-icon {
+  @apply text-xl font-bold;
+}
+
+.fc .fc-button-primary {
+  all: unset;
+  @apply bg-coral text-white px-3 py-1 rounded-md text-sm !important;
+}

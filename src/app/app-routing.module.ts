@@ -21,7 +21,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'register-psychologist',
+    path: 'register/psychologist',
     loadChildren: () => import('./pages/register-psychologist/register-psychologist.module').then( m => m.RegisterPsychologistPageModule)
   },
   {
@@ -31,6 +31,47 @@ const routes: Routes = [
   {
     path: 'statistics',
     loadChildren: () => import('./pages/statistics/statistics.module').then( m => m.StatisticsPageModule)
+  },
+  {
+    path: 'schedule-appointment/:id',
+    loadChildren: () => import('./pages/schedule-appointment/schedule-appointment.module')
+                     .then(m => m.ScheduleAppointmentPageModule)
+  },
+  {
+    path: 'search-psychologist',
+    loadChildren: () => import('./pages/search-psychologist/search-psychologist.module').then( m => m.SearchPsychologistPageModule)
+  },
+  {
+    path: 'confirm-appointment',
+    loadChildren: () => import('./pages/confirm-appointment/confirm-appointment.module').then( m => m.ConfirmAppointmentPageModule)
+  },
+  {
+    path: 'weekly-schedule',
+    loadChildren: () => import('./pages/weekly-schedule/weekly-schedule.module').then( m => m.WeeklySchedulePageModule)
+  },
+  {
+    path: 'working-hour-modal',
+    loadChildren: () => import('./pages/working-hour-modal/working-hour-modal.module').then( m => m.WorkingHourModalPageModule)
+  },
+  {
+    path: 'calendar',
+    loadChildren: () => import('./pages/calendar/calendar.module').then( m => m.CalendarPageModule)
+  },
+  {
+    path: 'appointment-requests',
+    loadChildren: () => import('./pages/appointment-requests/appointment-requests.module').then( m => m.AppointmentRequestsPageModule)
+  },
+  {
+    path: 'psychologist-navbar',
+    loadChildren: () => import('./pages/psychologist-navbar/psychologist-navbar.module').then( m => m.PsychologistNavbarPageModule)
+  },
+  {
+    path: 'search-patient',
+    loadChildren: () => import('./pages/search-patient/search-patient.module').then( m => m.SearchPatientPageModule)
+  },
+  {
+    path: 'upcoming-appointments',
+    loadChildren: () => import('./pages/upcoming-appointments/upcoming-appointments.module').then( m => m.UpcomingAppointmentsPageModule)
   }
 ];
 

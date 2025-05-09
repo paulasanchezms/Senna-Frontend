@@ -13,6 +13,8 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { NgChartsModule } from 'ng2-charts';
+import { PsychologistNavbarPageModule } from './pages/psychologist-navbar/psychologist-navbar.module';
+import { PsychologistNavbarPage } from './pages/psychologist-navbar/psychologist-navbar.page';
 
 registerLocaleData(localeEs);
 
@@ -24,7 +26,8 @@ registerLocaleData(localeEs);
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgChartsModule
+    NgChartsModule,
+    PsychologistNavbarPageModule
     
   ],
   providers: [

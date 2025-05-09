@@ -34,19 +34,14 @@ export class RegisterPsychologistPage implements OnInit {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, this.onlyLettersValidator]],
       last_name: ['', [Validators.required, this.twoLastNamesValidator]],
-      email: [
-        '',
-        [Validators.required, Validators.email, this.customEmailValidator],
-      ],
-      password: [
-        '',
-        [Validators.required, Validators.minLength(6), this.passwordValidator],
-      ],
+      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
+      password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
       dni: ['', [Validators.required]],
       qualification: ['', [Validators.required]],
-      specialty: ['', [Validators.required]],
-      location: ['', [Validators.required]],
-      role: ['PSYCHOLOGIST'],
+      consultationDuration: [null],
+      consultationPrice: [null],
+      specialty: [''],
+      location: [''],
     });
 
     this.registerForm.get('name')!.valueChanges.subscribe((value) => {
@@ -60,7 +55,6 @@ export class RegisterPsychologistPage implements OnInit {
     this.checkScreenSize();
   }
 
-  // Aquí se carga el autocompletado de Google Places
   ngAfterViewInit(): void {
     const input = document.getElementById('autocomplete') as HTMLInputElement;
 
@@ -81,25 +75,54 @@ export class RegisterPsychologistPage implements OnInit {
 
   onRegister(): void {
     this.formSubmitted = true;
-
-    if (this.registerForm.invalid || !this.selectedFile) {
-      return;
-    }
-
+    if (this.registerForm.invalid) return;
+  
+    const v = this.registerForm.value;
+  
+    // 1) Creamos objeto user
+    const userPart = {
+      name: v.name,
+      last_name: v.last_name,
+      email: v.email,
+      password: v.password
+    };
+  
+    // 2) Creamos objeto profile
+    const profilePart = {
+      consultationDuration: v.consultationDuration,
+      consultationPrice: v.consultationPrice,
+      specialty: v.specialty,
+      location: v.location,
+      workingHours: []  // Ajusta si manejas horas de trabajo
+    };
+  
     const formData = new FormData();
-
-    Object.entries(this.registerForm.value).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-
-    formData.append('document', this.selectedFile!);
-
-    this.authService.register(formData).subscribe({
+  
+    // 3) Añadimos la parte 'user' como JSON
+    formData.append(
+      'user',
+      new Blob([JSON.stringify(userPart)], { type: 'application/json' })
+    );
+  
+    // 4) Añadimos la parte 'profile' como JSON
+    formData.append(
+      'profile',
+      new Blob([JSON.stringify(profilePart)], { type: 'application/json' })
+    );
+  
+    // 5) Si hay fichero, lo añadimos bajo 'document'
+    if (this.selectedFile) {
+      formData.append('document', this.selectedFile);
+    }
+  
+    // 6) Llamada al servicio
+    this.authService.registerPsychologist(formData).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
         this.router.navigate(['/home']);
       },
       error: (error) => {
+        console.error('error registro', error);
         this.message =
           'Error en el registro: ' + (error.error?.message || error.message);
       },

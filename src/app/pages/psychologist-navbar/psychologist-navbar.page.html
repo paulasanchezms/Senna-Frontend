@@ -1,0 +1,57 @@
+<ion-header class="bg-lightPeach shadow-md w-full">
+  <ion-toolbar>
+    <!-- Contenedor centrado y full-width -->
+    <div class="grid grid-cols-3 items-center max-w-7xl w-full mx-auto px-4 py-3">
+      
+      <!-- 1) Logo a la izquierda -->
+      <div class="flex items-center space-x-2">
+        <!-- Si tienes un SVG/logo propio: -->
+        <span class="font-peachy text-xl font-bold text-lavender">Senna</span>
+      </div>
+
+      <!-- 2) Menú principal centrado -->
+      <nav class="hidden md:flex justify-center space-x-8">
+        <a
+          routerLink="/calendar"
+          routerLinkActive="text-lavender border-b-2 border-lavender"
+          class="text-salmon hover:text-lavender transition py-1"
+          >Calendario</a
+        >
+        <a
+          routerLink="/appointments"
+          routerLinkActive="text-lavender border-b-2 border-lavender"
+          class="text-salmon hover:text-lavender transition py-1"
+          >Solicitudes</a
+        >
+        <a
+          routerLink="/search-patient"
+          routerLinkActive="text-lavender border-b-2 border-lavender"
+          class="text-salmon hover:text-lavender transition py-1"
+          >Pacientes</a
+        >
+        <a
+          routerLink="/profile"
+          routerLinkActive="text-lavender border-b-2 border-lavender"
+          class="text-salmon hover:text-lavender transition py-1"
+          >Perfil</a
+        >
+      </nav>
+
+      <!-- 3) Icono de “hamburger” a la derecha (visible solo en móvil) -->
+      <div class="flex justify-end">
+        <ion-button
+          fill="clear"
+          class="md:hidden text-coral text-2xl"
+          (click)="toggleMenu()"
+        >
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- ¡Aquí entra todo tu contenido! -->
+  <router-outlet></router-outlet>
+</ion-content>
