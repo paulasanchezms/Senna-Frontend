@@ -26,14 +26,30 @@ export class LoginPage implements OnInit {
   onLogin(): void {
     this.formSubmitted = true;
     if (this.loginForm.invalid) return;
-
+  
     this.authService.login(this.loginForm.value).subscribe({
       next: (response: AuthResponse) => {
-        localStorage.setItem('authToken', response.jwt);
-        this.router.navigate(['/home']);
+        // Guardamos el token
+        const token = response.jwt;
+        localStorage.setItem('authToken', token);
+  
+        // Extraemos el rol del JWT y lo guardamos
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const role: 'PATIENT' | 'PSYCHOLOGIST' = payload.role;
+        localStorage.setItem('userRole', role);
+  
+        // Redirigimos a la ruta raíz de ese rol
+        if (role === 'PATIENT') {
+          this.router.navigate(['/menu-patient']);
+        } else if (role === 'PSYCHOLOGIST') {
+          this.router.navigate(['/psychologist-navbar']);
+        } else {
+          // por si el token viniera mal formado
+          this.router.navigate(['/login']);
+        }
       },
-      error: (error) => {
-        this.message = 'Error en el inicio de sesión: ' + (error.error?.message || error.message);
+      error: err => {
+        this.message = 'Error en el inicio de sesión: ' + (err.error?.message || err.message);
       }
     });
   }

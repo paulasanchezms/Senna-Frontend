@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
+import { RegisterDayModalPage } from '../register-day-modal/register-day-modal.page';
+import { RegisterDayModalPageModule } from '../register-day-modal/register-day-modal.module';
 
 
 @NgModule({
@@ -12,7 +14,8 @@ import { HomePageRoutingModule } from './home-routing.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    RegisterDayModalPageModule
   ],
   declarations: [HomePage]
 })

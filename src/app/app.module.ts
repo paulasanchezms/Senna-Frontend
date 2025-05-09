@@ -24,10 +24,9 @@ registerLocaleData(localeEs);
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    NgChartsModule,
-    PsychologistNavbarPageModule
+   HttpClientModule,
+   FormsModule,
+  //  NgChartsModule,
     
   ],
   providers: [
