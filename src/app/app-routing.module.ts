@@ -72,6 +72,10 @@ const routes: Routes = [
   {
     path: 'upcoming-appointments',
     loadChildren: () => import('./pages/upcoming-appointments/upcoming-appointments.module').then( m => m.UpcomingAppointmentsPageModule)
+  },
+  {
+    path: 'patient',
+    loadChildren: () => import('./pages/patient-tabs/patient-tabs.module').then( m => m.PatientTabsPageModule)
   }
 ];
 
