@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   standalone:false,
@@ -7,9 +9,21 @@ import { Component } from '@angular/core';
   styleUrls: ['./psychologist-navbar.page.scss']
 })
 export class PsychologistNavbarPage {
-  menuOpen = false;
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  isMenuOpen = false;
 
   toggleMenu() {
-    this.menuOpen = !this.menuOpen;
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
+  logout() {
+    this.authService.logout(); // elimina token en el AuthService
+    this.router.navigate(['/login']);
   }
 }

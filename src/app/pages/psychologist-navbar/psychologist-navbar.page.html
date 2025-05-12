@@ -1,57 +1,47 @@
-<ion-header class="bg-lightPeach shadow-md w-full">
-  <ion-toolbar>
-    <!-- Contenedor centrado y full-width -->
+<ion-header class="bg-lightPeach shadow-md w-full relative">
+  <ion-toolbar class="relative">
     <div class="grid grid-cols-3 items-center max-w-7xl w-full mx-auto px-4 py-3">
-      
-      <!-- 1) Logo a la izquierda -->
+
+      <!-- 1) Logo -->
       <div class="flex items-center space-x-2">
-        <!-- Si tienes un SVG/logo propio: -->
         <span class="font-peachy text-xl font-bold text-lavender">Senna</span>
       </div>
 
-      <!-- 2) Menú principal centrado -->
+      <!-- 2) Menú principal desktop -->
       <nav class="hidden md:flex justify-center space-x-8">
-        <a
-          routerLink="/calendar"
-          routerLinkActive="text-lavender border-b-2 border-lavender"
-          class="text-salmon hover:text-lavender transition py-1"
-          >Calendario</a
-        >
-        <a
-          routerLink="/appointments"
-          routerLinkActive="text-lavender border-b-2 border-lavender"
-          class="text-salmon hover:text-lavender transition py-1"
-          >Solicitudes</a
-        >
-        <a
-          routerLink="/search-patient"
-          routerLinkActive="text-lavender border-b-2 border-lavender"
-          class="text-salmon hover:text-lavender transition py-1"
-          >Pacientes</a
-        >
-        <a
-          routerLink="/profile"
-          routerLinkActive="text-lavender border-b-2 border-lavender"
-          class="text-salmon hover:text-lavender transition py-1"
-          >Perfil</a
-        >
+        <a routerLink="/calendar" routerLinkActive="text-lavender border-b-2 border-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition py-1">Calendario</a>
+        <a routerLink="/appointment-requests" routerLinkActive="text-lavender border-b-2 border-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition py-1">Solicitudes</a>
+        <a routerLink="/search-patient" routerLinkActive="text-lavender border-b-2 border-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition py-1">Pacientes</a>
+        <a routerLink="/profile" routerLinkActive="text-lavender border-b-2 border-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition py-1">Perfil</a>
       </nav>
 
-      <!-- 3) Icono de “hamburger” a la derecha (visible solo en móvil) -->
+      <!-- 3) Área derecha: logout en desktop / hamburger en móvil -->
       <div class="flex justify-end">
-        <ion-button
-          fill="clear"
-          class="md:hidden text-coral text-2xl"
-          (click)="toggleMenu()"
-        >
+        <!-- Botón logout visible solo en desktop -->
+        <ion-button fill="clear" class="hidden md:flex text-coral" (click)="logout()">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span class="ml-1">Cerrar sesión</span>
+        </ion-button>
+
+        <!-- Botón hamburger visible solo en móvil -->
+        <ion-button fill="clear" class="md:hidden text-coral text-2xl" (click)="toggleMenu()">
           <ion-icon name="menu"></ion-icon>
         </ion-button>
       </div>
     </div>
+
+    <!-- ✅ Menú móvil desplegable -->
+    <nav *ngIf="isMenuOpen" class="md:hidden bg-lightPeach w-full absolute top-full left-0 shadow-md z-50 flex flex-col items-center space-y-2 py-4">
+      <a routerLink="/calendar" routerLinkActive="text-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition" (click)="closeMenu()">Calendario</a>
+      <a routerLink="/appointment-requests" routerLinkActive="text-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition" (click)="closeMenu()">Solicitudes</a>
+      <a routerLink="/search-patient" routerLinkActive="text-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition" (click)="closeMenu()">Pacientes</a>
+      <a routerLink="/profile" routerLinkActive="text-lavender" [routerLinkActiveOptions]="{ exact: true }" class="text-salmon hover:text-lavender transition" (click)="closeMenu()">Perfil</a>
+      <!-- 🔥 Logout en menú móvil -->
+      <button class="text-salmon hover:text-lavender transition" (click)="logout(); closeMenu()">Cerrar sesión</button>
+    </nav>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <!-- ¡Aquí entra todo tu contenido! -->
   <router-outlet></router-outlet>
 </ion-content>

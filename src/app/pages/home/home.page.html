@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="text-center">
       <h2 class="text-2xl font-bold text-lavender">Hola de nuevo!</h2>
-      <p class="text-sm text-peach">{{ today | date: 'fullDate' }}</p>
+      <p class="text-sm text-salmon">{{ today | date: 'fullDate' }}</p>
     </div>
 
     <!-- Calendario semanal lunes-domingo -->
@@ -33,13 +33,14 @@
       </div>
     </div>
 
+    <img
+    src="../../../assets/images/image1.1.png"
+    alt="Mood image"
+    class="w-200 h-200 mx-auto"
+  />
     <!-- Imagen + frase -->
     <div class="rounded-xl shadow p-4 text-center space-y-2 bg-white">
-      <img
-        src="assets/img/mood.svg"
-        alt="Mood image"
-        class="w-20 h-20 mx-auto"
-      />
+   
       <p class="text-peach text-lg font-semibold">
         {{ selectedDay | date: 'fullDate' }}
       </p>
@@ -49,7 +50,7 @@
     </div>
 
     <!-- Botón fijo abajo -->
-    <div class="fixed bottom-12 left-1/2 transform -translate-x-1/2">
+    <div class="fixed bottom-24 left-1/2 transform -translate-x-1/2">
       <div class="min-w-[120px] min-h-[48px] flex items-center justify-center">
         <ion-button
           class="bg-salmon text-white font-bold rounded-full text-lg px-6 py-2"
