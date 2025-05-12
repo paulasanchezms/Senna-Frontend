@@ -1,0 +1,36 @@
+<app-psychologist-navbar></app-psychologist-navbar>
+
+<ion-content class="p-4 space-y-6 bg-lightPeach min-h-screen">
+  <div *ngFor="let appt of pendingAppointments" 
+       class="p-5 rounded-2xl shadow-md bg-white border-2 border-lavender transition-transform transform hover:scale-[1.02]">
+    
+    <!-- Nombre del paciente -->
+    <div class="text-lg font-semibold text-lavender">
+      {{ appt.patient.name }} {{ appt.patient.last_name }}
+    </div>
+
+    <!-- Fecha y hora -->
+    <div class="text-sm text-gray-700 mt-1">
+      <span class="font-medium">Fecha:</span> {{ appt.dateTime | date: 'short' }}
+    </div>
+
+    <!-- Duración -->
+    <div class="text-sm text-gray-700">
+      <span class="font-medium">Duración:</span> {{ appt.duration }} min
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-3 mt-4">
+      <ion-button fill="clear" color="success" size="small" (click)="accept(appt.id)">
+        <span class="text-green font-bold">Aceptar</span>
+      </ion-button>
+      <ion-button fill="clear" color="danger" size="small" (click)="reject(appt.id)">
+        <span class="text-red font-bold">Rechazar</span>
+      </ion-button>
+    </div>
+  </div>
+
+  <div *ngIf="pendingAppointments.length === 0" class="text-center text-gray-500 text-sm mt-10">
+    No hay solicitudes pendientes.
+  </div>
+</ion-content>

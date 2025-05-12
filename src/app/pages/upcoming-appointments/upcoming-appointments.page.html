@@ -1,0 +1,51 @@
+<ion-content class="bg-lightPeach font-peachy" fullscreen="true">
+  <div class="max-w-4xl mx-auto mb-12 px-6 py-8 space-y-12">
+
+    <!-- Citas Próximas -->
+    <section>
+      <h2 class="text-2xl font-bold text-salmon mb-5 tracking-wide border-b-2 border-salmon pb-1">
+        Citas Próximas
+      </h2>
+
+      <div *ngIf="upcomingAppointments.length === 0" class="text-center text-gray-500 italic">
+        No hay citas próximas.
+      </div>
+
+      <div *ngFor="let appt of upcomingAppointments" class="p-5 rounded-2xl shadow-md bg-white border-l-4 border-salmon mb-6 space-y-1">
+        <div class="text-lg font-bold text-salmon">{{ appt.patient.name }} {{ appt.patient.last_name }}</div>
+        <div class="text-sm text-gray-700 flex items-center gap-1">
+          <ion-icon name="calendar-clear-outline" class="text-lavender"></ion-icon>
+          {{ appt.dateTime | date: 'short' }}
+        </div>
+        <div class="text-sm text-gray-700 flex items-center gap-1">
+          <ion-icon name="time-outline" class="text-lavender"></ion-icon>
+          Duración: {{ appt.duration }} min
+        </div>
+      </div>
+    </section>
+
+    <!-- Citas Pasadas -->
+    <section>
+      <h2 class="text-2xl font-bold text-salmon mb-5 tracking-wide border-b-2 border-salmon pb-1">
+        Citas Pasadas
+      </h2>
+
+      <div *ngIf="pastAppointments.length === 0" class="text-center text-gray-500 italic">
+        No hay citas pasadas.
+      </div>
+
+      <div *ngFor="let appt of pastAppointments" class="p-5 rounded-2xl shadow-sm bg-white border border-gray-300 mb-6 opacity-80 space-y-1">
+        <div class="text-base font-bold text-gray-700">{{ appt.patient.name }} {{ appt.patient.last_name }}</div>
+        <div class="text-sm text-gray-600 flex items-center gap-1">
+          <ion-icon name="calendar-clear-outline" class="text-salmon"></ion-icon>
+          {{ appt.dateTime | date: 'short' }}
+        </div>
+        <div class="text-sm text-gray-600 flex items-center gap-1">
+          <ion-icon name="time-outline" class="text-salmon"></ion-icon>
+          Duración: {{ appt.duration }} min
+        </div>
+      </div>
+    </section>
+
+  </div>
+</ion-content>

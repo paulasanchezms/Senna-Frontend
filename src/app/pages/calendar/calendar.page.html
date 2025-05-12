@@ -1,0 +1,15 @@
+
+  <app-psychologist-navbar></app-psychologist-navbar>
+
+  <!-- Contenido principal -->
+  <div class="flex-1 flex flex-col">
+    <ion-header class="bg-lavender text-peachy">
+      <ion-toolbar>
+        <ion-title>Agenda semanal</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="p-2 overflow-auto flex-1">
+      <full-calendar [options]="calendarOptions"></full-calendar>
+    </ion-content>
+  </div>

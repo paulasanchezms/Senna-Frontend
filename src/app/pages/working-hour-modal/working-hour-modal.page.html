@@ -1,0 +1,49 @@
+<ion-header class="flex justify-between items-center px-4 py-2 bg-white shadow rounded-t-lg">
+  <h2 class="font-bold text-lg text-peach">Configura tu horario - {{ days[selectedDay] }}</h2>
+  <ion-button fill="clear" (click)="close()" class="p-0 m-0">
+    <ion-icon name="close" size="large"></ion-icon>
+  </ion-button>
+</ion-header>
+
+<ion-content class="p-4 bg-white space-y-4 rounded-b-lg">
+
+  <!-- Selector de días -->
+  <div class="flex justify-between space-x-2">
+    <ion-button *ngFor="let day of days; let i = index"
+      [class.bg-lavender]="selectedDay === i"
+      [class.text-white]="selectedDay === i"
+      [class.bg-gray-200]="selectedDay !== i"
+      [class.text-black]="selectedDay !== i"
+      fill="clear"
+      class="flex-1 rounded-full h-10 text-xs font-semibold px-0"
+      (click)="selectDay(i)">
+      {{ day }}
+    </ion-button>
+  </div>
+
+  <!-- Lista editable de franjas -->
+  <div class="space-y-2">
+    <div *ngFor="let hour of workingHoursForDay; let i = index" class="flex items-center space-x-2">
+      <ion-input type="time" [(ngModel)]="hour.startTime"
+                 class="border bg-lightPeach rounded px-2 py-1 flex-1 text-center text-sm"></ion-input>
+      <ion-input type="time" [(ngModel)]="hour.endTime"
+                 class="border bg-lightPeach rounded px-2 py-1 flex-1 text-center text-sm"></ion-input>
+      <ion-button fill="clear" (click)="deleteHour(hour)" class="text-red-500 text-lg">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Botón añadir nueva franja -->
+  <ion-button fill="clear"
+    (click)="addEmptyRow()"
+    class="border border-dashed border-lavender text-lavender rounded-lg py-2 w-full text-sm font-semibold">
+    + Añadir nueva franja
+  </ion-button>
+
+  <!-- Botón guardar todas -->
+  <ion-button expand="block" class="bg-lavender text-white rounded-lg py-3 font-semibold" (click)="saveAll()">
+    Guardar cambios
+  </ion-button>
+
+</ion-content>

@@ -1,0 +1,75 @@
+<ion-content class="bg-lightPeach font-peachy" fullscreen="true">
+  <div class="max-w-4xl mx-auto mb-36 p-4 space-y-10"> 
+    <h2 class="text-4xl font-bold text-salmon tracking-wide border-b-2 border-salmon text-center mb-6">Estadísticas</h2>
+
+    <!-- — Semana — -->
+    <div class="bg-white rounded-2xl shadow p-4 space-y-4">
+      <h3 class="text-xl font-bold text-lavender">Estadísticas semanales</h3>
+      <!-- etiqueta + flecha disparadora -->
+      <div class="flex items-center mb-2">
+        <span class="text-lg font-semibold text-salmon">{{ weekLabel }}</span>
+        <ion-button fill="clear" class="text-salmon ml-2" (click)="showWeekPicker = !showWeekPicker">
+          <ion-icon name="chevron-down"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- datetime oculto hasta pulsar la flecha -->
+      <ng-container *ngIf="showWeekPicker">
+        <ion-datetime
+          [firstDayOfWeek]="1"
+          presentation="date"
+          [min]="minWeekDate"
+          [max]="maxWeekDate"
+          (ionChange)="onWeekDateChange($event.detail.value); showWeekPicker = false"
+          (ionCancel)="showWeekPicker = false"
+        ></ion-datetime>
+      </ng-container>
+      <div class="w-full h-80">
+        <canvas
+          baseChart
+          [data]="weeklyChartConfig.data"
+          [options]="weeklyChartConfig.options"
+          [type]="weeklyChartConfig.type"
+          (chartClick)="onChartClick($event,'weekly')"
+          class="w-full h-80"
+        ></canvas>
+      </div>
+    </div>
+
+    <!-- — Mes — -->
+    <div class="bg-white rounded-3xl shadow-lg p-6 space-y-4">
+      <h3 class="text-xl font-bold text-lavender">Estadísticas mensuales</h3>
+
+      <!-- etiqueta + flecha disparadora -->
+      <div class="flex items-center mb-2">
+        <span class="text-2xl font-semibold text-salmon">{{ monthLabel }}</span>
+        <ion-button fill="clear" class="text-salmon ml-2" (click)="showMonthPicker = !showMonthPicker">
+          <ion-icon name="chevron-down"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- datetime oculto hasta pulsar la flecha -->
+      <ng-container *ngIf="showMonthPicker">
+        <ion-datetime
+          [firstDayOfWeek]="1"
+          presentation="month-year"
+          [min]="minMonth"
+          [max]="maxMonth"
+          (ionChange)="onMonthPickerChange($event.detail.value); showMonthPicker = false"
+          (ionCancel)="showMonthPicker = false"
+        ></ion-datetime>
+      </ng-container>
+
+      <div class="w-full h-80">
+        <canvas
+          baseChart
+          [data]="monthlyChartConfig.data"
+          [options]="monthlyChartConfig.options"
+          [type]="monthlyChartConfig.type"
+          (chartClick)="onChartClick($event,'monthly')"
+          class="w-full h-80"
+        ></canvas>
+      </div>
+    </div>
+  </div>
+</ion-content>
