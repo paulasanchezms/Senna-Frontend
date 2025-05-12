@@ -69,7 +69,7 @@ export class WorkingHourModalPage implements OnInit {
         return;
       }
     }
-
+  
     const sorted = [...this.workingHoursForDay].sort((a, b) => a.startTime.localeCompare(b.startTime));
     for (let i = 0; i < sorted.length - 1; i++) {
       if (sorted[i].endTime > sorted[i + 1].startTime) {
@@ -77,29 +77,23 @@ export class WorkingHourModalPage implements OnInit {
         return;
       }
     }
-
-    // Eliminar todas las franjas existentes de ese día antes de guardar
-    const existingForDay = this.allHours.filter(h => h.dayOfWeek === this.selectedDay);
-    for (const h of existingForDay) {
-      if ((h as any).id) {
-        await this.whService.deleteWorkingHour(this.userId, (h as any).id).toPromise();
-      }
-    }
-
-    // Guardar nuevas
-    for (const hour of this.workingHoursForDay) {
-      const dto: WorkingHourDTO = {
-        dayOfWeek: this.selectedDay,
-        startTime: hour.startTime + ':00',
-        endTime: hour.endTime + ':00'
-      };
-      await this.whService.createWorkingHour(this.userId, dto).toPromise();
-    }
-
+  
+    // Normalizar el día para el backend: 1 (lunes) a 7 (domingo)
+    const backendDay = this.selectedDay + 1;
+  
+    const dtos: WorkingHourDTO[] = this.workingHoursForDay.map(hour => ({
+      dayOfWeek: backendDay,
+      startTime: hour.startTime + ':00',
+      endTime: hour.endTime + ':00'
+    }));
+  
+    // Paso solo las franjas del día seleccionado al backend
+    await this.whService.replaceWorkingHours(this.userId, dtos).toPromise();
+  
     const updatedHours = await this.whService.getWorkingHours(this.userId).toPromise() ?? [];
     this.allHours = updatedHours;
     this.loadHoursForDay(this.selectedDay);
-
+  
     this.modalCtrl.dismiss({ status: 'saved', updatedHours: this.allHours });
   }
 

@@ -19,6 +19,7 @@ export class ScheduleAppointmentPage implements OnInit {
   description: string = '';
 
   weeklyAvailability: { [date: string]: string[] } = {};
+  availableTimes: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -34,6 +35,10 @@ export class ScheduleAppointmentPage implements OnInit {
     this.loadWeeklyAvailability();
   }
 
+  onDateChange() {
+    this.availableTimes = this.weeklyAvailability[this.selectedDate] || [];
+  }
+
   loadPsychologist() {
     this.userService.getPsychologistById(this.psychologistId).subscribe({
       next: data => this.psychologist = data,
@@ -47,7 +52,10 @@ export class ScheduleAppointmentPage implements OnInit {
     const endDate = new Date(today.setDate(today.getDate() + 6)).toISOString().slice(0, 10);
 
     this.appointmentService.getAvailableTimesForWeek(this.psychologistId, startDate, endDate).subscribe({
-      next: data => this.weeklyAvailability = data,
+      next: data => {
+        this.weeklyAvailability = data;
+        this.onDateChange(); // actualizar slots del día actual
+      },
       error: err => {
         console.error('Error al cargar disponibilidad semanal', err);
         this.weeklyAvailability = {};
@@ -67,19 +75,13 @@ export class ScheduleAppointmentPage implements OnInit {
       duration: this.duration,
       description: this.description || 'Reserva realizada desde app',
       psychologistId: this.psychologistId,
-      status: 'PENDIENTE',
+      status: 'PENDIENTE'
     };
 
-    this.appointmentService.scheduleAppointment(appointment).subscribe({
-      next: response => {
-        console.log('Cita creada:', response);
-        this.router.navigate(['/confirm-appointment'], {
-          state: { appointment: response }
-        });
-      },
-      error: err => {
-        console.error('Error al crear cita', err);
-        alert('Hubo un problema al crear la cita. Inténtalo de nuevo.');
+    this.router.navigate(['/confirm-appointment'], {
+      state: {
+        appointment,
+        psychologist: this.psychologist
       }
     });
   }
