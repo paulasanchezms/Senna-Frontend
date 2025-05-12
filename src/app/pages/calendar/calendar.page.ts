@@ -100,7 +100,9 @@ export class CalendarPage implements OnInit {
   }
 
   async handleDateClick(info: DateClickArg) {
-    const dayOfWeek = new Date(info.date).getDay();
+    const date = new Date(info.date);
+    const jsDay = date.getDay();
+    const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
     const modal = await this.modalCtrl.create({
       component: WorkingHourModalPage,
       componentProps: {

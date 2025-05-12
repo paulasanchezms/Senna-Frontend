@@ -13,11 +13,12 @@ import { UserResponseDTO } from 'src/app/models/user';
 export class ScheduleAppointmentPage implements OnInit {
   psychologistId!: number;
   psychologist!: UserResponseDTO;
-  selectedDate!: string;    // formato: YYYY-MM-DD
-  selectedTime!: string;    // formato: HH:mm
-  duration: number = 60;    // duración en minutos
+  selectedDate!: string;
+  selectedTime!: string;
+  duration: number = 60;
   description: string = '';
-  availableTimes: string[] = [];
+
+  weeklyAvailability: { [date: string]: string[] } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -27,39 +28,12 @@ export class ScheduleAppointmentPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Obtener ID del psicólogo de la URL
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
-    this.loadPsychologist();
-
-    // Inicializar fecha al día de hoy y cargar franjas
     this.selectedDate = new Date().toISOString().slice(0, 10);
-    this.fetchAvailableTimes();
+    this.loadPsychologist();
+    this.loadWeeklyAvailability();
   }
 
-  /** Se dispara al cambiar la fecha en el calendario */
-  onDateChange() {
-    this.fetchAvailableTimes();
-  }
-
-  /** Llama al servicio para obtener horas disponibles del psicólogo */
-  private fetchAvailableTimes() {
-    if (!this.selectedDate) {
-      this.availableTimes = [];
-      return;
-    }
-
-    this.appointmentService
-      .getAvailableTimes(this.psychologistId, this.selectedDate)
-      .subscribe({
-        next: times => this.availableTimes = times,
-        error: err => {
-          console.error('Error al obtener horas disponibles', err);
-          this.availableTimes = [];
-        }
-      });
-  }
-
-  /** Carga datos del psicólogo */
   loadPsychologist() {
     this.userService.getPsychologistById(this.psychologistId).subscribe({
       next: data => this.psychologist = data,
@@ -67,7 +41,20 @@ export class ScheduleAppointmentPage implements OnInit {
     });
   }
 
-  /** Reserva cita con la hora y fecha seleccionadas */
+  loadWeeklyAvailability() {
+    const today = new Date();
+    const startDate = today.toISOString().slice(0, 10);
+    const endDate = new Date(today.setDate(today.getDate() + 6)).toISOString().slice(0, 10);
+
+    this.appointmentService.getAvailableTimesForWeek(this.psychologistId, startDate, endDate).subscribe({
+      next: data => this.weeklyAvailability = data,
+      error: err => {
+        console.error('Error al cargar disponibilidad semanal', err);
+        this.weeklyAvailability = {};
+      }
+    });
+  }
+
   confirm() {
     if (!this.selectedDate || !this.selectedTime) {
       alert('Por favor, selecciona día y hora.');
@@ -97,15 +84,11 @@ export class ScheduleAppointmentPage implements OnInit {
     });
   }
 
-  /** Calcula la hora de fin sumando this.duration */
   computeEndTime(startTime: string): string {
-    if (!startTime) { return ''; }
+    if (!startTime) return '';
     const [hh, mm] = startTime.split(':').map(n => parseInt(n, 10));
     const date = new Date();
     date.setHours(hh, mm + this.duration);
-
-    const endH = date.getHours().toString().padStart(2, '0');
-    const endM = date.getMinutes().toString().padStart(2, '0');
-    return `${endH}:${endM}`;
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   }
 }
