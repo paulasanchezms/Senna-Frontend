@@ -1,0 +1,26 @@
+<ion-content class="ion-padding">
+  <ion-router-outlet></ion-router-outlet>
+</ion-content>
+
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 shadow-lg z-50">
+  <!-- Home -->
+  <div class="flex flex-col items-center justify-center" (click)="navigateTo('/patient/home')">
+    <ion-icon name="calendar-outline" class="text-black text-2xl"></ion-icon>
+    <span class="text-xs font-peachy text-black">Home</span>
+  </div>
+  <!-- Statistics -->
+  <div class="flex flex-col items-center justify-center" (click)="navigateTo('/patient/statistics')">
+    <ion-icon name="stats-chart-outline" class="text-black text-2xl"></ion-icon>
+    <span class="text-xs font-peachy text-black">Stats</span>
+  </div>
+  <!-- Search Psychologist -->
+  <div class="flex flex-col items-center justify-center" (click)="navigateTo('/patient/search-psychologist')">
+    <ion-icon name="search-outline" class="text-black text-2xl"></ion-icon>
+    <span class="text-xs font-peachy text-black">Search</span>
+  </div>
+  <!-- Upcoming Appointments -->
+  <div class="flex flex-col items-center justify-center" (click)="navigateTo('/patient/upcoming-appointments')">
+    <ion-icon name="time-outline" class="text-black text-2xl"></ion-icon>
+    <span class="text-xs font-peachy text-black">Appointments</span>
+  </div>
+</div>

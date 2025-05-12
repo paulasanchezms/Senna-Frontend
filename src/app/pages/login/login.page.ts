@@ -30,7 +30,16 @@ export class LoginPage implements OnInit {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
-        this.router.navigate(['/home']);
+
+        const role = this.authService.getRole();
+        if (role === 'PATIENT') {
+          this.router.navigate(['/patient/home']);
+        } else if (role === 'PSYCHOLOGIST') {
+          this.router.navigate(['/calendar']);
+        } else {
+          this.router.navigate(['/login']);
+          this.message = 'Rol no reconocido. Contacta con soporte.';
+        }
       },
       error: (error) => {
         this.message = 'Error en el inicio de sesión: ' + (error.error?.message || error.message);
