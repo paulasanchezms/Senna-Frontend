@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppointmentDTO } from 'src/app/models/appointment';
 import { AppointmentService } from 'src/app/services/appointment.service';
@@ -10,13 +10,16 @@ import { UserResponseDTO } from 'src/app/models/user';
   selector: 'app-schedule-appointment',
   templateUrl: './schedule-appointment.page.html',
 })
-export class ScheduleAppointmentPage implements OnInit {
+export class ScheduleAppointmentPage {
   psychologistId!: number;
   psychologist!: UserResponseDTO;
-  selectedDate!: string;    // formato: YYYY-MM-DD
-  selectedTime!: string;    // formato: HH:mm
-  duration: number = 60;    // duración en minutos
+  selectedDate!: string;
+  selectedTime!: string;
+  duration: number = 60;
   description: string = '';
+  todayISO = new Date().toISOString().split('T')[0];
+
+  weeklyAvailability: { [date: string]: string[] } = {};
   availableTimes: string[] = [];
 
   constructor(
@@ -26,86 +29,109 @@ export class ScheduleAppointmentPage implements OnInit {
     private userService: UserService
   ) {}
 
-  ngOnInit() {
-    // Obtener ID del psicólogo de la URL
+  ionViewWillEnter() {
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
-    this.loadPsychologist();
-
-    // Inicializar fecha al día de hoy y cargar franjas
     this.selectedDate = new Date().toISOString().slice(0, 10);
-    this.fetchAvailableTimes();
+    this.loadPsychologist();
+    this.loadWeeklyAvailability();
   }
 
-  /** Se dispara al cambiar la fecha en el calendario */
   onDateChange() {
-    this.fetchAvailableTimes();
-  }
+    const allTimes = this.weeklyAvailability[this.selectedDate] || [];
+    const now = new Date();
+    const selectedDay = new Date(this.selectedDate + 'T00:00:00');
 
-  /** Llama al servicio para obtener horas disponibles del psicólogo */
-  private fetchAvailableTimes() {
-    if (!this.selectedDate) {
-      this.availableTimes = [];
-      return;
-    }
+    this.availableTimes = allTimes.filter((time) => {
+      const [hh, mm] = time.split(':').map(Number);
+      const slotDateTime = new Date(this.selectedDate + 'T' + time + ':00');
 
-    this.appointmentService
-      .getAvailableTimes(this.psychologistId, this.selectedDate)
-      .subscribe({
-        next: times => this.availableTimes = times,
-        error: err => {
-          console.error('Error al obtener horas disponibles', err);
-          this.availableTimes = [];
-        }
-      });
-  }
+      if (slotDateTime < now) return false;
 
-  /** Carga datos del psicólogo */
-  loadPsychologist() {
-    this.userService.getPsychologistById(this.psychologistId).subscribe({
-      next: data => this.psychologist = data,
-      error: err => console.error('Error cargando psicólogo', err),
+      if (selectedDay.toDateString() === now.toDateString()) {
+        return slotDateTime.getTime() >= now.getTime() + 60 * 60 * 1000;
+      }
+
+      return true;
     });
   }
 
-  /** Reserva cita con la hora y fecha seleccionadas */
+  loadPsychologist() {
+    this.userService.getPsychologistById(this.psychologistId).subscribe({
+      next: (data) => (this.psychologist = data),
+      error: (err) => console.error('Error cargando psicólogo', err),
+    });
+  }
+
+  loadWeeklyAvailability() {
+    const today = new Date();
+    const start = new Date(today);
+    const end = new Date(today);
+    end.setDate(end.getDate() + 6);
+
+    const startDate = start.toISOString().split('T')[0]; // YYYY-MM-DD
+    const endDate = end.toISOString().split('T')[0];
+
+    this.appointmentService
+      .getAvailableTimesForWeek(this.psychologistId, startDate, endDate)
+      .subscribe({
+        next: (data) => {
+          this.weeklyAvailability = data;
+
+          // Verifica que la fecha seleccionada existe en la disponibilidad
+          console.log('Disponibilidad cargada:', data);
+          this.onDateChange(); // refresca los horarios disponibles del día actual
+        },
+        error: (err) => {
+          console.error('Error al cargar disponibilidad semanal', err);
+          this.weeklyAvailability = {};
+          this.availableTimes = [];
+        },
+      });
+  }
+
   confirm() {
     if (!this.selectedDate || !this.selectedTime) {
       alert('Por favor, selecciona día y hora.');
       return;
     }
 
-    const dateTime = `${this.selectedDate}T${this.selectedTime}`;
+    const dateTime = new Date(`${this.selectedDate}T${this.selectedTime}`);
+    const nowPlusOneHour = new Date(new Date().getTime() + 60 * 60 * 1000);
+
+    if (dateTime < nowPlusOneHour) {
+      alert('La cita debe ser al menos 1 hora desde ahora.');
+      return;
+    }
+
+    // Ajustar para que se mantenga la hora local
+    const adjustedDate = new Date(
+      dateTime.getTime() - dateTime.getTimezoneOffset() * 60000
+    );
+
     const appointment: AppointmentDTO = {
-      dateTime,
+      dateTime: adjustedDate.toISOString(),
       duration: this.duration,
       description: this.description || 'Reserva realizada desde app',
       psychologistId: this.psychologistId,
       status: 'PENDIENTE',
     };
 
-    this.appointmentService.scheduleAppointment(appointment).subscribe({
-      next: response => {
-        console.log('Cita creada:', response);
-        this.router.navigate(['/confirm-appointment'], {
-          state: { appointment: response }
-        });
+    this.router.navigate(['/confirm-appointment'], {
+      state: {
+        appointment,
+        psychologist: this.psychologist,
       },
-      error: err => {
-        console.error('Error al crear cita', err);
-        alert('Hubo un problema al crear la cita. Inténtalo de nuevo.');
-      }
     });
   }
 
-  /** Calcula la hora de fin sumando this.duration */
   computeEndTime(startTime: string): string {
-    if (!startTime) { return ''; }
-    const [hh, mm] = startTime.split(':').map(n => parseInt(n, 10));
+    if (!startTime) return '';
+    const [hh, mm] = startTime.split(':').map((n) => parseInt(n, 10));
     const date = new Date();
     date.setHours(hh, mm + this.duration);
-
-    const endH = date.getHours().toString().padStart(2, '0');
-    const endM = date.getMinutes().toString().padStart(2, '0');
-    return `${endH}:${endM}`;
+    return `${date.getHours().toString().padStart(2, '0')}:${date
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}`;
   }
 }

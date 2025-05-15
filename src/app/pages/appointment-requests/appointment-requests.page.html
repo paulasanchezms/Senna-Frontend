@@ -1,36 +1,45 @@
 <app-psychologist-navbar></app-psychologist-navbar>
 
-<ion-content class="p-4 space-y-6 bg-lightPeach min-h-screen">
-  <div *ngFor="let appt of pendingAppointments" 
-       class="p-5 rounded-2xl shadow-md bg-white border-2 border-lavender transition-transform transform hover:scale-[1.02]">
-    
-    <!-- Nombre del paciente -->
-    <div class="text-lg font-semibold text-lavender">
-      {{ appt.patient.name }} {{ appt.patient.last_name }}
-    </div>
+<ion-content class="p-4 bg-lightPeach min-h-screen">
+  <div class="space-y-6">
+    <ion-card 
+      *ngFor="let appt of pendingAppointments"
+      class="rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 hover:scale-[1.01] px-4 py-3 bg-white">
 
-    <!-- Fecha y hora -->
-    <div class="text-sm text-gray-700 mt-1">
-      <span class="font-medium">Fecha:</span> {{ appt.dateTime | date: 'short' }}
-    </div>
+      <ion-card-header class="pb-2">
+        <ion-card-title class="text-xl text-lavender font-semibold font-peachy">
+          {{ appt.patient.name }} {{ appt.patient.last_name }}
+        </ion-card-title>
+      </ion-card-header>
 
-    <!-- Duración -->
-    <div class="text-sm text-gray-700">
-      <span class="font-medium">Duración:</span> {{ appt.duration }} min
-    </div>
+      <ion-card-content class="text-sm text-gray-700 font-medium space-y-1">
+        <p><span class="text-salmon">Fecha:</span> {{ appt.dateTime | date: 'fullDate' }}</p>
+        <p><span class="text-salmon">Hora:</span> {{ appt.dateTime | date: 'shortTime' }}</p>
+        <p><span class="text-salmon">Duración:</span> {{ appt.duration }} min</p>
+      </ion-card-content>
 
-    <!-- Botones -->
-    <div class="flex justify-end gap-3 mt-4">
-      <ion-button fill="clear" color="success" size="small" (click)="accept(appt.id)">
-        <span class="text-green font-bold">Aceptar</span>
-      </ion-button>
-      <ion-button fill="clear" color="danger" size="small" (click)="reject(appt.id)">
-        <span class="text-red font-bold">Rechazar</span>
-      </ion-button>
-    </div>
-  </div>
+      <div class="flex justify-end gap-3 mt-4 pb-3 pr-4">
+        <ion-button 
+          fill="solid"
+          size="small"
+          class="bg-mint text-green-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-green-200 transition"
+          (click)="accept(appt.id)"
+        >
+          Aceptar
+        </ion-button>
+        <ion-button 
+          fill="solid"
+          size="small"
+          class="bg-peach text-red-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-red-200 transition"
+          (click)="reject(appt.id)"
+        >
+          Rechazar
+        </ion-button>
+      </div>
+    </ion-card>
 
-  <div *ngIf="pendingAppointments.length === 0" class="text-center text-gray-500 text-sm mt-10">
-    No hay solicitudes pendientes.
+    <div *ngIf="pendingAppointments.length === 0" class="text-center text-gray-500 text-sm mt-10 italic">
+      No hay solicitudes pendientes.
+    </div>
   </div>
 </ion-content>

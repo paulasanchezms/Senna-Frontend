@@ -2,7 +2,7 @@
   <ion-toolbar class="bg-lightPeach text-lavender shadow">
     <ion-buttons slot="start">
       <ion-back-button 
-        defaultHref="/psychologist-schedule" 
+        defaultHref="/schedule-appointment" 
         class="text-white"
       ></ion-back-button>
     </ion-buttons>
@@ -12,16 +12,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding bg-gray-50">
+<ion-content class="ion-padding bg-lightPeach">
   <ion-card class="rounded-2xl shadow-md overflow-hidden">
     <ion-card-header class="bg-white p-4">
       <ion-card-title class="text-2xl font-semibold text-gray-900">
         {{ appointmentSummary.psychologistName }}
       </ion-card-title>
-      <ion-card-subtitle class="text-sm text-gray-500 mt-1">
-        {{ appointmentSummary.specialty }}
-      </ion-card-subtitle>
     </ion-card-header>
+
     <ion-card-content class="bg-gray-100 p-4 space-y-2 text-gray-700">
       <p class="font-medium">
         <span class="font-bold">Fecha:</span> {{ appointmentSummary.date | date:'fullDate' }}
@@ -32,12 +30,15 @@
       <p class="font-medium">
         <span class="font-bold">Duración:</span> {{ appointmentSummary.duration }} min
       </p>
+      <p class="font-medium" *ngIf="appointment.description">
+        <span class="font-bold">Motivo:</span> {{ appointment.description }}
+      </p>
     </ion-card-content>
   </ion-card>
 
   <ion-button 
     expand="full" 
-    class="mt-6 bg-lavender text-white font-bold rounded-lg shadow-lg hover:bg-coral transition"
+    class="mt-6 bg-salmon text-white font-bold rounded-lg shadow-lg hover:bg-lavender transition"
     (click)="finalize()"
   >
     Confirmar Reserva
