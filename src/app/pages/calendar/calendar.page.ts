@@ -22,18 +22,34 @@ export class CalendarPage {
     initialView: 'timeGridWeek',
     plugins: [timeGridPlugin, interactionPlugin],
     events: [],
-    dateClick: this.handleDateClick.bind(this),
+    locale: esLocale,
+    themeSystem: 'standard',
+    height: 'auto',
+    contentHeight: 'auto',
+  
+    allDaySlot: false, 
+    
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
       right: 'timeGridWeek,timeGridDay'
     },
-    themeSystem: 'standard',
-    height: 'auto',
-    contentHeight: 'auto',
-    locale: esLocale,
+  
+    slotLabelFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    },
+  
+    slotLabelClassNames: ['custom-slot-label'],
+  
+    dayHeaderDidMount: (info) => {
+      info.el.style.color = '#f17c63';
+      info.el.style.fontFamily = 'Poppins';
+      info.el.style.fontWeight = '600';
+      info.el.style.fontSize = '13px';
+    }
   };
-
   private userId!: number;
   public allHours: WorkingHourDTO[] = [];
 
@@ -48,14 +64,24 @@ export class CalendarPage {
 
   loadAppointments() {
     this.appointmentService.getPsychologistAppointments().subscribe((appointments: AppointmentResponseDTO[]) => {
+      const colors = ['#f17c63', '#c4a2e2', '#c7e2c3', '#ee9870', '#f4b098'];
+      let colorIndex = 0;
+  
       const events = appointments
-        .filter(appt => appt.status === 'CONFIRMADA') 
-        .map(appt => ({
-          title: `Cita con ${appt.patient?.name || 'Paciente'}`,
-          start: appt.dateTime,
-          end: this.calculateEndTime(appt.dateTime, appt.duration),
-          color: '#f87171'
-        }));
+        .filter(appt => appt.status === 'CONFIRMADA')
+        .map(appt => {
+          const name = appt.patient?.name || '';
+          const lastName = appt.patient?.last_name || '';
+          const fullName = `${name} ${lastName}`.trim();
+  
+          return {
+            title: fullName || 'Paciente',
+            start: appt.dateTime,
+            end: this.calculateEndTime(appt.dateTime, appt.duration),
+            color: colors[colorIndex++ % colors.length]
+          };
+        });
+  
       this.calendarOptions.events = events;
     });
   }
@@ -124,4 +150,39 @@ export class CalendarPage {
       },
       error: err => console.error('No se pudo obtener usuario', err)
     });}
+
+    ngAfterViewInit() {
+      const applyFullCalendarStyles = () => {
+        // 🔸 Horas laterales (ej: 08:00, 09:00...)
+        const slotLabels = document.querySelectorAll('.fc-timegrid-slot-label-cushion');
+        slotLabels.forEach((el: any) => {
+          el.style.color = '#f17c63'; // salmon
+          el.style.fontFamily = 'Poppins';
+          el.style.fontSize = '13px';
+          el.style.fontWeight = '600';
+        });
+    
+        // 🔸 Título del calendario
+        const calendarTitle = document.querySelector('.fc-toolbar-title');
+        if (calendarTitle) {
+          (calendarTitle as HTMLElement).style.color = '#f17c63';
+          (calendarTitle as HTMLElement).style.fontFamily = 'Poppins';
+          (calendarTitle as HTMLElement).style.fontWeight = '700';
+          (calendarTitle as HTMLElement).style.fontSize = '20px';
+        }
+      };
+    
+      // Aplica estilos después del render inicial
+      setTimeout(() => applyFullCalendarStyles(), 300);
+    
+      // Observa el DOM del calendario para reaplicar estilos si cambian
+      const calendarEl = document.querySelector('.fc-timegrid');
+      if (calendarEl) {
+        const observer = new MutationObserver(() => applyFullCalendarStyles());
+        observer.observe(calendarEl, {
+          childList: true,
+          subtree: true
+        });
+      }
+    }
 }

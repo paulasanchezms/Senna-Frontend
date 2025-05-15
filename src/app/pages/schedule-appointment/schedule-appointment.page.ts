@@ -31,7 +31,7 @@ export class ScheduleAppointmentPage {
 
   ionViewWillEnter() {
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
-    this.selectedDate = new Date().toISOString().slice(0, 10); // formato YYYY-MM-DD
+    this.selectedDate = new Date().toISOString().slice(0, 10);
     this.loadPsychologist();
     this.loadWeeklyAvailability();
   }
