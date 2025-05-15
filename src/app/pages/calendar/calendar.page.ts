@@ -26,9 +26,9 @@ export class CalendarPage {
     themeSystem: 'standard',
     height: 'auto',
     contentHeight: 'auto',
-  
     allDaySlot: false, 
-    
+    dateClick: this.handleDateClick.bind(this),
+
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',

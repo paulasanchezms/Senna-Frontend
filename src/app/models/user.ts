@@ -3,7 +3,9 @@ export interface UserResponseDTO {
     name: string;
     last_name: string;
     email: string;
-    role: 'PATIENT' | 'PSYCHOLOGIST' | 'ADMIN';  // asegura los posibles valores
+    role: 'PATIENT' | 'PSYCHOLOGIST' | 'ADMIN'; 
+    phone?: string;
+    photoUrl?: string;
 
     // Solo si es psicólogo
     dni?: string;
@@ -11,5 +13,5 @@ export interface UserResponseDTO {
     specialty?: string;
     location?: string;
     document?: string;
-    profileImageUrl?: string;  // solo para frontend, si tienes foto
+    profileImageUrl?: string;  
 }
