@@ -17,7 +17,7 @@ import esLocale from '@fullcalendar/core/locales/es';
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
 })
-export class CalendarPage implements OnInit {
+export class CalendarPage {
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
     plugins: [timeGridPlugin, interactionPlugin],
@@ -44,25 +44,18 @@ export class CalendarPage implements OnInit {
     private workingHourService: WorkingHourService
   ) {}
 
-  ngOnInit() {
-    this.userService.me().subscribe({
-      next: user => {
-        this.userId = user.id_user;
-        this.loadAppointments();
-        this.loadWorkingHours();
-      },
-      error: err => console.error('No se pudo obtener usuario', err)
-    });
-  }
+ 
 
   loadAppointments() {
     this.appointmentService.getPsychologistAppointments().subscribe((appointments: AppointmentResponseDTO[]) => {
-      const events = appointments.map(appt => ({
-        title: `Cita con ${appt.patient?.name || 'Paciente'}`,
-        start: appt.dateTime,
-        end: this.calculateEndTime(appt.dateTime, appt.duration),
-        color: '#f87171'
-      }));
+      const events = appointments
+        .filter(appt => appt.status === 'CONFIRMADA') 
+        .map(appt => ({
+          title: `Cita con ${appt.patient?.name || 'Paciente'}`,
+          start: appt.dateTime,
+          end: this.calculateEndTime(appt.dateTime, appt.duration),
+          color: '#f87171'
+        }));
       this.calendarOptions.events = events;
     });
   }
@@ -121,4 +114,14 @@ export class CalendarPage implements OnInit {
       this.loadAppointments();
     }
   }
+
+  ionViewWillEnter() {
+    this.userService.me().subscribe({
+      next: user => {
+        this.userId = user.id_user;
+        this.loadAppointments();
+        this.loadWorkingHours();
+      },
+      error: err => console.error('No se pudo obtener usuario', err)
+    });}
 }

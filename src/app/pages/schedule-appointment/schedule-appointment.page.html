@@ -15,6 +15,7 @@
       presentation="date"
       [(ngModel)]="selectedDate"
       (ionChange)="onDateChange()"
+      [min]="todayISO" 
       class="mx-auto w-11/12 max-w-md rounded-2xl border-2 border-salmon bg-white text-gray-900"
     ></ion-datetime>
   </div>
