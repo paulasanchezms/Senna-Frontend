@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserResponseDTO } from 'src/app/models/user';
+import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -12,7 +14,7 @@ export class PatientProfilePage implements OnInit {
   previewUrl: string | null = null;
   photoTempUrl: string | null = null;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService,private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.userService.me().subscribe({
@@ -64,5 +66,10 @@ export class PatientProfilePage implements OnInit {
         alert('No se pudieron guardar los cambios.');
       }
     });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

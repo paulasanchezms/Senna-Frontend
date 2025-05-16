@@ -12,7 +12,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 
 @Component({
-  standalone: false,
+  standalone:false,
   selector: 'app-calendar',
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
@@ -26,30 +26,27 @@ export class CalendarPage {
     themeSystem: 'standard',
     height: 'auto',
     contentHeight: 'auto',
-    allDaySlot: false, 
+    allDaySlot: false,
     dateClick: this.handleDateClick.bind(this),
-
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
       right: 'timeGridWeek,timeGridDay'
     },
-  
     slotLabelFormat: {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
     },
-  
     slotLabelClassNames: ['custom-slot-label'],
-  
     dayHeaderDidMount: (info) => {
-      info.el.style.color = '#f17c63';
-      info.el.style.fontFamily = 'Poppins';
-      info.el.style.fontWeight = '600';
-      info.el.style.fontSize = '13px';
+      info.el.style.setProperty('color', '#f17c63', 'important');
+      info.el.style.setProperty('font-family', 'Poppins', 'important');
+      info.el.style.setProperty('font-weight', '600', 'important');
+      info.el.style.setProperty('font-size', '13px', 'important');
     }
   };
+
   private userId!: number;
   public allHours: WorkingHourDTO[] = [];
 
@@ -60,20 +57,29 @@ export class CalendarPage {
     private workingHourService: WorkingHourService
   ) {}
 
- 
+  ionViewWillEnter() {
+    this.userService.me().subscribe({
+      next: user => {
+        this.userId = user.id_user;
+        this.loadAppointments();
+        this.loadWorkingHours();
+      },
+      error: err => console.error('No se pudo obtener usuario', err)
+    });
+  }
 
   loadAppointments() {
     this.appointmentService.getPsychologistAppointments().subscribe((appointments: AppointmentResponseDTO[]) => {
       const colors = ['#f17c63', '#c4a2e2', '#c7e2c3', '#ee9870', '#f4b098'];
       let colorIndex = 0;
-  
+
       const events = appointments
         .filter(appt => appt.status === 'CONFIRMADA')
         .map(appt => {
           const name = appt.patient?.name || '';
           const lastName = appt.patient?.last_name || '';
           const fullName = `${name} ${lastName}`.trim();
-  
+
           return {
             title: fullName || 'Paciente',
             start: appt.dateTime,
@@ -81,7 +87,7 @@ export class CalendarPage {
             color: colors[colorIndex++ % colors.length]
           };
         });
-  
+
       this.calendarOptions.events = events;
     });
   }
@@ -100,8 +106,8 @@ export class CalendarPage {
       return;
     }
 
-    const allStartHours = this.allHours.map(h => parseInt(h.startTime.slice(0,2)));
-    const allEndHours = this.allHours.map(h => parseInt(h.endTime.slice(0,2)));
+    const allStartHours = this.allHours.map(h => parseInt(h.startTime.slice(0, 2)));
+    const allEndHours = this.allHours.map(h => parseInt(h.endTime.slice(0, 2)));
     const min = Math.min(...allStartHours);
     const max = Math.max(...allEndHours);
 
@@ -141,48 +147,42 @@ export class CalendarPage {
     }
   }
 
-  ionViewWillEnter() {
-    this.userService.me().subscribe({
-      next: user => {
-        this.userId = user.id_user;
-        this.loadAppointments();
-        this.loadWorkingHours();
-      },
-      error: err => console.error('No se pudo obtener usuario', err)
-    });}
-
-    ngAfterViewInit() {
-      const applyFullCalendarStyles = () => {
-        // 🔸 Horas laterales (ej: 08:00, 09:00...)
-        const slotLabels = document.querySelectorAll('.fc-timegrid-slot-label-cushion');
-        slotLabels.forEach((el: any) => {
-          el.style.color = '#f17c63'; // salmon
-          el.style.fontFamily = 'Poppins';
-          el.style.fontSize = '13px';
-          el.style.fontWeight = '600';
-        });
+  ngAfterViewInit() {
+    const applyFullCalendarStyles = () => {
+      // 🔸 Estilos para las horas laterales
+      const slotLabels = document.querySelectorAll('.fc-timegrid-slot-label-cushion');
+      slotLabels.forEach(el => {
+        const element = el as HTMLElement;
+        element.style.setProperty('color', '#f17c63', 'important');
+        element.style.setProperty('font-family', 'Poppins', 'important');
+        element.style.setProperty('font-size', '13px', 'important');
+        element.style.setProperty('font-weight', '600', 'important');
+      });
     
-        // 🔸 Título del calendario
-        const calendarTitle = document.querySelector('.fc-toolbar-title');
-        if (calendarTitle) {
-          (calendarTitle as HTMLElement).style.color = '#f17c63';
-          (calendarTitle as HTMLElement).style.fontFamily = 'Poppins';
-          (calendarTitle as HTMLElement).style.fontWeight = '700';
-          (calendarTitle as HTMLElement).style.fontSize = '20px';
-        }
-      };
-    
-      // Aplica estilos después del render inicial
-      setTimeout(() => applyFullCalendarStyles(), 300);
-    
-      // Observa el DOM del calendario para reaplicar estilos si cambian
-      const calendarEl = document.querySelector('.fc-timegrid');
-      if (calendarEl) {
-        const observer = new MutationObserver(() => applyFullCalendarStyles());
-        observer.observe(calendarEl, {
-          childList: true,
-          subtree: true
-        });
+      // 🔸 Estilo para el título
+      const calendarTitle = document.querySelector('.fc-toolbar-title');
+      if (calendarTitle) {
+        const titleEl = calendarTitle as HTMLElement;
+        titleEl.style.setProperty('color', '#f17c63', 'important');
+        titleEl.style.setProperty('font-family', 'Poppins', 'important');
+        titleEl.style.setProperty('font-weight', '700', 'important');
+        titleEl.style.setProperty('font-size', '20px', 'important');
       }
+    };
+
+    // Aplicar estilos tras renderizado inicial
+    setTimeout(() => applyFullCalendarStyles(), 300);
+
+    // Observador para aplicar estilos tras cambios del calendario
+    const calendarEl = document.querySelector('.fc-timegrid');
+    if (calendarEl) {
+      const observer = new MutationObserver(() => {
+        applyFullCalendarStyles();
+      });
+      observer.observe(calendarEl, {
+        childList: true,
+        subtree: true
+      });
     }
+  }
 }
