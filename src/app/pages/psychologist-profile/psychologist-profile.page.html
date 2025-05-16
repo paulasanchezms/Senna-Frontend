@@ -1,0 +1,104 @@
+<ion-content class="bg-lightPeach min-h-screen w-full p-4 flex justify-center items-center">
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-4xl space-y-6">
+    <!-- Encabezado con imagen editable -->
+    <div class="flex justify-between items-start">
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <img
+            [src]="previewUrl || user?.photoUrl || defaultAvatar"
+            alt="Foto de perfil"
+            class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
+          />
+          <label class="absolute bottom-0 right-0 bg-white rounded-full shadow-md p-1 cursor-pointer">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+            <ion-icon name="camera" class="text-coral text-lg"></ion-icon>
+          </label>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-lavender">{{ user?.name }} {{ user?.last_name }}</h2>
+          <p class="text-base text-gray-700">{{ user?.email }}</p>
+        </div>
+      </div>
+      <ion-button *ngIf="isOwnProfile" (click)="editMode = !editMode" size="small" class="bg-peach text-white px-4 py-2 rounded-xl font-semibold shadow hover:opacity-90">
+        {{ editMode ? 'Cancelar edición' : 'Editar perfil' }}
+      </ion-button>
+    </div>
+
+    <!-- Tabs -->
+    <ion-segment [(ngModel)]="activeTab" value="personal" class="text-center">
+      <ion-segment-button value="personal">
+        <ion-label class="text-base font-semibold text-coral">Datos personales</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="professional">
+        <ion-label class="text-base font-semibold text-coral">Datos profesionales</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- TAB: Datos personales -->
+    <div *ngIf="activeTab === 'personal'">
+      <form *ngIf="editMode" [formGroup]="personalForm" (ngSubmit)="savePersonal()" class="space-y-4 text-gray-900">
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Nombre</label>
+          <ion-input formControlName="name" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Apellidos</label>
+          <ion-input formControlName="last_name" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Teléfono</label>
+          <ion-input formControlName="phone" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
+        </div>
+        <ion-button type="submit" expand="block" class="w-full bg-coral text-white rounded-xl py-2 font-semibold hover:opacity-90">Guardar datos personales</ion-button>
+      </form>
+
+      <div *ngIf="!editMode" class="space-y-2 text-base text-gray-800">
+        <p><strong>Nombre:</strong> {{ user?.name || 'No disponible' }}</p>
+        <p><strong>Apellidos:</strong> {{ user?.last_name || 'No disponible' }}</p>
+        <p><strong>Email:</strong> {{ user?.email || 'No disponible' }}</p>
+        <p><strong>Teléfono:</strong> {{ user?.phone || 'No disponible' }}</p>
+      </div>
+    </div>
+
+    <!-- TAB: Datos profesionales -->
+    <div *ngIf="activeTab === 'professional'">
+      <form *ngIf="editMode" [formGroup]="professionalForm" (ngSubmit)="saveProfessional()" class="space-y-4 text-gray-900">
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Especialidad</label>
+          <ion-input formControlName="specialty" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Ubicación</label>
+          <input #locationInput type="text" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full" placeholder="Ubicación...">        
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Duración (minutos)</label>
+          <ion-input type="number" formControlName="consultationDuration" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Precio (€)</label>
+          <ion-input type="number" formControlName="consultationPrice" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Documento</label>
+          <input type="file" (change)="onDocumentSelected($event)" accept=".pdf,image/*" class="col-span-2 text-sm text-gray-900" />
+        </div>
+        <div *ngIf="professionalForm.value.document" class="text-sm text-right">
+          <a [href]="professionalForm.value.document" target="_blank" class="text-blue-600 underline">Ver documento subido</a>
+        </div>
+        <ion-button type="submit" expand="block" class="w-full bg-coral text-white rounded-xl py-2 font-semibold hover:opacity-90">Guardar datos profesionales</ion-button>
+      </form>
+
+      <div *ngIf="!editMode" class="space-y-2 text-base text-gray-800">
+        <p><strong>Especialidad:</strong> {{ profile?.specialty || 'No disponible' }}</p>
+        <p><strong>Ubicación:</strong> {{ profile?.location || 'No disponible' }}</p>
+        <p><strong>Duración:</strong> {{ profile?.consultationDuration }} min</p>
+        <p><strong>Precio:</strong> {{ profile?.consultationPrice }} €</p>
+        <p><strong>Documento:</strong>
+          <a *ngIf="profile?.document" [href]="profile.document" target="_blank" class="text-blue-600 underline">Ver documento</a>
+          <span *ngIf="!profile?.document">No disponible</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</ion-content>

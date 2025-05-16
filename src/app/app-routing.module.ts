@@ -74,6 +74,12 @@ const routes: Routes = [
     loadChildren: () => import('./pages/search-patient/search-patient.module').then(m => m.SearchPatientPageModule),
     canActivate: [PsychologistGuard]
   },
+  
+  {
+    path: 'psychologist-profile',
+    loadChildren: () => import('./pages/psychologist-profile/psychologist-profile.module').then( m => m.PsychologistProfilePageModule),
+    canActivate:[PsychologistGuard]
+  },
 
   // RUTAS GENERALES (si necesitas restricción, añade AuthGuard aquí también)
   {

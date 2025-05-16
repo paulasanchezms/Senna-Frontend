@@ -21,5 +21,17 @@ export class PsychologistProfileService {
     return this.http.get<PsychologistProfile>(
       `${this.baseUrl}/psychologists/${userId}/profile`
     );
+
+    
+  }
+
+  /**
+   * Actualiza el perfil profesional del psicólogo.
+   */
+  updateProfile(userId: number, data: Partial<PsychologistProfile>): Observable<PsychologistProfile> {
+    return this.http.put<PsychologistProfile>(
+      `${this.baseUrl}/psychologists/${userId}/profile`,
+      data
+    );
   }
 }

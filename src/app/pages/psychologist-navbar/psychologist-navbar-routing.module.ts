@@ -5,6 +5,7 @@ import { PsychologistNavbarPage } from './psychologist-navbar.page';
 import { AppointmentRequestsPage } from '../appointment-requests/appointment-requests.page';
 import { CalendarPage } from '../calendar/calendar.page';
 import { SearchPatientPage } from '../search-patient/search-patient.page';
+import { PsychologistProfilePage } from '../psychologist-profile/psychologist-profile.page';
 
 const routes: Routes = [
   { path: 'calendar', component: CalendarPage },
@@ -12,6 +13,8 @@ const routes: Routes = [
   {
     path: 'search-patient',component: SearchPatientPage
   },
+  {
+    path: 'psychologist-profile',component: PsychologistProfilePage},
   { path: '', redirectTo: 'calendar', pathMatch: 'full' },
   { path: '**', redirectTo: 'calendar' }
 ];
