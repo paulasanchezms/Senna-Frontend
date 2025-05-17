@@ -82,10 +82,7 @@ const routes: Routes = [
   },
 
   // RUTAS GENERALES (si necesitas restricción, añade AuthGuard aquí también)
-  {
-    path: 'weekly-schedule',
-    loadChildren: () => import('./pages/weekly-schedule/weekly-schedule.module').then(m => m.WeeklySchedulePageModule)
-  },
+
   {
     path: 'unauthorized',
     loadChildren: () => import('./pages/unauthorized/unauthorized.module').then( m => m.UnauthorizedPageModule)
