@@ -20,8 +20,9 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   personalForm!: FormGroup;
   professionalForm!: FormGroup;
 
-  activeTab: 'personal' | 'professional' = 'personal';
-  editMode = false;
+  private _activeTab: 'personal' | 'professional' = 'personal';
+  private _editMode = false;
+
   isOwnProfile = true;
   defaultAvatar = '/assets/default-avatar.png';
   private userId!: number;
@@ -48,20 +49,46 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.locationInput) {
-        const autocomplete = new google.maps.places.Autocomplete(this.locationInput.nativeElement, {
-          types: ['geocode'],
-          componentRestrictions: { country: 'es' },
-        });
+    this.tryInitAutocomplete();
+  }
 
-        autocomplete.addListener('place_changed', () => {
-          const place = autocomplete.getPlace();
-          const location = place.formatted_address;
-          this.professionalForm.patchValue({ location });
-        });
+  set activeTab(value: 'personal' | 'professional') {
+    this._activeTab = value;
+    this.tryInitAutocomplete();
+  }
+
+  get activeTab(): 'personal' | 'professional' {
+    return this._activeTab;
+  }
+
+  set editMode(value: boolean) {
+    this._editMode = value;
+    this.tryInitAutocomplete();
+  }
+
+  get editMode(): boolean {
+    return this._editMode;
+  }
+
+  tryInitAutocomplete() {
+    setTimeout(() => {
+      if (this.editMode && this.activeTab === 'professional' && this.locationInput) {
+        this.initAutocomplete();
       }
-    }, 0);
+    }, 200); // espera a que el input esté en el DOM
+  }
+
+  initAutocomplete() {
+    const autocomplete = new google.maps.places.Autocomplete(this.locationInput.nativeElement, {
+      types: ['geocode'],
+      componentRestrictions: { country: 'es' },
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      const location = place.formatted_address;
+      this.professionalForm.patchValue({ location });
+    });
   }
 
   buildForms() {
@@ -72,11 +99,12 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     });
 
     this.professionalForm = this.fb.group({
-      specialty: [''],
-      location: [''],
-      consultationDuration: [0],
-      consultationPrice: [0],
-      document: ['']
+      specialty: [this.profile?.specialty || ''],
+      location: [this.profile?.location || ''],
+      consultationDuration: [this.profile?.consultationDuration || 0],
+      consultationPrice: [this.profile?.consultationPrice || 0],
+      document: [this.profile?.document || ''],
+      description: [this.profile?.description || ''] 
     });
   }
 
@@ -115,9 +143,22 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     const file = event.target.files[0];
     if (file) {
       this.documentFile = file;
+  
       this.userService.uploadToImgBB(file).subscribe({
         next: (url: string) => {
           this.professionalForm.patchValue({ document: url });
+  
+          // 🚀 Guardar inmediatamente en el perfil
+          const update = { ...this.professionalForm.value, document: url };
+          this.profileService.updateProfile(this.userId, update).subscribe({
+            next: () => {
+              this.profile.document = url; // sincroniza vista
+            },
+            error: err => {
+              console.error('Error al guardar el documento en el backend', err);
+              alert('No se pudo guardar el documento. Intenta nuevamente.');
+            }
+          });
         },
         error: err => {
           console.error('Error al subir el documento', err);

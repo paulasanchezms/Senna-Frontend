@@ -19,13 +19,13 @@
           <p class="text-base text-gray-700">{{ user?.email }}</p>
         </div>
       </div>
-      <ion-button *ngIf="isOwnProfile" (click)="editMode = !editMode" size="small" class="bg-peach text-white px-4 py-2 rounded-xl font-semibold shadow hover:opacity-90">
+      <ion-button *ngIf="isOwnProfile" (click)="editMode = !editMode; tryInitAutocomplete()" size="small" class="bg-peach text-white px-4 py-2 rounded-xl font-semibold shadow hover:opacity-90">
         {{ editMode ? 'Cancelar edición' : 'Editar perfil' }}
       </ion-button>
     </div>
 
     <!-- Tabs -->
-    <ion-segment [(ngModel)]="activeTab" value="personal" class="text-center">
+    <ion-segment [(ngModel)]="activeTab" value="personal" (ionChange)="tryInitAutocomplete()" class="text-center">
       <ion-segment-button value="personal">
         <ion-label class="text-base font-semibold text-coral">Datos personales</ion-label>
       </ion-segment-button>
@@ -67,9 +67,15 @@
           <label class="text-sm font-semibold text-gray-700">Especialidad</label>
           <ion-input formControlName="specialty" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"></ion-input>
         </div>
+        <div class="grid grid-cols-3 gap-4 items-start">
+          <label class="text-sm font-semibold text-gray-700">Descripción</label>
+          <textarea formControlName="description"
+                    class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full h-24 resize-none"
+                    placeholder="Describe tu enfoque, experiencia, etc."></textarea>
+        </div>
         <div class="grid grid-cols-3 gap-4 items-center">
           <label class="text-sm font-semibold text-gray-700">Ubicación</label>
-          <input #locationInput type="text" class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full" placeholder="Ubicación...">        
+          <input #locationInput type="text" placeholder="Ubicación..." class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full">
         </div>
         <div class="grid grid-cols-3 gap-4 items-center">
           <label class="text-sm font-semibold text-gray-700">Duración (minutos)</label>
@@ -91,6 +97,7 @@
 
       <div *ngIf="!editMode" class="space-y-2 text-base text-gray-800">
         <p><strong>Especialidad:</strong> {{ profile?.specialty || 'No disponible' }}</p>
+        <p><strong>Descripción:</strong> {{ profile?.description || 'No disponible' }}</p>
         <p><strong>Ubicación:</strong> {{ profile?.location || 'No disponible' }}</p>
         <p><strong>Duración:</strong> {{ profile?.consultationDuration }} min</p>
         <p><strong>Precio:</strong> {{ profile?.consultationPrice }} €</p>
