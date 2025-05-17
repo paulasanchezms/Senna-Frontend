@@ -21,19 +21,21 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
 
   personalForm!: FormGroup;
   professionalForm!: FormGroup;
-
-  private _activeTab: 'personal' | 'professional' = 'personal';
-  private _editMode = false;
+  scheduleForm!: FormGroup;
 
   isOwnProfile = true;
   defaultAvatar = '/assets/default-avatar.png';
-  private userId!: number;
+  previewUrl: string | null = null;
   profilePhotoFile: File | null = null;
   documentFile: File | null = null;
-  previewUrl: string | null = null;
-  scheduleForm!: FormGroup;
+  uploadedDocumentName: string | null = null;
   consultationDuration!: number;
-  days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+  private userId!: number;
+  private _editMode = false;
+  private _activeTab: 'personal' | 'professional' = 'personal';
+
+  days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
 
@@ -59,8 +61,32 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.tryInitAutocomplete();
   }
 
-  set activeTab(value: 'personal' | 'professional') {
-    this._activeTab = value;
+  get editMode(): boolean {
+    return this._editMode;
+  }
+
+  set editMode(value: boolean) {
+    this._editMode = value;
+
+    if (value && this._activeTab === 'personal' && this.user) {
+      this.personalForm.patchValue({
+        name: this.user.name || '',
+        last_name: this.user.last_name || '',
+        phone: this.user.phone || ''
+      });
+    }
+
+    if (value && this._activeTab === 'professional' && this.profile) {
+      this.professionalForm.patchValue({
+        specialty: this.profile.specialty || '',
+        location: this.profile.location || '',
+        consultationDuration: this.profile.consultationDuration || 0,
+        consultationPrice: this.profile.consultationPrice || 0,
+        document: this.profile.document || '',
+        description: this.profile.description || ''
+      });
+    }
+
     this.tryInitAutocomplete();
   }
 
@@ -68,13 +94,166 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     return this._activeTab;
   }
 
-  set editMode(value: boolean) {
-    this._editMode = value;
+  set activeTab(value: 'personal' | 'professional') {
+    this._activeTab = value;
+
+    if (this.editMode && value === 'personal' && this.user) {
+      this.personalForm.patchValue({
+        name: this.user.name || '',
+        last_name: this.user.last_name || '',
+        phone: this.user.phone || ''
+      });
+    }
+
+    if (this.editMode && value === 'professional' && this.profile) {
+      this.professionalForm.patchValue({
+        specialty: this.profile.specialty || '',
+        location: this.profile.location || '',
+        consultationDuration: this.profile.consultationDuration || 0,
+        consultationPrice: this.profile.consultationPrice || 0,
+        document: this.profile.document || '',
+        description: this.profile.description || ''
+      });
+    }
+
     this.tryInitAutocomplete();
   }
 
-  get editMode(): boolean {
-    return this._editMode;
+  buildForms() {
+    this.personalForm = this.fb.group({
+      name: [''],
+      last_name: [''],
+      phone: ['']
+    });
+
+    this.professionalForm = this.fb.group({
+      specialty: [''],
+      location: [''],
+      consultationDuration: [0],
+      consultationPrice: [0],
+      document: [''],
+      description: ['']
+    });
+  }
+
+  buildScheduleForm() {
+    const group: any = {};
+    for (let d = 0; d < 7; d++) {
+      group[`enabled_${d}`] = [false];
+      group[`morningStart_${d}`] = [''];
+      group[`morningEnd_${d}`] = [''];
+      group[`afternoonStart_${d}`] = [''];
+      group[`afternoonEnd_${d}`] = [''];
+    }
+    this.scheduleForm = this.fb.group(group);
+  }
+
+  loadProfile() {
+    this.profileService.getProfile(this.userId).subscribe(profile => {
+      this.profile = profile;
+      this.professionalForm.patchValue(profile);
+    });
+  }
+
+  async loadProfileAndHours() {
+    try {
+      const profile = await firstValueFrom(this.profileService.getProfile(this.userId));
+      this.consultationDuration = profile.consultationDuration;
+
+      const whs = await firstValueFrom(this.profileService.getWorkingHours(this.userId));
+      whs.forEach(wh => {
+        const d = wh.dayOfWeek;
+        this.scheduleForm.patchValue({ [`enabled_${d}`]: true });
+        const start = wh.startTime.slice(0, 5);
+        const end = wh.endTime.slice(0, 5);
+        if (start < '12:00') {
+          this.scheduleForm.patchValue({
+            [`morningStart_${d}`]: start,
+            [`morningEnd_${d}`]: end
+          });
+        } else {
+          this.scheduleForm.patchValue({
+            [`afternoonStart_${d}`]: start,
+            [`afternoonEnd_${d}`]: end
+          });
+        }
+      });
+    } catch (err) {
+      console.error('Error cargando perfil o franjas', err);
+    }
+  }
+
+  async savePersonal() {
+    const data = this.personalForm.value;
+    try {
+      await firstValueFrom(this.userService.updateMe(data));
+      await this.exitEditModeAndReload();
+    } catch (err) {
+      console.error('Error al guardar datos personales', err);
+      alert('No se pudo guardar. Intenta nuevamente.');
+    }
+  }
+
+  async saveProfessional() {
+    const data = this.professionalForm.value;
+    try {
+      await firstValueFrom(this.profileService.updateProfile(this.userId, data));
+      await this.exitEditModeAndReload();
+    } catch (err) {
+      console.error('Error al guardar datos profesionales', err);
+      alert('No se pudo guardar. Intenta nuevamente.');
+    }
+  }
+
+  async exitEditModeAndReload() {
+    this._editMode = false;
+    try {
+      this.user = await firstValueFrom(this.userService.me());
+      this.profile = await firstValueFrom(this.profileService.getProfile(this.userId));
+    } catch (err) {
+      console.error('Error recargando datos tras la edición', err);
+    }
+  }
+
+  onCancelEdit() {
+    this.exitEditModeAndReload();
+  }
+
+  async saveSchedule() {
+    const dtos: WorkingHourDTO[] = [];
+
+    for (let d = 0; d < 7; d++) {
+      if (!this.scheduleForm.value[`enabled_${d}`]) continue;
+
+      const mS = this.scheduleForm.value[`morningStart_${d}`];
+      const mE = this.scheduleForm.value[`morningEnd_${d}`];
+      const aS = this.scheduleForm.value[`afternoonStart_${d}`];
+      const aE = this.scheduleForm.value[`afternoonEnd_${d}`];
+
+      if (mS && mE && mS > mE) {
+        alert(`Horario inválido: Mañana de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
+        return;
+      }
+      if (aS && aE && aS > aE) {
+        alert(`Horario inválido: Tarde de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
+        return;
+      }
+      if (mS && mE && aS && aE && mE > aS) {
+        alert(`Horario inválido: Mañana y tarde de ${this.days[d]} se solapan`);
+        return;
+      }
+
+      if (mS && mE) dtos.push({ dayOfWeek: d, startTime: `${mS}:00`, endTime: `${mE}:00` });
+      if (aS && aE) dtos.push({ dayOfWeek: d, startTime: `${aS}:00`, endTime: `${aE}:00` });
+    }
+
+    try {
+      await firstValueFrom(this.profileService.replaceWorkingHours(this.userId, dtos));
+      alert('Horario guardado con éxito');
+    } catch (err) {
+      console.error('Error guardando horario', err);
+      alert('No se pudo guardar el horario. Intenta nuevamente.');
+    }
   }
 
   tryInitAutocomplete() {
@@ -95,30 +274,6 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
       const place = autocomplete.getPlace();
       const location = place.formatted_address;
       this.professionalForm.patchValue({ location });
-    });
-  }
-
-  buildForms() {
-    this.personalForm = this.fb.group({
-      name: [''],
-      last_name: [''],
-      phone: ['']
-    });
-
-    this.professionalForm = this.fb.group({
-      specialty: [''],
-      location: [''],
-      consultationDuration: [0],
-      consultationPrice: [0],
-      document: [''],
-      description: ['']
-    });
-  }
-
-  loadProfile() {
-    this.profileService.getProfile(this.userId).subscribe(profile => {
-      this.profile = profile;
-      this.professionalForm.patchValue(profile);
     });
   }
 
@@ -150,7 +305,8 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     const file = event.target.files[0];
     if (file) {
       this.documentFile = file;
-  
+      this.uploadedDocumentName = file.name;
+
       this.userService.uploadToImgBB(file).subscribe({
         next: (url: string) => {
           this.professionalForm.patchValue({ document: url });
@@ -174,111 +330,14 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
-  savePersonal() {
-    const data = this.personalForm.value;
-    this.userService.updateMe(data).subscribe(() => {
-      this.user = { ...this.user, ...data };
-      this.editMode = false;
-    });
-  }
-
-  saveProfessional() {
-    const data = this.professionalForm.value;
-    this.profileService.updateProfile(this.userId, data).subscribe(() => {
-      this.profile = { ...this.profile, ...data };
-      this.editMode = false;
-    });
-  }
-
-  private buildScheduleForm() {
-    const group: any = {};
-    for (let d = 0; d < 7; d++) {
-      group[`enabled_${d}`] = [false];
-      group[`morningStart_${d}`] = [''];
-      group[`morningEnd_${d}`] = [''];
-      group[`afternoonStart_${d}`] = [''];
-      group[`afternoonEnd_${d}`] = [''];
-    }
-    this.scheduleForm = this.fb.group(group);
-  }
-
-  private async loadProfileAndHours() {
-    try {
-      const profile = await firstValueFrom(this.profileService.getProfile(this.userId));
-      this.consultationDuration = profile.consultationDuration;
-
-      const whs = await firstValueFrom(this.profileService.getWorkingHours(this.userId));
-      whs.forEach(wh => {
-        const d = wh.dayOfWeek;
-        this.scheduleForm.patchValue({ [`enabled_${d}`]: true });
-        const start = wh.startTime.slice(0, 5);
-        const end = wh.endTime.slice(0, 5);
-        if (start < '12:00') {
-          this.scheduleForm.patchValue({
-            [`morningStart_${d}`]: start,
-            [`morningEnd_${d}`]: end
-          });
-        } else {
-          this.scheduleForm.patchValue({
-            [`afternoonStart_${d}`]: start,
-            [`afternoonEnd_${d}`]: end
-          });
-        }
-      });
-    } catch (err) {
-      console.error('Error cargando perfil o franjas', err);
-    }
-  }
-
-  async saveSchedule() {
-    const dtos: WorkingHourDTO[] = [];
-  
-    for (let d = 0; d < 7; d++) {
-      if (!this.scheduleForm.value[`enabled_${d}`]) continue;
-  
-      const mS = this.scheduleForm.value[`morningStart_${d}`];
-      const mE = this.scheduleForm.value[`morningEnd_${d}`];
-      const aS = this.scheduleForm.value[`afternoonStart_${d}`];
-      const aE = this.scheduleForm.value[`afternoonEnd_${d}`];
-  
-      // Validación de rangos individuales
-      if (mS && mE && mS > mE) {
-        alert(`Horario inválido: Mañana de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
-        return;
-      }
-      if (aS && aE && aS > aE) {
-        alert(`Horario inválido: Tarde de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
-        return;
-      }
-  
-      // Validación de solapamiento entre mañana y tarde
-      if (mS && mE && aS && aE && mE > aS) {
-        alert(`Horario inválido: Mañana y tarde de ${this.days[d]} se solapan`);
-        return;
-      }
-  
-      // Construcción segura de franjas
-      if (mS && mE) dtos.push({ dayOfWeek: d, startTime: `${mS}:00`, endTime: `${mE}:00` });
-      if (aS && aE) dtos.push({ dayOfWeek: d, startTime: `${aS}:00`, endTime: `${aE}:00` });
-    }
-  
-    try {
-      await firstValueFrom(this.profileService.replaceWorkingHours(this.userId, dtos));
-      alert('Horario guardado con éxito');
-    } catch (err) {
-      console.error('Error guardando horario', err);
-      alert('No se pudo guardar el horario. Intenta nuevamente.');
-    }
-  }
-
   get groupedWorkingHours(): { day: string, slots: { start: string, end: string }[] }[] {
     const daysMap: { [key: number]: string } = {
       0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves',
       4: 'Viernes', 5: 'Sábado', 6: 'Domingo'
     };
-  
+
     const grouped: { [day: string]: { start: string, end: string }[] } = {};
-  
+
     this.profile?.workingHours?.forEach(slot => {
       const dayName = daysMap[slot.dayOfWeek];
       if (!grouped[dayName]) grouped[dayName] = [];
@@ -287,7 +346,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
         end: slot.endTime.slice(0, 5)
       });
     });
-  
+
     return Object.entries(grouped).map(([day, slots]) => ({ day, slots }));
   }
 }

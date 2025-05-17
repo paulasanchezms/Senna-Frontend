@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { PsychologistProfilePageRoutingModule } from './psychologist-profile-routing.module';
 
 import { PsychologistProfilePage } from './psychologist-profile.page';
+import { PsychologistNavbarPageModule } from '../psychologist-navbar/psychologist-navbar.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { PsychologistProfilePage } from './psychologist-profile.page';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    PsychologistProfilePageRoutingModule
+    PsychologistProfilePageRoutingModule,
+    PsychologistNavbarPageModule
   ],
   declarations: [PsychologistProfilePage]
 })
