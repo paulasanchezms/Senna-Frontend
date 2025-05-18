@@ -8,9 +8,21 @@
 </ion-header>
 
 <ion-content class="p-4 bg-white space-y-4 rounded-b-lg">
+  
+  <p class="text-xs text-gray-500 italic mt-1">
+    {{ isCustomDate
+      ? 'Estás editando un horario personalizado para este día.'
+      : 'Estás usando tu horario habitual de los ' + days[dayOfWeek].toLowerCase() + '.' }}
+  </p>
+
+  <!-- Toggle para trabajar este día -->
+  <div class="flex items-center gap-2 mt-2">
+    <ion-toggle [(ngModel)]="isDayEnabled" class="text-peach"></ion-toggle>
+    <label class="text-sm font-medium text-gray-700">Trabaja este día</label>
+  </div>
 
   <!-- Lista editable de franjas -->
-  <div class="space-y-2">
+  <div *ngIf="isDayEnabled" class="space-y-2">
     <div *ngFor="let hour of workingHoursForDay; let i = index" class="flex items-center space-x-2">
       <ion-input type="time" [(ngModel)]="hour.startTime"
                  class="border bg-lightPeach rounded px-2 py-1 flex-1 text-center text-sm"></ion-input>
@@ -20,18 +32,17 @@
         <ion-icon name="trash"></ion-icon>
       </ion-button>
     </div>
-  </div>
 
-  <!-- Botón añadir nueva franja -->
-  <ion-button fill="clear"
-    (click)="addEmptyRow()"
-    class="border border-dashed border-lavender text-lavender rounded-lg py-2 w-full text-sm font-semibold">
-    + Añadir nueva franja
-  </ion-button>
+    <!-- Botón añadir nueva franja -->
+    <ion-button fill="clear"
+      (click)="addEmptyRow()"
+      class="border border-dashed border-lavender text-lavender rounded-lg py-2 w-full text-sm font-semibold">
+      + Añadir nueva franja
+    </ion-button>
+  </div>
 
   <!-- Botón guardar todas -->
   <ion-button expand="block" class="bg-lavender text-white rounded-lg py-3 font-semibold" (click)="saveAll()">
     Guardar cambios
   </ion-button>
-
 </ion-content>

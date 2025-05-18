@@ -1,3 +1,4 @@
+// schedule-appointment.page.ts
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppointmentDTO } from 'src/app/models/appointment';
@@ -29,6 +30,9 @@ export class ScheduleAppointmentPage {
     private userService: UserService
   ) {}
 
+  days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+
   ionViewWillEnter() {
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
     this.selectedDate = new Date().toISOString().slice(0, 10);
@@ -37,21 +41,41 @@ export class ScheduleAppointmentPage {
   }
 
   onDateChange() {
+    if (!this.weeklyAvailability[this.selectedDate]) {
+      const selected = new Date(this.selectedDate);
+      const start = new Date(selected);
+      const end = new Date(selected);
+      end.setDate(end.getDate() + 6);
+
+      const startDate = start.toISOString().split('T')[0];
+      const endDate = end.toISOString().split('T')[0];
+
+      this.appointmentService.getAvailableTimesForWeek(this.psychologistId, startDate, endDate).subscribe({
+        next: (data) => {
+          this.weeklyAvailability = { ...this.weeklyAvailability, ...data };
+          this.refreshAvailableTimes();
+        },
+        error: (err) => {
+          console.error('Error al cargar disponibilidad adicional', err);
+          this.availableTimes = [];
+        },
+      });
+    } else {
+      this.refreshAvailableTimes();
+    }
+  }
+
+  refreshAvailableTimes() {
     const allTimes = this.weeklyAvailability[this.selectedDate] || [];
     const now = new Date();
     const selectedDay = new Date(this.selectedDate + 'T00:00:00');
 
     this.availableTimes = allTimes.filter((time) => {
-      const [hh, mm] = time.split(':').map(Number);
       const slotDateTime = new Date(this.selectedDate + 'T' + time + ':00');
-
-      if (slotDateTime < now) return false;
-
       if (selectedDay.toDateString() === now.toDateString()) {
         return slotDateTime.getTime() >= now.getTime() + 60 * 60 * 1000;
       }
-
-      return true;
+      return slotDateTime > now;
     });
   }
 
@@ -68,7 +92,7 @@ export class ScheduleAppointmentPage {
     const end = new Date(today);
     end.setDate(end.getDate() + 6);
 
-    const startDate = start.toISOString().split('T')[0]; // YYYY-MM-DD
+    const startDate = start.toISOString().split('T')[0];
     const endDate = end.toISOString().split('T')[0];
 
     this.appointmentService
@@ -76,10 +100,7 @@ export class ScheduleAppointmentPage {
       .subscribe({
         next: (data) => {
           this.weeklyAvailability = data;
-
-          // Verifica que la fecha seleccionada existe en la disponibilidad
-          console.log('Disponibilidad cargada:', data);
-          this.onDateChange(); // refresca los horarios disponibles del día actual
+          this.onDateChange();
         },
         error: (err) => {
           console.error('Error al cargar disponibilidad semanal', err);
@@ -103,7 +124,6 @@ export class ScheduleAppointmentPage {
       return;
     }
 
-    // Ajustar para que se mantenga la hora local
     const adjustedDate = new Date(
       dateTime.getTime() - dateTime.getTimezoneOffset() * 60000
     );
@@ -134,4 +154,5 @@ export class ScheduleAppointmentPage {
       .toString()
       .padStart(2, '0')}`;
   }
+
 }

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
-import { WorkingHourDTO } from '../../services/working-hour.service'; // solo para fallback
+import { WorkingHourDTO } from '../../services/working-hour.service';
 import { WorkingHourCustomDTO } from 'src/app/models/working-hour-custom';
 import { WorkingHourCustomService } from 'src/app/services/working-hour-custom.service';
 
@@ -13,12 +13,15 @@ import { WorkingHourCustomService } from 'src/app/services/working-hour-custom.s
 export class WorkingHourModalPage implements OnInit {
   @Input() userId!: number;
   @Input() allHours: WorkingHourDTO[] = [];
-  @Input() selectedDate!: string; // YYYY-MM-DD
+  @Input() selectedDate!: string; // 'YYYY-MM-DD'
   @Input() dayOfWeek!: number; // 0-6 (lunes a domingo)
 
   days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   selectedDay = 0;
   workingHoursForDay: WorkingHourCustomDTO[] = [];
+
+  isCustomDate = false;
+  isDayEnabled = true;
 
   constructor(
     private customWhService: WorkingHourCustomService,
@@ -34,23 +37,22 @@ export class WorkingHourModalPage implements OnInit {
   loadHoursForDate(date: string) {
     this.customWhService.getCustomHours(this.userId, date).subscribe(customHours => {
       if (customHours.length > 0) {
+        this.isCustomDate = true;
+        this.isDayEnabled = true;
         this.workingHoursForDay = customHours.map(h => ({
           startTime: h.startTime.slice(0, 5),
           endTime: h.endTime.slice(0, 5),
         }));
       } else {
-        this.workingHoursForDay = this.allHours
-          .filter(h => h.dayOfWeek === this.selectedDay)
-          .map(h => ({
-            startTime: h.startTime.slice(0, 5),
-            endTime: h.endTime.slice(0, 5),
-          }));
+        const fallback = this.allHours.filter(h => h.dayOfWeek === this.dayOfWeek);        this.isCustomDate = false;
+        this.isDayEnabled = fallback.length > 0;
+        this.workingHoursForDay = fallback.map(h => ({
+          startTime: h.startTime.slice(0, 5),
+          endTime: h.endTime.slice(0, 5),
+        }));
+        console.log('Fallback hours for day:', fallback);
       }
     });
-  }
-
-  selectDay(index: number) {
-    this.selectedDay = index;
   }
 
   addEmptyRow() {
@@ -67,13 +69,19 @@ export class WorkingHourModalPage implements OnInit {
   async saveAll() {
     if (!this.selectedDate) return;
 
+    if (!this.isDayEnabled) {
+      await this.customWhService.replaceCustomHours(this.userId, this.selectedDate, []).toPromise();
+      this.modalCtrl.dismiss({ status: 'saved' });
+      return;
+    }
+
     for (const [i, hour] of this.workingHoursForDay.entries()) {
       if (!hour.startTime || !hour.endTime) {
         this.showToast(`Franja ${i + 1}: completa ambas horas.`);
         return;
       }
       if (hour.startTime >= hour.endTime) {
-        this.showToast(`Franja ${i + 1}: hora de inicio debe ser menor.`);
+        this.showToast(`Franja ${i + 1}: la hora de inicio debe ser menor.`);
         return;
       }
     }

@@ -1,27 +1,35 @@
 <ion-header>
   <ion-toolbar class="bg-lightPeach">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/search-psychologist" class="text-lavender"></ion-back-button>
+      <ion-back-button
+        defaultHref="/search-psychologist"
+        class="text-lavender"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title class="text-lavender font-bold">Reservar cita</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="bg-lightPeach p-4 flex flex-col">
-
   <!-- 1) CALENDARIO -->
   <div class="mb-4 flex justify-center">
     <ion-datetime
       presentation="date"
+      locale="es-ES"
       [(ngModel)]="selectedDate"
       (ionChange)="onDateChange()"
-      [min]="todayISO" 
+      [min]="todayISO"
+      [firstDayOfWeek]="1"
       class="mx-auto w-11/12 max-w-md rounded-2xl border-2 border-salmon bg-white text-gray-900"
-    ></ion-datetime>
+    >
+    </ion-datetime>
   </div>
 
   <!-- Mensaje si no hay franjas disponibles -->
-  <div *ngIf="availableTimes.length === 0" class="text-center text-gray-600 mb-4">
+  <div
+    *ngIf="availableTimes.length === 0"
+    class="text-center text-gray-600 mb-4"
+  >
     No hay horas disponibles para esta fecha.
   </div>
 
@@ -44,7 +52,9 @@
   </div>
 
   <!-- 3) TARJETA DE SERVICIO -->
-  <div class="bg-white rounded-2xl shadow p-4 flex justify-between items-center mb-4">
+  <div
+    class="bg-white rounded-2xl shadow p-4 flex justify-between items-center mb-4"
+  >
     <div>
       <p class="text-lg font-bold text-gray-900">
         Consulta de {{ psychologist?.name }} {{ psychologist?.last_name }}

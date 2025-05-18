@@ -10,6 +10,8 @@ import { DateClickArg } from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
+import { WorkingHourCustomService } from 'src/app/services/working-hour-custom.service';
+import { WorkingHourCustomDTO } from 'src/app/models/working-hour-custom';
 
 @Component({
   standalone:false,
@@ -50,11 +52,19 @@ export class CalendarPage {
   private userId!: number;
   public allHours: WorkingHourDTO[] = [];
 
+  isCustomDate = false;
+  isDayEnabled = true;
+  workingHoursForDay: WorkingHourCustomDTO[] = [];
+  selectedDay = 0;
+
+
   constructor(
     private appointmentService: AppointmentService,
     private modalCtrl: ModalController,
     private userService: UserService,
-    private workingHourService: WorkingHourService
+    private workingHourService: WorkingHourService,
+    private customWhService: WorkingHourCustomService
+
   ) {}
 
   ionViewWillEnter() {
@@ -95,6 +105,7 @@ export class CalendarPage {
   loadWorkingHours() {
     this.workingHourService.getWorkingHours(this.userId).subscribe((hours: WorkingHourDTO[]) => {
       this.allHours = hours;
+      this.highlightWorkingDays();
       this.updateCalendarSlotTimes();
     });
   }
@@ -125,6 +136,7 @@ export class CalendarPage {
   }
 
   async handleDateClick(info: DateClickArg) {
+    console.log('Fecha clicada:', info.date); 
     const date = new Date(info.date);
     const jsDay = date.getDay();
     const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
@@ -135,6 +147,7 @@ export class CalendarPage {
         userId: this.userId,
         dayOfWeek: dayOfWeek,
         selectedDate: date.toISOString().split('T')[0],
+        allHours: this.allHours
       }
     });
     await modal.present();
@@ -185,4 +198,68 @@ export class CalendarPage {
       });
     }
   }
+
+  highlightWorkingDays() {
+    const defaultWorkingDays = new Set(this.allHours.map(h => h.dayOfWeek));
+  
+    const daysInCurrentWeek = this.getCurrentWeekDates();
+    const backgroundEvents = daysInCurrentWeek.map(({ date, dayOfWeek }) => {
+      const isWorking = defaultWorkingDays.has(dayOfWeek);
+      return {
+        start: date,
+        display: 'background',
+        backgroundColor: isWorking ? '#d4f5e9' : '#fcd5d5',
+        end: date,
+        allDay: true
+      };
+    });
+  
+    const existingEvents = Array.isArray(this.calendarOptions.events)
+    ? this.calendarOptions.events
+    : [];
+
+  this.calendarOptions = {
+    ...this.calendarOptions,
+    events: [...existingEvents, ...backgroundEvents]
+  };
+  }
+  
+  getCurrentWeekDates(): { date: string; dayOfWeek: number }[] {
+    const today = new Date();
+    const start = today.getDate() - today.getDay();
+    const dates: { date: string; dayOfWeek: number }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(start + i + 1);
+      dates.push({
+        date: d.toISOString().split('T')[0],
+        dayOfWeek: i
+      });
+    }
+    return dates;
+  }
+  
+  // 2. WorkingHourModalPage.ts - forzar toggle activo si hay horario por defecto y bloquear si no puede trabajar
+  loadHoursForDate(date: string) {
+    this.customWhService.getCustomHours(this.userId, date).subscribe(customHours => {
+      const fallback = this.allHours.filter(h => h.dayOfWeek === this.selectedDay);
+      if (customHours.length > 0) {
+        this.isCustomDate = true;
+        this.isDayEnabled = true;
+        this.workingHoursForDay = customHours.map(h => ({
+          startTime: h.startTime.slice(0, 5),
+          endTime: h.endTime.slice(0, 5),
+        }));
+      } else {
+        this.isCustomDate = false;
+        this.isDayEnabled = fallback.length > 0;
+        this.workingHoursForDay = fallback.map(h => ({
+          startTime: h.startTime.slice(0, 5),
+          endTime: h.endTime.slice(0, 5),
+        }));
+      }
+    });
+  }
+  
+
 }
