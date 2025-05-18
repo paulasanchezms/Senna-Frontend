@@ -134,7 +134,7 @@ export class CalendarPage {
       componentProps: {
         userId: this.userId,
         dayOfWeek: dayOfWeek,
-        allHours: this.allHours
+        selectedDate: date.toISOString().split('T')[0],
       }
     });
     await modal.present();

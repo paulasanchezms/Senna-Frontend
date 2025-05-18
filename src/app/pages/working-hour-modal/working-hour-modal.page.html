@@ -1,25 +1,13 @@
 <ion-header class="flex justify-between items-center px-4 py-2 bg-white shadow rounded-t-lg">
-  <h2 class="font-bold text-lg text-peach">Configura tu horario - {{ days[selectedDay] }}</h2>
+  <h2 class="font-bold text-lg text-peach">
+    Configura tu horario - {{ selectedDate | date:'fullDate':'':'es' }}
+  </h2>
   <ion-button fill="clear" (click)="close()" class="p-0 m-0">
     <ion-icon name="close" size="large"></ion-icon>
   </ion-button>
 </ion-header>
 
 <ion-content class="p-4 bg-white space-y-4 rounded-b-lg">
-
-  <!-- Selector de días -->
-  <div class="flex justify-between space-x-2">
-    <ion-button *ngFor="let day of days; let i = index"
-      [class.bg-lavender]="selectedDay === i"
-      [class.text-white]="selectedDay === i"
-      [class.bg-gray-200]="selectedDay !== i"
-      [class.text-black]="selectedDay !== i"
-      fill="clear"
-      class="flex-1 rounded-full h-10 text-xs font-semibold px-0"
-      (click)="selectDay(i)">
-      {{ day }}
-    </ion-button>
-  </div>
 
   <!-- Lista editable de franjas -->
   <div class="space-y-2">

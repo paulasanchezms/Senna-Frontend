@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   /** Registro de paciente → POST /api/auth/register */
-  register(data: FormData): Observable<AuthResponse> {
+  register(data: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
       `${this.baseUrl}/register`,
       data
