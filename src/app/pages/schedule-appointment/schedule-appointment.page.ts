@@ -5,6 +5,7 @@ import { AppointmentDTO } from 'src/app/models/appointment';
 import { AppointmentService } from 'src/app/services/appointment.service';
 import { UserService } from 'src/app/services/user.service';
 import { UserResponseDTO } from 'src/app/models/user';
+import { PsychologistProfile } from 'src/app/models/psychologist-profile';
 
 @Component({
   standalone: false,
@@ -19,6 +20,7 @@ export class ScheduleAppointmentPage {
   duration: number = 60;
   description: string = '';
   todayISO = new Date().toISOString().split('T')[0];
+  profile!: PsychologistProfile;
 
   weeklyAvailability: { [date: string]: string[] } = {};
   availableTimes: string[] = [];
@@ -81,7 +83,15 @@ export class ScheduleAppointmentPage {
 
   loadPsychologist() {
     this.userService.getPsychologistById(this.psychologistId).subscribe({
-      next: (data) => (this.psychologist = data),
+      next: (data) => {
+        this.psychologist = data;
+        if (data.profile) {
+          this.profile = data.profile;
+          this.duration = this.profile.consultationDuration;
+        } else {
+          console.warn('El psicólogo no tiene perfil configurado');
+        }
+      },
       error: (err) => console.error('Error cargando psicólogo', err),
     });
   }

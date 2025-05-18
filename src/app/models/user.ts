@@ -1,3 +1,5 @@
+import { PsychologistProfile } from "./psychologist-profile";
+
 export interface UserResponseDTO {
     id_user: number;
     name: string;
@@ -6,6 +8,7 @@ export interface UserResponseDTO {
     role: 'PATIENT' | 'PSYCHOLOGIST' | 'ADMIN'; 
     phone?: string;
     photoUrl?: string;
+    profile?: PsychologistProfile;
 
     // Solo si es psicólogo
     dni?: string;
