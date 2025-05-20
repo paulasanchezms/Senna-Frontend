@@ -67,7 +67,7 @@ export class SearchPsychologistPage implements OnInit {
     }
   }
 
-  goToPsychologistSchedule(id_user: number) {
-    this.router.navigate(['/schedule-appointment', id_user]);
+  goToPublicProfile(id_user: number) {
+    this.router.navigate(['/psychologist-public', id_user]);
   }
 }

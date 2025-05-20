@@ -349,4 +349,6 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
 
     return Object.entries(grouped).map(([day, slots]) => ({ day, slots }));
   }
+
+  
 }

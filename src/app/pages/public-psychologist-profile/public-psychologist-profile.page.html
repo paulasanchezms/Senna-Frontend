@@ -1,0 +1,48 @@
+<!-- public-psychologist-profile.page.html -->
+<ion-content class="bg-lightPeach min-h-screen w-full p-4 flex justify-center items-center">
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-4xl space-y-6">
+
+    <!-- Perfil del psicólogo -->
+    <div class="flex items-center space-x-4">
+      <img
+        [src]="psychologist?.photoUrl || defaultAvatar"
+        alt="Foto de perfil"
+        class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
+      />
+      <div>
+        <h2 class="text-2xl font-bold text-lavender">{{ psychologist?.name }} {{ psychologist?.last_name }}</h2>
+        <p class="text-sm text-gray-600">{{ psychologist?.email }}</p>
+        <p class="text-sm text-gray-600">{{ psychologist?.phone || 'Teléfono no disponible' }}</p>
+      </div>
+    </div>
+
+    <!-- Datos profesionales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800">
+      <div>
+        <p><strong>Especialidad:</strong> {{ psychologist?.profile?.specialty || 'No disponible' }}</p>
+        <p><strong>Descripción:</strong> {{ psychologist?.profile?.description || 'No disponible' }}</p>
+      </div>
+      <div>
+        <p><strong>Ubicación:</strong> {{ psychologist?.profile?.location || 'No disponible' }}</p>
+        <p><strong>Precio consulta:</strong> {{ psychologist?.profile?.consultationPrice }} €</p>
+        <p><strong>Duración:</strong> {{ psychologist?.profile?.consultationDuration }} min</p>
+      </div>
+    </div>
+
+    <!-- Foro de valoraciones (placeholder) -->
+    <div class="mt-6">
+      <h3 class="text-lg font-semibold text-coral mb-2">Valoraciones y Reseñas</h3>
+      <div class="text-sm text-gray-600 italic">
+        Este profesional aún no tiene reseñas. Pronto podrás leer experiencias de otros pacientes.
+      </div>
+    </div>
+
+  </div>
+
+  <ion-button
+  expand="block"
+  class="bg-peach text-white font-semibold rounded-xl mt-6 hover:opacity-90"
+  (click)="goToPsychologistSchedule(psychologist.id_user)">
+  Solicitar cita con {{ psychologist.name }}
+</ion-button>
+</ion-content>
