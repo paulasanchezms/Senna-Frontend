@@ -31,7 +31,7 @@
       class="bg-white rounded-2xl shadow hover:shadow-lg cursor-pointer flex overflow-hidden"
     >
       <img
-        [src]="psy.profileImageUrl || 'assets/default-avatar.png'"
+        [src]="psy.photoUrl || 'assets/default-avatar.png'"
         alt="Foto del psicólogo"
         class="w-32 h-32 object-cover"
       />
@@ -39,7 +39,10 @@
         <div>
           <h3 class="text-lg font-bold text-gray-800">{{ psy.name }} {{ psy.last_name }}</h3>
           <p class="text-sm text-gray-500">
-            {{ psy.location || 'Ubicación no disponible' }}
+            {{ psy.profile?.specialty || 'Especialidad no disponible' }}
+          </p>
+          <p class="text-sm text-gray-500">
+            {{ psy.profile?.location || 'Ubicación no disponible' }}
           </p>
         </div>
         <div class="text-sm text-gray-600 mt-2">
