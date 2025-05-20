@@ -22,13 +22,10 @@ export class PublicPsychologistProfilePage implements OnInit {
   comment = '';
 
   reviewsPerPage = 5;
-  currentPage = 1;
-
   reviews: ReviewDTO[] = [];
-
-  averageRating: number = 0;
   visibleReviews: ReviewDTO[] = [];
   pageSize = 5;
+  averageRating = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,21 +36,19 @@ export class PublicPsychologistProfilePage implements OnInit {
 
   ngOnInit() {
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
-
     this.userService.getPsychologistById(this.psychologistId).subscribe({
       next: (data) => (this.psychologist = data),
     });
-
     this.loadReviews();
   }
 
   setRating(value: number) {
-    this.rating = value;
+    if (!this.hasRated) this.rating = value;
   }
 
   submitReview() {
     if (!this.rating || !this.comment.trim()) return;
-  
+
     this.reviewService
       .createReview({
         psychologistId: this.psychologistId,
@@ -63,21 +58,18 @@ export class PublicPsychologistProfilePage implements OnInit {
       .subscribe({
         next: (newReview) => {
           this.hasRated = true;
-  
-          // Actualiza la lista de reseñas localmente
+          this.comment = '';
+          this.rating = 0;
+
           const reviewToAdd: ReviewDTO = {
             ...newReview,
             createdAt: new Date().toISOString(),
-            patientName: 'Tú' // O el nombre real si lo tienes disponible
+            patientName: 'Tú'
           };
-  
+
           this.reviews.unshift(reviewToAdd);
-          this.visibleReviews = this.reviews.slice(0, this.visibleReviews.length + 1);
+          this.visibleReviews = this.reviews.slice(0, this.pageSize);
           this.calculateAverageRating();
-  
-          // Limpia los campos
-          this.comment = '';
-          this.rating = 0;
         },
         error: (err) => {
           console.error(err);
@@ -88,9 +80,14 @@ export class PublicPsychologistProfilePage implements OnInit {
 
   loadReviews() {
     this.reviewService.getReviews(this.psychologistId).subscribe((res) => {
-      this.reviews = res;
+      this.reviews = res.filter(r => r.comment?.trim() && r.rating);
       this.visibleReviews = this.reviews.slice(0, this.pageSize);
       this.calculateAverageRating();
+  
+      const youAlreadyRated = this.reviews.some(r => r.patientName === 'Tú');
+      if (youAlreadyRated) {
+        this.hasRated = true;
+      }
     });
   }
 
@@ -100,7 +97,7 @@ export class PublicPsychologistProfilePage implements OnInit {
   }
 
   calculateAverageRating() {
-    if (this.reviews.length === 0) {
+    if (!this.reviews.length) {
       this.averageRating = 0;
       return;
     }

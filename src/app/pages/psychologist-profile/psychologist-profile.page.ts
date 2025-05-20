@@ -6,6 +6,8 @@ import { UserResponseDTO } from '../../models/user';
 import { PsychologistProfile } from '../../models/psychologist-profile';
 import { WorkingHourDTO } from 'src/app/models/working-hour';
 import { firstValueFrom } from 'rxjs';
+import { ReviewService } from 'src/app/services/review.service';
+import { ReviewDTO } from 'src/app/models/review';
 
 declare var google: any;
 
@@ -36,13 +38,18 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   private _activeTab: 'personal' | 'professional' = 'personal';
 
   days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  reviews: ReviewDTO[] = [];
+  visibleReviews: ReviewDTO[] = [];
+  averageRating: number = 0;
+  pageSize: number = 5;
 
   @ViewChild('locationInput') locationInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private userService: UserService,
     private profileService: PsychologistProfileService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private reviewService: ReviewService
   ) {}
 
   ngOnInit() {
@@ -54,6 +61,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
       this.buildScheduleForm();
       this.loadProfile();
       this.loadProfileAndHours();
+      this.loadReviews();
     });
   }
 
@@ -350,5 +358,32 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     return Object.entries(grouped).map(([day, slots]) => ({ day, slots }));
   }
 
+  loadReviews() {
+    if (!this.user?.id_user) return;
+    this.reviewService.getReviews(this.user.id_user).subscribe({
+      next: (res) => {
+        this.reviews = res;
+        this.visibleReviews = this.reviews.slice(0, this.pageSize);
+        this.calculateAverageRating();
+      },
+      error: (err) => {
+        console.error('Error cargando valoraciones', err);
+      }
+    });
+  }
+
+  showMoreReviews() {
+    const next = this.visibleReviews.length + this.pageSize;
+    this.visibleReviews = this.reviews.slice(0, next);
+  }
+
+  calculateAverageRating() {
+    if (this.reviews.length === 0) {
+      this.averageRating = 0;
+      return;
+    }
+    const total = this.reviews.reduce((sum, r) => sum + r.rating, 0);
+    this.averageRating = total / this.reviews.length;
+  }
   
 }
