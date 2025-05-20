@@ -16,12 +16,21 @@ export class SearchPsychologistPage implements OnInit {
   constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit() {
+    console.log('Componente search cargado');
+
     this.loadPsychologists();
   }
 
   loadPsychologists() {
-    this.userService.getPsychologists().subscribe((data) => {
-      this.psychologists = data;
+    console.log('Cargando psicólogos...');
+    this.userService.getPsychologists().subscribe({
+      next: (data) => {
+        console.log('Datos recibidos:', data);
+        this.psychologists = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener psicólogos:', err);
+      }
     });
   }
 

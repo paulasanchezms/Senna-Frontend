@@ -35,10 +35,22 @@ export class PublicPsychologistProfilePage implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('Cargando perfil público de psicólogo...');
+  console.log('Token actual:', localStorage.getItem('authToken'));
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
+  
     this.userService.getPsychologistById(this.psychologistId).subscribe({
-      next: (data) => (this.psychologist = data),
+      next: (data) => {
+        this.psychologist = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener psicólogo:', err);
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        }
+      }
     });
+  
     this.loadReviews();
   }
 
@@ -79,14 +91,22 @@ export class PublicPsychologistProfilePage implements OnInit {
   }
 
   loadReviews() {
-    this.reviewService.getReviews(this.psychologistId).subscribe((res) => {
-      this.reviews = res.filter(r => r.comment?.trim() && r.rating);
-      this.visibleReviews = this.reviews.slice(0, this.pageSize);
-      this.calculateAverageRating();
-  
-      const youAlreadyRated = this.reviews.some(r => r.patientName === 'Tú');
-      if (youAlreadyRated) {
-        this.hasRated = true;
+    this.reviewService.getReviews(this.psychologistId).subscribe({
+      next: (res) => {
+        this.reviews = res.filter(r => r.comment?.trim() && r.rating);
+        this.visibleReviews = this.reviews.slice(0, this.pageSize);
+        this.calculateAverageRating();
+    
+        const youAlreadyRated = this.reviews.some(r => r.patientName === 'Tú');
+        if (youAlreadyRated) {
+          this.hasRated = true;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar reseñas:', err);
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }

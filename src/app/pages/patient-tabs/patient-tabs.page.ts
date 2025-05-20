@@ -13,10 +13,7 @@ export class PatientTabsPage implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.isPatient = this.authService.getRole() === 'PATIENT';
-    if (!this.isPatient) {
-      this.router.navigate(['/unauthorized']);
-    }
+   
   }
 
   navigateTo(route: string) {

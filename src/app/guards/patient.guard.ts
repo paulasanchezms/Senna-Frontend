@@ -11,6 +11,8 @@ export class PatientGuard implements CanActivate {
 
   canActivate(): boolean {
     const role = this.authService.getRole();
+    console.log('ROLE en PatientGuard:', role);
+
     if (role === 'PATIENT') {
       return true;
     } else {
