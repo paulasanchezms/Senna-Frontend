@@ -14,9 +14,8 @@ import { ReviewDTO } from 'src/app/models/review';
 export class PublicPsychologistProfilePage implements OnInit {
   psychologistId!: number;
   psychologist!: UserResponseDTO;
-  defaultAvatar = 'assets/default-avatar.png';
+  defaultAvatar = 'assets/default-avatar.png'; // Asegúrate de que existe
 
-  // Valoración
   hasRated = false;
   rating = 0;
   comment = '';
@@ -36,9 +35,10 @@ export class PublicPsychologistProfilePage implements OnInit {
 
   ngOnInit() {
     console.log('Cargando perfil público de psicólogo...');
-  console.log('Token actual:', localStorage.getItem('authToken'));
+    console.log('Token actual:', localStorage.getItem('authToken'));
+
     this.psychologistId = +this.route.snapshot.paramMap.get('id')!;
-  
+
     this.userService.getPsychologistById(this.psychologistId).subscribe({
       next: (data) => {
         this.psychologist = data;
@@ -50,8 +50,14 @@ export class PublicPsychologistProfilePage implements OnInit {
         }
       }
     });
-  
+
     this.loadReviews();
+  }
+
+  parseDateString(dateStr: string): string {
+    const [datePart, timePart] = dateStr.split(' ');
+    const [day, month, year] = datePart.split('/');
+    return new Date(`${year}-${month}-${day}T${timePart}`).toISOString();
   }
 
   setRating(value: number) {
@@ -93,10 +99,16 @@ export class PublicPsychologistProfilePage implements OnInit {
   loadReviews() {
     this.reviewService.getReviews(this.psychologistId).subscribe({
       next: (res) => {
-        this.reviews = res.filter(r => r.comment?.trim() && r.rating);
+        this.reviews = res
+          .filter(r => r.comment?.trim() && r.rating)
+          .map(r => ({
+            ...r,
+            createdAt: this.parseDateString(r.createdAt)
+          }));
+
         this.visibleReviews = this.reviews.slice(0, this.pageSize);
         this.calculateAverageRating();
-    
+
         const youAlreadyRated = this.reviews.some(r => r.patientName === 'Tú');
         if (youAlreadyRated) {
           this.hasRated = true;

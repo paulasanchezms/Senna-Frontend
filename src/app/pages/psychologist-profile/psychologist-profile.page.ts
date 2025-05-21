@@ -362,7 +362,10 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     if (!this.user?.id_user) return;
     this.reviewService.getReviews(this.user.id_user).subscribe({
       next: (res) => {
-        this.reviews = res;
+        this.reviews = res.map(r => ({
+          ...r,
+          createdAt: this.parseDateString(r.createdAt)
+        }));
         this.visibleReviews = this.reviews.slice(0, this.pageSize);
         this.calculateAverageRating();
       },
@@ -370,6 +373,13 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
         console.error('Error cargando valoraciones', err);
       }
     });
+  }
+  
+  parseDateString(dateStr: string): string {
+    if (dateStr.includes('T')) return dateStr; // ya es ISO
+    const [datePart, timePart] = dateStr.split(' ');
+    const [day, month, year] = datePart.split('/');
+    return new Date(`${year}-${month}-${day}T${timePart}`).toISOString();
   }
 
   showMoreReviews() {

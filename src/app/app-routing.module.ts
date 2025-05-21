@@ -49,7 +49,8 @@ const routes: Routes = [
   },
   {
     path: 'psychologist-public/:id',
-    loadChildren: () => import('./pages/public-psychologist-profile/public-psychologist-profile.module').then(m => m.PublicPsychologistProfilePageModule)
+    loadChildren: () => import('./pages/public-psychologist-profile/public-psychologist-profile.module').then(m => m.PublicPsychologistProfilePageModule),
+    canActivate: [PatientGuard]
   },
 
   // RUTAS DE PSYCHOLOGIST protegidas por PsychologistGuard

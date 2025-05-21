@@ -3,13 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/patient"></ion-back-button>
     </ion-buttons>
-    <ion-title class="text-lavender font-semibold"
-      >Perfil del psicólogo</ion-title
-    >
+    <ion-title class="text-lavender font-semibold">Perfil del psicólogo</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen class="bg-lightPeach font-peachy">
+<ion-content *ngIf="psychologist; else loading" fullscreen class="bg-lightPeach font-peachy">
   <div class="max-w-4xl mx-auto px-4 py-6 pb-36">
     <!-- Perfil -->
     <div class="bg-white rounded-2xl shadow-xl p-6 flex gap-6 items-center">
@@ -32,26 +30,11 @@
     <!-- Info profesional -->
     <div class="mt-6 bg-white rounded-2xl shadow p-6 space-y-2 text-gray-700">
       <h3 class="text-xl font-semibold text-peach">Información profesional</h3>
-      <p>
-        <strong>Especialidad:</strong> {{ psychologist?.profile?.specialty ||
-        'No disponible' }}
-      </p>
-      <p>
-        <strong>Descripción:</strong> {{ psychologist?.profile?.description ||
-        'No disponible' }}
-      </p>
-      <p>
-        <strong>Ubicación:</strong> {{ psychologist?.profile?.location || 'No
-        disponible' }}
-      </p>
-      <p>
-        <strong>Duración:</strong> {{
-        psychologist?.profile?.consultationDuration }} minutos
-      </p>
-      <p>
-        <strong>Precio:</strong> {{ psychologist?.profile?.consultationPrice }}
-        €
-      </p>
+      <p><strong>Especialidad:</strong> {{ psychologist?.profile?.specialty || 'No disponible' }}</p>
+      <p><strong>Descripción:</strong> {{ psychologist?.profile?.description || 'No disponible' }}</p>
+      <p><strong>Ubicación:</strong> {{ psychologist?.profile?.location || 'No disponible' }}</p>
+      <p><strong>Duración:</strong> {{ psychologist?.profile?.consultationDuration }} minutos</p>
+      <p><strong>Precio:</strong> {{ psychologist?.profile?.consultationPrice }} €</p>
     </div>
 
     <!-- Valoraciones -->
@@ -64,9 +47,9 @@
           *ngFor="let s of [1,2,3,4,5]"
           [name]="averageRating >= s ? 'star' : 'star-outline'"
         ></ion-icon>
-        <span class="text-sm text-gray-700 ml-2"
-          >({{ averageRating.toFixed(1) }}/5)</span
-        >
+        <span class="text-sm text-gray-700 ml-2">
+          ({{ averageRating.toFixed(1) }}/5)
+        </span>
       </div>
 
       <!-- Formulario -->
@@ -100,10 +83,7 @@
       </div>
 
       <!-- Reseñas -->
-      <div
-        *ngFor="let r of visibleReviews"
-        class="border border-lavender rounded-lg p-4"
-      >
+      <div *ngFor="let r of visibleReviews" class="border border-lavender rounded-lg p-4">
         <div class="flex items-center justify-between">
           <div class="font-semibold text-gray-800">{{ r.patientName }}</div>
           <div class="text-yellow-400">
@@ -132,10 +112,11 @@
   </div>
 </ion-content>
 
-<!-- Footer siempre visible -->
-<ion-footer
-  class="bg-white border-t border-peach shadow-inner fixed bottom-0 left-0 right-0 z-50"
->
+<ng-template #loading>
+  <div class="text-center p-8 text-gray-500">Cargando perfil...</div>
+</ng-template>
+
+<ion-footer *ngIf="psychologist" class="bg-white border-t border-peach shadow-inner fixed bottom-0 left-0 right-0 z-50">
   <ion-toolbar class="p-4">
     <ion-button
       expand="block"
