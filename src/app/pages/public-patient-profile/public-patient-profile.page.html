@@ -1,56 +1,64 @@
-<ion-header class="bg-white shadow">
+<ion-header class="bg-white shadow-md">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/search-patient"></ion-back-button>
+      <ion-back-button defaultHref="/search-patient" class="text-peach"></ion-back-button>
     </ion-buttons>
-    <ion-title class="text-lavender font-semibold">Perfil del paciente</ion-title>
+    <ion-title class="text-lavender font-bold text-lg">Perfil de {{ patient?.name }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="bg-lightPeach min-h-screen flex justify-center items-center">
-  <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md flex flex-col items-center space-y-5">
+<ion-content class="bg-lightPeach flex justify-center items-center min-h-screen">
+  <div class="w-full  p-6">
+    <div class="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6">
 
-    <!-- Imagen de perfil -->
-    <div class="relative">
-      <img
-        [src]="patient?.photoUrl || 'https://ui-avatars.com/api/?name=' + patient?.name + '+' + patient?.last_name"
-        alt="Foto de perfil"
-        class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
-      />
+      <!-- Imagen y nombre -->
+      <div class="flex flex-col md:flex-row items-center md:items-center md:justify-start gap-6">
+        <!-- Imagen -->
+        <div class="flex-shrink-0">
+          <img
+            [src]="patient?.photoUrl || 'https://ui-avatars.com/api/?name=' + patient?.name + '+' + patient?.last_name"
+            alt="Foto de perfil"
+            class="w-32 h-32 rounded-full border-4 border-peach shadow-md object-cover"
+          />
+        </div>
+
+        <!-- Nombre completo -->
+        <div class="text-center md:text-left">
+          <p class="text-3xl font-bold text-salmon">{{ patient?.name }} {{ patient?.last_name }}</p>
+        </div>
+      </div>
+
+      <!-- Datos personales -->
+      <div class="w-full">
+        <h2 class="text-2xl font-peachy text-lavender mb-4">Datos personales</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-semibold text-peach">Email</label>
+            <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-3">
+              {{ patient?.email }}
+            </p>
+          </div>
+
+          <div>
+            <label class="text-sm font-semibold text-peach">Teléfono</label>
+            <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-3">
+              {{ patient?.phone || 'No disponible' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Datos personales -->
-    <div class="w-full flex flex-col space-y-4 text-left">
-      <div>
-        <label class="text-sm font-semibold text-lavender">Nombre</label>
-        <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-2">{{ patient?.name }}</p>
-      </div>
-
-      <div>
-        <label class="text-sm font-semibold text-lavender">Apellidos</label>
-        <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-2">{{ patient?.last_name }}</p>
-      </div>
-
-      <div>
-        <label class="text-sm font-semibold text-lavender">Email</label>
-        <p class="bg-gray-100 text-gray-500 italic border border-peach rounded-xl p-2">{{ patient?.email }}</p>
-      </div>
-
-      <div>
-        <label class="text-sm font-semibold text-lavender">Teléfono</label>
-        <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-2">
-          {{ patient?.phone || 'No disponible' }}
-        </p>
-      </div>
+    <!-- Botón de estadísticas -->
+    <div *ngIf="isPsychologist" class="flex justify-center mt-6">
+      <ion-button
+        expand="block"
+        class="bg-lavender text-white font-semibold text-base rounded-full px-6 py-3 shadow-lg"
+        (click)="goToStatistics()"
+      >
+        Ver estadísticas
+      </ion-button>
     </div>
-
   </div>
-  <ion-button
-  *ngIf="isPsychologist"
-  expand="block"
-  class="mt-4 bg-lavender text-white font-bold rounded-full"
-  (click)="goToStatistics()"
->
-  Ver estadísticas
-</ion-button>
 </ion-content>
