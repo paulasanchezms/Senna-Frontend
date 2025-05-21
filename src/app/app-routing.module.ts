@@ -85,6 +85,17 @@ const routes: Routes = [
     loadChildren: () => import('./pages/psychologist-profile/psychologist-profile.module').then( m => m.PsychologistProfilePageModule),
     canActivate:[PsychologistGuard]
   },
+  
+  {
+    path: 'public-patient-profile/:id',
+    loadChildren: () => import('./pages/public-patient-profile/public-patient-profile.module').then( m => m.PublicPatientProfilePageModule),
+    canActivate:[PsychologistGuard]
+  },
+  {
+    path: 'statistics',
+    loadChildren: () => import('./pages/statistics/statistics.module').then(m => m.StatisticsPageModule),
+    canActivate: [PsychologistGuard]
+  },
 
   // RUTAS GENERALES (si necesitas restricción, añade AuthGuard aquí también)
 

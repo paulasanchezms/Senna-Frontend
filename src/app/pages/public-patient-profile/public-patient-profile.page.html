@@ -1,0 +1,56 @@
+<ion-header class="bg-white shadow">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/search-patient"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-lavender font-semibold">Perfil del paciente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-lightPeach min-h-screen flex justify-center items-center">
+  <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md flex flex-col items-center space-y-5">
+
+    <!-- Imagen de perfil -->
+    <div class="relative">
+      <img
+        [src]="patient?.photoUrl || 'https://ui-avatars.com/api/?name=' + patient?.name + '+' + patient?.last_name"
+        alt="Foto de perfil"
+        class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
+      />
+    </div>
+
+    <!-- Datos personales -->
+    <div class="w-full flex flex-col space-y-4 text-left">
+      <div>
+        <label class="text-sm font-semibold text-lavender">Nombre</label>
+        <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-2">{{ patient?.name }}</p>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-lavender">Apellidos</label>
+        <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-2">{{ patient?.last_name }}</p>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-lavender">Email</label>
+        <p class="bg-gray-100 text-gray-500 italic border border-peach rounded-xl p-2">{{ patient?.email }}</p>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-lavender">Teléfono</label>
+        <p class="bg-gray-100 text-gray-800 border border-peach rounded-xl p-2">
+          {{ patient?.phone || 'No disponible' }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+  <ion-button
+  *ngIf="isPsychologist"
+  expand="block"
+  class="mt-4 bg-lavender text-white font-bold rounded-full"
+  (click)="goToStatistics()"
+>
+  Ver estadísticas
+</ion-button>
+</ion-content>

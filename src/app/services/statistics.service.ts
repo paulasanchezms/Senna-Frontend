@@ -21,10 +21,9 @@ export class StatisticsService {
 
   /**
    * Obtiene estadísticas semanales.
-   * Si year y week están definidos, los envía como query params
-   * para recuperar la semana concreta; si no, trae la semana actual.
+   * Si year, week o patientId están definidos, los envía como query params.
    */
-  getWeeklyStatistics(year?: number, week?: number): Observable<StatisticsResponse> {
+  getWeeklyStatistics(year?: number, week?: number, patientId?: number): Observable<StatisticsResponse> {
     let params = new HttpParams();
     if (year != null) {
       params = params.set('year', year.toString());
@@ -32,21 +31,26 @@ export class StatisticsService {
     if (week != null) {
       params = params.set('week', week.toString());
     }
+    if (patientId != null) {
+      params = params.set('patientId', patientId.toString());
+    }
     return this.http.get<StatisticsResponse>(`${this.baseUrl}/weekly`, { params });
   }
 
   /**
    * Obtiene estadísticas mensuales.
-   * Si year y month están definidos, los envía como query params
-   * para recuperar el mes concreto; si no, trae el mes actual.
+   * Si year, month o patientId están definidos, los envía como query params.
    */
-  getMonthlyStatistics(year?: number, month?: number): Observable<StatisticsResponse> {
+  getMonthlyStatistics(year?: number, month?: number, patientId?: number): Observable<StatisticsResponse> {
     let params = new HttpParams();
     if (year != null) {
       params = params.set('year', year.toString());
     }
     if (month != null) {
       params = params.set('month', month.toString());
+    }
+    if (patientId != null) {
+      params = params.set('patientId', patientId.toString());
     }
     return this.http.get<StatisticsResponse>(`${this.baseUrl}/monthly`, { params });
   }

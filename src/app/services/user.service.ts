@@ -12,11 +12,15 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-   getPsychologists(): Observable<UserResponseDTO[]> {
+  getPsychologists(): Observable<UserResponseDTO[]> {
     return this.http.get<UserResponseDTO[]>(`${this.baseUrl}/psychologists`);
   }
 
   getPsychologistById(id: number): Observable<UserResponseDTO> {
+    return this.http.get<UserResponseDTO>(`${this.baseUrl}/by-id/${id}`);
+  }
+
+  getPatientById(id: number): Observable<UserResponseDTO> {
     return this.http.get<UserResponseDTO>(`${this.baseUrl}/by-id/${id}`);
   }
 
@@ -32,15 +36,15 @@ export class UserService {
     return this.http.put<void>(`${this.baseUrl}/me`, data);
   }
 
-uploadToImgBB(file: File): Observable<string> {
-  const formData = new FormData();
-  formData.append('image', file);
+  uploadToImgBB(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('image', file);
 
-  return this.http.post<{ url: string }>(
-    'http://localhost:8080/api/users/upload-image',
-    formData
-  ).pipe(
-    map(res => res.url)
-  );
-}
+    return this.http.post<{ url: string }>(
+      'http://localhost:8080/api/users/upload-image',
+      formData
+    ).pipe(
+      map(res => res.url)
+    );
+  }
 }
