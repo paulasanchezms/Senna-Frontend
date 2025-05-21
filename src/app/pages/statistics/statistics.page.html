@@ -1,19 +1,42 @@
-<ion-content class="bg-lightPeach font-peachy" fullscreen="true">
-  <div class="max-w-4xl mx-auto mb-36 p-4 space-y-10"> 
-    <h2 class="text-4xl font-bold text-salmon tracking-wide border-b-2 border-salmon text-center mb-6">Estadísticas</h2>
+<!-- SOLO si el usuario es PSYCHOLOGIST -->
+<ion-header *ngIf="isPsychologist" class="bg-white shadow-md border-b border-gray-200">
+  <ion-toolbar class="px-6 py-3 flex items-center justify-between">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" class="text-peach text-base font-semibold" (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="start" class="text-lg mr-1"></ion-icon>
+        Volver
+      </ion-button>
+    </ion-buttons>
 
-    <!-- — Semana — -->
-    <div class="bg-white rounded-2xl shadow p-4 space-y-4">
+    <ion-title class="text-peach text-xl font-bold font-peachy text-end w-full">
+      Estadísticas de {{ patient?.name }} {{ patient?.last_name }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-lightPeach font-peachy" fullscreen="true">
+  <div
+  class="max-w-5xl mx-auto px-4 space-y-12"
+  [ngClass]="{
+    'pt-20 pb-6': isPsychologist,   
+    'pt-6 pb-36': !isPsychologist 
+  }"
+>
+    <!-- Título para PACIENTE (no psicólogo) -->
+    <h2 *ngIf="!isPsychologist" class="text-4xl font-bold text-salmon tracking-wide border-b-2 border-salmon text-center mb-6">
+      Estadísticas
+    </h2>
+
+    <!-- Estadísticas Semanales -->
+    <div class="bg-white rounded-3xl shadow p-6 space-y-4">
       <h3 class="text-xl font-bold text-lavender">Estadísticas semanales</h3>
-      <!-- etiqueta + flecha disparadora -->
       <div class="flex items-center mb-2">
         <span class="text-lg font-semibold text-salmon">{{ weekLabel }}</span>
         <ion-button fill="clear" class="text-salmon ml-2" (click)="showWeekPicker = !showWeekPicker">
-          <ion-icon name="chevron-down"></ion-icon>
+          <ion-icon name="chevron-down-outline"></ion-icon>
         </ion-button>
       </div>
 
-      <!-- datetime oculto hasta pulsar la flecha -->
       <ng-container *ngIf="showWeekPicker">
         <ion-datetime
           [firstDayOfWeek]="1"
@@ -24,6 +47,7 @@
           (ionCancel)="showWeekPicker = false"
         ></ion-datetime>
       </ng-container>
+
       <div class="w-full h-80">
         <canvas
           baseChart
@@ -36,22 +60,18 @@
       </div>
     </div>
 
-    <!-- — Mes — -->
-    <div class="bg-white rounded-3xl shadow-lg p-6 space-y-4">
+    <!-- Estadísticas Mensuales -->
+    <div class="bg-white rounded-3xl shadow p-6 space-y-4">
       <h3 class="text-xl font-bold text-lavender">Estadísticas mensuales</h3>
-
-      <!-- etiqueta + flecha disparadora -->
       <div class="flex items-center mb-2">
-        <span class="text-2xl font-semibold text-salmon">{{ monthLabel }}</span>
+        <span class="text-lg font-semibold text-salmon">{{ monthLabel }}</span>
         <ion-button fill="clear" class="text-salmon ml-2" (click)="showMonthPicker = !showMonthPicker">
-          <ion-icon name="chevron-down"></ion-icon>
+          <ion-icon name="chevron-down-outline"></ion-icon>
         </ion-button>
       </div>
 
-      <!-- datetime oculto hasta pulsar la flecha -->
       <ng-container *ngIf="showMonthPicker">
         <ion-datetime
-          [firstDayOfWeek]="1"
           presentation="month-year"
           [min]="minMonth"
           [max]="maxMonth"

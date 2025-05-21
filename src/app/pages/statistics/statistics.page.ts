@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import {
   StatisticsService,
@@ -12,6 +12,10 @@ import { catchError, firstValueFrom, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { PublicRegisterModalPage } from '../public-register-modal/public-register-modal.page';
+import { Location } from '@angular/common';
+import { UserService } from 'src/app/services/user.service';
+
+
 
 @Component({
   standalone: false,
@@ -19,10 +23,12 @@ import { PublicRegisterModalPage } from '../public-register-modal/public-registe
   templateUrl: './statistics.page.html',
   styleUrls: ['./statistics.page.scss'],
 })
-export class StatisticsPage implements OnInit {
+export class StatisticsPage implements OnInit, AfterViewInit {
   @ViewChild('weeklyChart', { static: true }) weeklyChart!: BaseChartDirective;
   @ViewChild('monthlyChart', { static: true })
   monthlyChart!: BaseChartDirective;
+
+  patient: { name: string; last_name: string } | null = null;
 
   displayWeekYear!: number;
   displayWeekNum!: number;
@@ -43,6 +49,7 @@ export class StatisticsPage implements OnInit {
 
   viewingPatientId!: number;
   isPsychologist = false;
+  
 
   weeklyChartConfig: ChartConfiguration<'line'> = {
     type: 'line',
@@ -162,11 +169,13 @@ export class StatisticsPage implements OnInit {
   };
 
   constructor(
+    private location: Location,
     private statisticsService: StatisticsService,
     private diaryService: DiaryService,
     private modalController: ModalController,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService 
   ) {}
 
   ngOnInit(): void {
@@ -186,8 +195,13 @@ export class StatisticsPage implements OnInit {
         return;
       }
       this.viewingPatientId = +idFromRoute;
-    } else {
-      this.viewingPatientId = currentUser.id_user;
+    
+      this.userService.getPatientById(this.viewingPatientId).subscribe({
+        next: (data) => {
+          this.patient = { name: data.name, last_name: data.last_name };
+        },
+        error: (err) => console.error('Error cargando paciente:', err),
+      });
     }
     const today = new Date();
     const lastYear = new Date(today);
@@ -205,9 +219,13 @@ export class StatisticsPage implements OnInit {
 
     this.updateWeekLabel();
     this.updateMonthLabel();
+  }
 
-    this.loadWeeklyStatistics();
-    this.loadMonthlyStatistics();
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.loadWeeklyStatistics();
+      this.loadMonthlyStatistics();
+    }, 100); 
   }
 
   onWeekDateChange(val: string | string[] | null | undefined): void {
@@ -452,5 +470,9 @@ export class StatisticsPage implements OnInit {
   private formatDate(d: Date): string {
     const p = (n: number) => (n < 10 ? `0${n}` : `${n}`);
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }
