@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class PublicPatientProfilePage implements OnInit {
   patient!: UserResponseDTO;
-  defaultAvatar = 'assets/default-avatar.png';
+  defaultAvatar = 'assets/images/default-avatar.png';
   isPsychologist = false;
   patientId!: number;
 

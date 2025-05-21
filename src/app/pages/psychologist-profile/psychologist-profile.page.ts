@@ -26,7 +26,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   scheduleForm!: FormGroup;
 
   isOwnProfile = true;
-  defaultAvatar = '/assets/default-avatar.png';
+  defaultAvatar = '/assets/images/default-avatar.png';
   previewUrl: string | null = null;
   profilePhotoFile: File | null = null;
   documentFile: File | null = null;

@@ -14,7 +14,7 @@ import { ReviewDTO } from 'src/app/models/review';
 export class PublicPsychologistProfilePage implements OnInit {
   psychologistId!: number;
   psychologist!: UserResponseDTO;
-  defaultAvatar = 'assets/default-avatar.png'; // Asegúrate de que existe
+  defaultAvatar = 'assets/images/default-avatar.png'; // Asegúrate de que existe
 
   hasRated = false;
   rating = 0;
