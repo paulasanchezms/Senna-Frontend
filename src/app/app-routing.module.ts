@@ -102,6 +102,10 @@ const routes: Routes = [
   {
     path: 'unauthorized',
     loadChildren: () => import('./pages/unauthorized/unauthorized.module').then( m => m.UnauthorizedPageModule)
+  },
+  {
+    path: 'public-register-modal',
+    loadChildren: () => import('./pages/public-register-modal/public-register-modal.module').then( m => m.PublicRegisterModalPageModule)
   }
 ];
 

@@ -18,6 +18,7 @@ export interface DiaryEntryResponseDTO {
   symptoms: { id: number; name: string }[]; 
   notes: string;
   user: UserResponseDTO;
+  moodLevel: number;
 }
 
 export interface UserResponseDTO {
