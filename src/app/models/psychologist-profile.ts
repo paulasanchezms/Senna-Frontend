@@ -6,4 +6,6 @@ export interface PsychologistProfile {
     specialty: string;
     location: string;
     document: string;
-    workingHours: WorkingHourDTO[];  }
+    workingHours: WorkingHourDTO[];
+    description: string;
+}

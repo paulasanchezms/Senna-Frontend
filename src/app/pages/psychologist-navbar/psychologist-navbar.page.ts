@@ -23,7 +23,7 @@ export class PsychologistNavbarPage {
   }
 
   logout() {
-    this.authService.logout(); // elimina token en el AuthService
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 }

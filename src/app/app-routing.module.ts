@@ -47,6 +47,11 @@ const routes: Routes = [
     loadChildren: () => import('./pages/confirm-appointment/confirm-appointment.module').then(m => m.ConfirmAppointmentPageModule),
     canActivate: [PatientGuard]
   },
+  {
+    path: 'psychologist-public/:id',
+    loadChildren: () => import('./pages/public-psychologist-profile/public-psychologist-profile.module').then(m => m.PublicPsychologistProfilePageModule),
+    canActivate: [PatientGuard]
+  },
 
   // RUTAS DE PSYCHOLOGIST protegidas por PsychologistGuard
   {
@@ -74,15 +79,33 @@ const routes: Routes = [
     loadChildren: () => import('./pages/search-patient/search-patient.module').then(m => m.SearchPatientPageModule),
     canActivate: [PsychologistGuard]
   },
+  
+  {
+    path: 'psychologist-profile',
+    loadChildren: () => import('./pages/psychologist-profile/psychologist-profile.module').then( m => m.PsychologistProfilePageModule),
+    canActivate:[PsychologistGuard]
+  },
+  
+  {
+    path: 'public-patient-profile/:id',
+    loadChildren: () => import('./pages/public-patient-profile/public-patient-profile.module').then( m => m.PublicPatientProfilePageModule),
+    canActivate:[PsychologistGuard]
+  },
+  {
+    path: 'statistics',
+    loadChildren: () => import('./pages/statistics/statistics.module').then(m => m.StatisticsPageModule),
+    canActivate: [PsychologistGuard]
+  },
 
   // RUTAS GENERALES (si necesitas restricción, añade AuthGuard aquí también)
-  {
-    path: 'weekly-schedule',
-    loadChildren: () => import('./pages/weekly-schedule/weekly-schedule.module').then(m => m.WeeklySchedulePageModule)
-  },
+
   {
     path: 'unauthorized',
     loadChildren: () => import('./pages/unauthorized/unauthorized.module').then( m => m.UnauthorizedPageModule)
+  },
+  {
+    path: 'public-register-modal',
+    loadChildren: () => import('./pages/public-register-modal/public-register-modal.module').then( m => m.PublicRegisterModalPageModule)
   }
 ];
 

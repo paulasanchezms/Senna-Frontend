@@ -58,12 +58,7 @@ export class RegisterPage implements OnInit {
   
     const raw = this.registerForm.value;
   
-    const formData = new FormData();
-    Object.entries(raw).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-  
-    this.authService.register(formData).subscribe({
+    this.authService.register(raw).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
         this.message = 'Registro exitoso. ¡Bienvenido!';

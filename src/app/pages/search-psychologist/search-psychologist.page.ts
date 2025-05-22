@@ -16,12 +16,21 @@ export class SearchPsychologistPage implements OnInit {
   constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit() {
+    console.log('Componente search cargado');
+
     this.loadPsychologists();
   }
 
   loadPsychologists() {
-    this.userService.getPsychologists().subscribe((data) => {
-      this.psychologists = data;
+    console.log('Cargando psicólogos...');
+    this.userService.getPsychologists().subscribe({
+      next: (data) => {
+        console.log('Datos recibidos:', data);
+        this.psychologists = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener psicólogos:', err);
+      }
     });
   }
 
@@ -29,7 +38,7 @@ export class SearchPsychologistPage implements OnInit {
     return text
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');  // elimina acentos
+      .replace(/[̀-ͯ]/g, ''); // elimina acentos
   }
 
   search() {
@@ -40,8 +49,8 @@ export class SearchPsychologistPage implements OnInit {
       this.userService.getPsychologists().subscribe((data) => {
         this.psychologists = data.filter((psy) => {
           const name = this.normalizeText(`${psy.name} ${psy.last_name}`);
-          const specialty = this.normalizeText(psy.specialty || '');
-          const location = this.normalizeText(psy.location || '');
+          const specialty = this.normalizeText(psy.profile?.specialty || '');
+          const location = this.normalizeText(psy.profile?.location || '');
 
           const matchesSpecialtyOrName =
             !normalizedSearch ||
@@ -67,7 +76,7 @@ export class SearchPsychologistPage implements OnInit {
     }
   }
 
-  goToPsychologistSchedule(id_user: number) {
-    this.router.navigate(['/schedule-appointment', id_user]);
+  goToPublicProfile(id_user: number) {
+    this.router.navigate(['/psychologist-public', id_user]);
   }
 }

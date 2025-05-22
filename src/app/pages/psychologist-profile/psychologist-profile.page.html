@@ -1,0 +1,360 @@
+<app-psychologist-navbar></app-psychologist-navbar>
+<ion-content
+  class="bg-lightPeach min-h-screen w-fullp-4 flex justify-center items-center"
+>
+  <div
+    class="bg-white shadow-xl rounded-2xl p-8 w-full mb-20 max-w-8xl space-y-6"
+  >
+    <!-- Encabezado con imagen editable -->
+    <div class="flex justify-between items-start">
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <img
+            [src]="previewUrl || user?.photoUrl || defaultAvatar"
+            alt="Foto de perfil"
+            class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
+          />
+          <label
+            class="absolute bottom-0 right-0 bg-white rounded-full shadow-md p-1 cursor-pointer"
+          >
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              class="hidden"
+            />
+            <ion-icon name="camera" class="text-coral text-lg"></ion-icon>
+          </label>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-lavender">
+            {{ user?.name }} {{ user?.last_name }}
+          </h2>
+          <p class="text-base text-gray-700">{{ user?.email }}</p>
+        </div>
+      </div>
+      <ion-button
+        *ngIf="isOwnProfile"
+        (click)="editMode ? onCancelEdit() : editMode = true"
+        class="bg-peach text-white rounded-xl px-4 py-2 font-semibold shadow hover:opacity-90"
+      >
+        {{ editMode ? 'Cancelar edición' : 'Editar perfil' }}
+      </ion-button>
+    </div>
+
+    <!-- Tabs -->
+    <ion-segment
+      [(ngModel)]="activeTab"
+      value="personal"
+      (ionChange)="tryInitAutocomplete()"
+      class="text-center"
+    >
+      <ion-segment-button value="personal">
+        <ion-label class="text-base font-semibold text-coral"
+          >Datos personales</ion-label
+        >
+      </ion-segment-button>
+      <ion-segment-button value="professional">
+        <ion-label class="text-base font-semibold text-coral"
+          >Datos profesionales</ion-label
+        >
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- TAB: Datos personales -->
+    <div *ngIf="activeTab === 'personal'">
+      <form
+        *ngIf="editMode"
+        [formGroup]="personalForm"
+        (ngSubmit)="savePersonal()"
+        class="space-y-4 text-gray-900"
+      >
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Nombre</label>
+          <ion-input
+            formControlName="name"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"
+          ></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Apellidos</label>
+          <ion-input
+            formControlName="last_name"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"
+          ></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Teléfono</label>
+          <ion-input
+            formControlName="phone"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"
+          ></ion-input>
+        </div>
+        <ion-button
+          type="submit"
+          size="small"
+          class="bg-coral text-white rounded-xl py-2 font-semibold hover:opacity-90"
+          >Guardar datos personales</ion-button
+        >
+      </form>
+
+      <div *ngIf="!editMode" class="space-y-2 text-base text-gray-800">
+        <p><strong>Nombre:</strong> {{ user?.name || 'No disponible' }}</p>
+        <p>
+          <strong>Apellidos:</strong> {{ user?.last_name || 'No disponible' }}
+        </p>
+        <p><strong>Email:</strong> {{ user?.email || 'No disponible' }}</p>
+        <p><strong>Teléfono:</strong> {{ user?.phone || 'No disponible' }}</p>
+      </div>
+    </div>
+
+    <!-- TAB: Datos profesionales -->
+    <div *ngIf="activeTab === 'professional'">
+      <form
+        *ngIf="editMode"
+        [formGroup]="professionalForm"
+        (ngSubmit)="saveProfessional()"
+        class="space-y-4 text-gray-900"
+      >
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700"
+            >Especialidad</label
+          >
+          <ion-input
+            formControlName="specialty"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"
+          ></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-start">
+          <label class="text-sm font-semibold text-gray-700">Descripción</label>
+          <textarea
+            formControlName="description"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full h-24 resize-none"
+            placeholder="Describe tu enfoque, experiencia, etc."
+          ></textarea>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Ubicación</label>
+          <input
+            formControlName="location"
+            #locationInput
+            type="text"
+            placeholder="Ubicación..."
+            class="col-span-2 bg-white border border-peach rounded-xl p-2 w-full"
+          />
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700"
+            >Duración (minutos)</label
+          >
+          <ion-input
+            type="number"
+            formControlName="consultationDuration"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"
+          ></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Precio (€)</label>
+          <ion-input
+            type="number"
+            formControlName="consultationPrice"
+            class="col-span-2 bg-white text-gray-900 border border-peach rounded-xl p-2 w-full"
+          ></ion-input>
+        </div>
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <label class="text-sm font-semibold text-gray-700">Documento</label>
+          <input
+            type="file"
+            (change)="onDocumentSelected($event)"
+            accept=".pdf,image/*"
+            class="col-span-2 text-sm text-gray-900"
+          />
+          <div
+            *ngIf="uploadedDocumentName"
+            class="text-sm text-gray-700 italic mt-1"
+          >
+            Archivo seleccionado: {{ uploadedDocumentName }}
+          </div>
+        </div>
+        <div *ngIf="professionalForm.value.document" class="text-sm text-right">
+          <a
+            [href]="professionalForm.value.document"
+            target="_blank"
+            class="text-blue-600 underline"
+            >Ver documento subido</a
+          >
+        </div>
+        <ion-button
+          type="submit"
+          siza="small"
+          class="bg-peach text-white px-4 py-2 rounded-xl font-semibold shadow hover:opacity-90"
+          >Guardar datos profesionales</ion-button
+        >
+      </form>
+
+      <!-- Formulario de horario semanal elegante -->
+      <form
+        *ngIf="scheduleForm && editMode"
+        [formGroup]="scheduleForm"
+        (ngSubmit)="saveSchedule()"
+        class="space-y-4 mt-6"
+      >
+        <div
+          class="bg-white rounded-xl shadow border border-lavender px-6 py-4"
+        >
+          <h4 class="text-lg font-semibold text-peach mb-4">
+            Configura tus horarios
+          </h4>
+
+          <div
+            *ngFor="let d of [0,1,2,3,4,5,6]"
+            class="mb-4 p-4 border border-lavender rounded-lg"
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <ion-toggle [formControlName]="'enabled_' + d"></ion-toggle>
+              <label class="font-semibold text-gray-700 text-sm"
+                >{{ days[d] }}</label
+              >
+            </div>
+
+            <div
+              *ngIf="scheduleForm.get('enabled_' + d)?.value"
+              class="space-y-3 ml-8"
+            >
+              <!-- Mañana -->
+              <div class="flex items-center gap-2">
+                <label class="w-20 text-sm text-gray-700">Mañana</label>
+                <ion-input
+                  type="time"
+                  [formControlName]="'morningStart_' + d"
+                  class="w-28 border border-gray-300 rounded px-2 py-1 text-sm text-gray-500"
+                ></ion-input>
+                <span class="text-sm text-gray-600">a</span>
+                <ion-input
+                  type="time"
+                  [formControlName]="'morningEnd_' + d"
+                  class="w-28 border border-gray-300 rounded px-2 py-1 text-sm text-gray-500"
+                ></ion-input>
+              </div>
+
+              <!-- Tarde -->
+              <div class="flex items-center gap-2">
+                <label class="w-20 text-sm text-gray-700">Tarde</label>
+                <ion-input
+                  type="time"
+                  [formControlName]="'afternoonStart_' + d"
+                  class="w-28 border border-gray-300 rounded px-2 py-1 text-sm text-gray-500"
+                ></ion-input>
+                <span class="text-sm text-gray-600">a</span>
+                <ion-input
+                  type="time"
+                  [formControlName]="'afternoonEnd_' + d"
+                  class="w-28 border border-gray-300 rounded px-2 py-1 text-sm text-gray-500"
+                ></ion-input>
+              </div>
+            </div>
+          </div>
+
+          <ion-button
+            size="small"
+            type="submit"
+            class="bg-peach text-white px-4 py-2 rounded-xl font-semibold shadow hover:opacity-90"
+          >
+            Guardar horario
+          </ion-button>
+        </div>
+      </form>
+
+      <div *ngIf="!editMode" class="space-y-2 text-base text-gray-800 mt-6">
+        <p>
+          <strong>Especialidad:</strong> {{ profile?.specialty || 'No
+          disponible' }}
+        </p>
+        <p>
+          <strong>Descripción:</strong> {{ profile?.description || 'No
+          disponible' }}
+        </p>
+        <p>
+          <strong>Ubicación:</strong> {{ profile?.location || 'No disponible' }}
+        </p>
+        <p>
+          <strong>Duración:</strong> {{ profile?.consultationDuration }} min
+        </p>
+        <p><strong>Precio:</strong> {{ profile?.consultationPrice }} €</p>
+        <p>
+          <strong>Documento:</strong>
+          <ng-container *ngIf="profile?.document; else noDoc">
+            <a
+              [href]="profile.document"
+              target="_blank"
+              class="text-blue-600 underline"
+              >Ver documento</a
+            >
+            <span class="ml-2 italic text-gray-600">(documento subido)</span>
+          </ng-container>
+          <ng-template #noDoc>
+            <span>No disponible</span>
+          </ng-template>
+        </p>
+        <!-- Vista de horarios -->
+        <div class="mt-4">
+          <h4 class="text-lavender font-semibold text-base mb-2">
+            Horario semanal
+          </h4>
+          <div
+            *ngIf="groupedWorkingHours.length > 0; else sinHorario"
+            class="grid gap-4"
+          >
+            <div
+              *ngFor="let group of groupedWorkingHours"
+              class="bg-white/80 border border-lavender rounded-xl p-4 shadow-sm"
+            >
+              <h4
+                class="text-peach font-semibold text-base flex items-center gap-2"
+              >
+                <ion-icon name="calendar-outline"></ion-icon> {{ group.day }}
+              </h4>
+              <ul class="mt-1 pl-4 list-disc text-gray-700 text-sm">
+                <li *ngFor="let slot of group.slots">
+                  {{ slot.start }} - {{ slot.end }}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <ng-template #sinHorario>
+            <p class="text-sm text-gray-500 mt-2">No disponible</p>
+          </ng-template>
+        </div>
+        <!-- Sección de valoraciones recibidas -->
+      <div class="mt-6">
+        <h4 class="text-xl font-semibold text-peach">Valoraciones recibidas</h4>
+
+        <div *ngIf="reviews.length > 0; else noReviews" class="space-y-4 mt-4">
+          <div class="flex items-center gap-2 text-yellow-500">
+            <ion-icon *ngFor="let s of [1,2,3,4,5]" [name]="averageRating >= s ? 'star' : 'star-outline'"></ion-icon>
+            <span class="text-sm text-gray-700 ml-2">({{ averageRating.toFixed(1) }}/5)</span>
+          </div>
+
+          <div *ngFor="let r of visibleReviews" class="border border-lavender rounded-lg p-4">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold text-gray-800">{{ r.patientName }}</div>
+              <div class="text-yellow-400">
+                <ion-icon *ngFor="let s of [1,2,3,4,5]" [name]="r.rating >= s ? 'star' : 'star-outline'"></ion-icon>
+              </div>
+            </div>
+            <div class="text-sm text-gray-500">{{ r.createdAt | date: 'dd/MM/yyyy' }}</div>
+            <p class="text-sm text-gray-700 mt-2">{{ r.comment }}</p>
+          </div>
+
+          <ion-button *ngIf="visibleReviews.length < reviews.length" expand="block" class="bg-lavender text-white rounded-xl font-semibold mt-2" (click)="showMoreReviews()">
+            Ver más valoraciones
+          </ion-button>
+        </div>
+        <ng-template #noReviews>
+          <p class="text-sm text-gray-500 mt-2">Aún no has recibido valoraciones.</p>
+        </ng-template>
+      </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -33,7 +33,7 @@
           Pacientes
         </a>
         <a
-          routerLink="/profile"
+          routerLink="/psychologist-profile"
           routerLinkActive="bg-lavender text-white"
           [routerLinkActiveOptions]="{ exact: true }"
           class="px-3 py-1 rounded-md text-base text-salmon hover:bg-lavender hover:text-white transition font-semibold"
@@ -87,17 +87,17 @@
         >Pacientes</a
       >
       <a
-        routerLink="/profile"
+        routerLink="/psychologist-profile"
         class="block text-salmon hover:text-lavender font-medium"
         (click)="closeMenu()"
         >Perfil</a
       >
-      <button
+      <ion-button
         class="block text-salmon hover:text-lavender font-medium"
         (click)="logout(); closeMenu()"
       >
         Cerrar sesión
-      </button>
+      </ion-button>
     </div>
   </ion-toolbar>
 </ion-header>

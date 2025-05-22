@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar class="bg-peach text-white">
+    <ion-title class="font-peachy">Registro del día</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline" class="text-white"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-lightPeach font-peachy">
+  <div class="p-4 space-y-4">
+    <!-- Fecha -->
+    <div class="bg-white rounded-xl shadow p-4">
+      <p class="text-lavender font-semibold text-center text-lg">
+        {{ selectedDate | date: 'fullDate' }}
+      </p>
+    </div>
+
+    <!-- Nivel de ánimo -->
+    <div class="bg-white rounded-xl shadow p-4 mb-4">
+      <p class="text-peach text-lg font-semibold mb-2">
+        ¿Cómo se sentía el paciente?
+      </p>
+
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm text-coral">Muy mal</span>
+        <span class="text-sm text-mint">Muy bien</span>
+      </div>
+
+      <ion-range
+        min="1"
+        max="5"
+        step="1"
+        [value]="moodLevel"
+        disabled
+        class="w-full"
+      ></ion-range>
+
+      <p class="text-center text-sm mt-2 text-gray-600">
+        Nivel registrado:
+        <span class="font-semibold text-lavender">{{ moodLevel }}</span> / 5
+      </p>
+    </div>
+
+    <!-- Estado de ánimo -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Estado de ánimo</h3>
+      <div class="flex flex-wrap gap-2">
+        <ion-chip
+          *ngFor="let mood of moods"
+          [color]="isSelectedMood(mood.id) ? 'primary' : 'medium'"
+          disabled
+        >
+          <ion-label>{{ mood.name }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Síntomas -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Síntomas</h3>
+      <div class="flex flex-wrap gap-2">
+        <ion-chip
+          *ngFor="let symptom of symptoms"
+          [color]="isSelectedSymptom(symptom.id) ? 'secondary' : 'medium'"
+          disabled
+        >
+          <ion-label>{{ symptom.name }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Notas -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-2">
+      <h3 class="text-peach font-semibold text-lg mb-2">Notas</h3>
+      <ion-textarea
+        class="w-full"
+        placeholder="Sin notas"
+        [value]="notes"
+        readonly
+      ></ion-textarea>
+    </div>
+  </div>
+</ion-content>
