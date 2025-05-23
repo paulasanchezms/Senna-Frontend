@@ -1,0 +1,127 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Panel de Administración</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="selectedTab" value="pending">
+    <ion-segment-button value="pending">
+      <ion-label>Solicitudes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="users">
+      <ion-label>Usuarios Activos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- TAB: Solicitudes -->
+  <div *ngIf="selectedTab === 'pending'">
+    <div *ngIf="loading" class="flex justify-center items-center h-32">
+      <ion-spinner name="dots"></ion-spinner>
+    </div>
+
+    <div
+      *ngIf="!loading && pendingPsychologists.length === 0"
+      class="text-center text-gray-500 mt-8"
+    >
+      <p>No hay psicólogos pendientes de aprobación.</p>
+    </div>
+
+    <div
+      *ngFor="let psy of pendingPsychologists"
+      class="bg-white rounded-2xl shadow-md p-4 mb-6"
+    >
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800">
+            {{ psy.name }} {{ psy.last_name }}
+          </h2>
+          <p class="text-sm text-gray-500">{{ psy.email }}</p>
+          <p class="text-sm text-gray-600 mt-2">
+            <strong>Especialidad:</strong> {{ psy.profile?.specialty }}
+          </p>
+          <p class="text-sm text-gray-600">
+            <strong>Ubicación:</strong> {{ psy.profile?.location }}
+          </p>
+          <p class="text-sm text-gray-600">
+            <strong>Descripción:</strong> {{ psy.profile?.description }}
+          </p>
+          <p class="text-sm text-gray-600">
+            <strong>Documento:</strong>
+            <a *ngIf="psy.profile?.document" [href]="psy.profile?.document" target="_blank" class="text-blue-500 hover:underline">
+              Ver documento
+            </a>
+            <span *ngIf="!psy.profile?.document">No disponible</span>
+          </p>
+        </div>
+
+        <div class="flex mt-4 md:mt-0 gap-3">
+          <ion-button
+            color="medium"
+            (click)="viewProfile(psy)"
+            class="rounded-xl shadow"
+          >
+            <ion-icon name="eye" slot="start"></ion-icon>
+            Ver perfil
+          </ion-button>
+
+          <ion-button
+            color="success"
+            (click)="approve(psy.id_user)"
+            class="rounded-xl shadow"
+          >
+            <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+            Aprobar
+          </ion-button>
+
+          <ion-button
+            color="danger"
+            (click)="reject(psy.id_user)"
+            class="rounded-xl shadow"
+          >
+            <ion-icon name="close-circle" slot="start"></ion-icon>
+            Rechazar
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Usuarios Activos -->
+  <div *ngIf="selectedTab === 'users'">
+    <div
+      *ngIf="activeUsers.length === 0"
+      class="text-center text-gray-500 mt-8"
+    >
+      <p>No hay usuarios activos para mostrar.</p>
+    </div>
+
+    <div
+      *ngFor="let user of activeUsers"
+      class="bg-white rounded-2xl shadow-md p-4 mb-4"
+    >
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-800">
+            {{ user.name }} {{ user.last_name }}
+          </h2>
+          <p class="text-sm text-gray-500">{{ user.email }}</p>
+          <p class="text-sm text-gray-600 capitalize">
+            <strong>Rol:</strong> {{ user.role.toLowerCase() }}
+          </p>
+        </div>
+
+        <div class="flex mt-3 md:mt-0 gap-3">
+          <ion-button
+            color="danger"
+            (click)="ban(user.id_user)"
+            class="rounded-xl shadow"
+          >
+            <ion-icon name="ban" slot="start"></ion-icon>
+            Banear
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

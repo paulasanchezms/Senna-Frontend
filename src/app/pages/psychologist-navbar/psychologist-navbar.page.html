@@ -40,6 +40,14 @@
         >
           Perfil
         </a>
+        <a
+          *ngIf="isAdmin"
+          routerLink="/admin"
+          routerLinkActive="bg-lavender text-white"
+          class="px-3 py-1 rounded-md text-base text-salmon hover:bg-lavender hover:text-white transition font-semibold"
+        >
+          Administración
+        </a>
       </nav>
 
       <!-- Área derecha -->
@@ -91,6 +99,14 @@
         class="block text-salmon hover:text-lavender font-medium"
         (click)="closeMenu()"
         >Perfil</a
+      >
+      <a
+        *ngIf="isAdmin"
+        routerLink="/admin"
+        class="block text-salmon hover:text-lavender font-medium"
+        (click)="closeMenu()"
+      >
+        Administración</a
       >
       <ion-button
         class="block text-salmon hover:text-lavender font-medium"

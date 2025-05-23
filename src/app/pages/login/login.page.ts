@@ -36,6 +36,8 @@ export class LoginPage implements OnInit {
           this.router.navigate(['/patient/home']);
         } else if (role === 'PSYCHOLOGIST') {
           this.router.navigate(['/calendar']);
+        } else if (role === 'ADMIN') {
+          this.router.navigate(['/admin']);
         } else {
           this.router.navigate(['/login']);
           this.message = 'Rol no reconocido. Contacta con soporte.';
