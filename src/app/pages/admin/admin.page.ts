@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
-import { ToastController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { UserResponseDTO } from 'src/app/models/user';
+import { PsychologistProfileModalPage } from '../psychologist-profile-modal/psychologist-profile-modal.page';
 
 @Component({
   standalone:false,
@@ -20,7 +21,9 @@ export class AdminPage implements OnInit {
   constructor(
     private adminService: AdminService,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private modalController: ModalController 
+
   ) {}
 
   ngOnInit() {
@@ -57,6 +60,7 @@ export class AdminPage implements OnInit {
     this.adminService.approvePsychologist(id).subscribe(() => {
       this.presentToast('Psicólogo aprobado');
       this.loadPendingPsychologists();
+      this.loadActiveUsers();
     });
   }
 
@@ -74,10 +78,14 @@ export class AdminPage implements OnInit {
     });
   }
 
-  viewProfile(psychologist: UserResponseDTO) {
-    this.router.navigate(['/admin/psychologist-profile-modal'], {
-      state: { psychologist }
+  async viewProfile(psychologist: UserResponseDTO) {
+    const modal = await this.modalController.create({
+      component: PsychologistProfileModalPage,
+      componentProps: {
+        psychologist
+      }
     });
+    await modal.present();
   }
 
   async presentToast(message: string) {
