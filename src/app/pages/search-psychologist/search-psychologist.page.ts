@@ -26,14 +26,13 @@ export class SearchPsychologistPage implements OnInit {
     this.userService.getPsychologists().subscribe({
       next: (data) => {
         console.log('Datos recibidos:', data);
-        this.psychologists = data;
+        this.psychologists = data.filter(p => p.active); 
       },
       error: (err) => {
         console.error('Error al obtener psicólogos:', err);
       }
     });
   }
-
   normalizeText(text: string): string {
     return text
       .toLowerCase()
@@ -41,32 +40,31 @@ export class SearchPsychologistPage implements OnInit {
       .replace(/[̀-ͯ]/g, ''); // elimina acentos
   }
 
-  search() {
-    const normalizedSearch = this.normalizeText(this.searchTerm);
-    const normalizedLocation = this.normalizeText(this.locationTerm);
+ 
+search() {
+  const normalizedSearch = this.normalizeText(this.searchTerm);
+  const normalizedLocation = this.normalizeText(this.locationTerm);
 
-    if (normalizedSearch || normalizedLocation) {
-      this.userService.getPsychologists().subscribe((data) => {
-        this.psychologists = data.filter((psy) => {
-          const name = this.normalizeText(`${psy.name} ${psy.last_name}`);
-          const specialty = this.normalizeText(psy.profile?.specialty || '');
-          const location = this.normalizeText(psy.profile?.location || '');
+  this.userService.getPsychologists().subscribe((data) => {
+    this.psychologists = data
+      .filter(p => p.active) // Solo activos
+      .filter((psy) => {
+        const name = this.normalizeText(`${psy.name} ${psy.last_name}`);
+        const specialty = this.normalizeText(psy.profile?.specialty || '');
+        const location = this.normalizeText(psy.profile?.location || '');
 
-          const matchesSpecialtyOrName =
-            !normalizedSearch ||
-            name.includes(normalizedSearch) ||
-            specialty.includes(normalizedSearch);
+        const matchesSpecialtyOrName =
+          !normalizedSearch ||
+          name.includes(normalizedSearch) ||
+          specialty.includes(normalizedSearch);
 
-          const matchesLocation =
-            !normalizedLocation || location.includes(normalizedLocation);
+        const matchesLocation =
+          !normalizedLocation || location.includes(normalizedLocation);
 
-          return matchesSpecialtyOrName && matchesLocation;
-        });
+        return matchesSpecialtyOrName && matchesLocation;
       });
-    } else {
-      this.loadPsychologists();
-    }
-  }
+  });
+}
 
   onInputChange() {
     if (!this.searchTerm.trim() && !this.locationTerm.trim()) {

@@ -1,40 +1,66 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Perfil del Psicólogo</ion-title>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin"></ion-back-button>
-    </ion-buttons>
+  <ion-toolbar class="bg-white shadow-none">
+    <ion-title class="font-peachy text-lavender text-lg">
+      Perfil de {{ psychologist.name }} 
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="bg-white rounded-2xl shadow-md p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+<ion-content class="ion-padding bg-lightPeach">
+  <div class="bg-white mt-8 rounded-2xl shadow-md p-6 space-y-6 max-w-xl mx-auto text-gray-700 text-sm">
+
+    <!-- Nombre -->
+    <h2 class="text-2xl text-salmon font-bold font-peachy text-center">
       {{ psychologist.name }} {{ psychologist.last_name }}
     </h2>
-    <p class="text-gray-600 mb-1"><strong>Email:</strong> {{ psychologist.email }}</p>
-    <p class="text-gray-600 mb-4"><strong>Teléfono:</strong> {{ psychologist.phone || 'No disponible' }}</p>
 
-    <div class="mt-4">
-      <p class="text-gray-600">
+    <!-- Contacto -->
+    <div class="space-y-1">
+      <p><strong>Email:</strong> {{ psychologist.email }}</p>
+      <p><strong>Teléfono:</strong> {{ psychologist.phone || 'No disponible' }}</p>
+    </div>
+
+    <!-- Perfil Profesional -->
+    <div class="space-y-1">
+      <p><strong>Especialidad:</strong> {{ psychologist.profile?.specialty || 'No disponible' }}</p>
+      <p><strong>Ubicación:</strong> {{ psychologist.profile?.location || 'No disponible' }}</p>
+      <p><strong>Descripción:</strong> {{ psychologist.profile?.description || 'No disponible' }}</p>
+    </div>
+
+    <!-- Documento -->
+    <div class="text-center pt-2">
+      <p>
         <strong>Documento acreditativo:</strong>
-        <a *ngIf="psychologist.profile?.document" [href]="psychologist.profile?.document" target="_blank" class="text-blue-500 hover:underline">
+        <a *ngIf="psychologist.profile?.document" 
+           [href]="psychologist.profile?.document" 
+           target="_blank" 
+           class="text-lavender underline hover:text-indigo-500 transition">
           Ver documento
         </a>
         <span *ngIf="!psychologist.profile?.document">No disponible</span>
       </p>
     </div>
 
-    <div class="flex justify-center gap-4 mt-6">
-      <ion-button color="success" (click)="approve()">
-        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+    <!-- Botones -->
+    <div class="flex justify-center gap-4 pt-4">
+      <ion-button 
+        fill="solid"
+        size="small"
+        class="bg-mint text-green-900 font-semibold rounded-full px-6 py-2 text-sm hover:bg-green-200 transition"
+        (click)="approve()">
+        <ion-icon name="checkmark-circle" slot="start" class="px-2"></ion-icon>
         Aprobar
       </ion-button>
 
-      <ion-button color="danger" (click)="reject()">
-        <ion-icon name="close-circle" slot="start"></ion-icon>
+      <ion-button 
+        fill="solid"
+        size="small"
+        class="bg-peach text-red-900 font-semibold rounded-full px-6 py-2 text-sm hover:bg-red-200 transition"
+        (click)="reject()">
+        <ion-icon name="close-circle" slot="start" class="px-2"></ion-icon>
         Rechazar
       </ion-button>
     </div>
+    
   </div>
 </ion-content>

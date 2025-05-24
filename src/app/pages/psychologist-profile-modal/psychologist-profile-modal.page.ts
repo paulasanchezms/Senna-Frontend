@@ -1,49 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { ModalController, ToastController } from '@ionic/angular';
 import { AdminService } from 'src/app/services/admin.service';
-import { Location } from '@angular/common';
-import { ToastController } from '@ionic/angular';
 import { UserResponseDTO } from 'src/app/models/user';
 
 @Component({
-  standalone:false,
+  standalone: false,
   selector: 'app-psychologist-profile-modal',
   templateUrl: './psychologist-profile-modal.page.html',
   styleUrls: ['./psychologist-profile-modal.page.scss']
 })
-export class PsychologistProfileModalPage implements OnInit {
+export class PsychologistProfileModalPage {
 
-  psychologist!: UserResponseDTO;
+  @Input() psychologist!: UserResponseDTO;
 
   constructor(
-    private route: ActivatedRoute,
     private adminService: AdminService,
     private toastController: ToastController,
-    private location: Location,
-    private router: Router
+    private modalController: ModalController
   ) {}
-
-  ngOnInit() {
-    const nav = this.router.getCurrentNavigation();
-    if (nav?.extras?.state?.['psychologist']) {
-      this.psychologist = nav.extras.state['psychologist'];
-    } else {
-      this.location.back();
-    }
-  }
 
   approve() {
     this.adminService.approvePsychologist(this.psychologist.id_user).subscribe(() => {
       this.presentToast('Psicólogo aprobado correctamente');
-      this.location.back();
+      this.modalController.dismiss(null, 'refresh');
     });
   }
 
   reject() {
     this.adminService.rejectPsychologist(this.psychologist.id_user).subscribe(() => {
       this.presentToast('Psicólogo rechazado correctamente');
-      this.location.back();
+      this.modalController.dismiss(null, 'refresh');
     });
+  }
+
+  dismissModal() {
+    this.modalController.dismiss();
   }
 
   async presentToast(message: string) {
