@@ -45,7 +45,7 @@ export class ConfirmAppointmentPage implements OnInit {
     this.appointmentService.scheduleAppointment(this.appointment).subscribe({
       next: () => {
         alert('Cita reservada con éxito');
-        this.router.navigate(['/home']);
+        this.router.navigate(['/patient/home']);
       },
       error: err => {
         console.error('Error al confirmar la cita:', err);

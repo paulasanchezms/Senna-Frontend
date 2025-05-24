@@ -106,7 +106,7 @@ export class RegisterPsychologistPage implements OnInit {
     this.authService.registerPsychologist(formData).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
-        this.router.navigate(['/home']);
+        this.router.navigate(['/calendar']);
       },
       error: (error) => {
         console.error('error registro', error);
