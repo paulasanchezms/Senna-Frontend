@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentResponseDTO } from '../../models/appointment';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   standalone: false,
@@ -12,7 +13,7 @@ export class UpcomingAppointmentsPage implements OnInit {
   upcomingAppointments: AppointmentResponseDTO[] = [];
   pastAppointments: AppointmentResponseDTO[] = [];
 
-  constructor(private appointmentService: AppointmentService) {}
+  constructor(private alertCtrl: AlertController,private appointmentService: AppointmentService) {}
 
   ngOnInit() {
     this.loadAppointments();
@@ -29,6 +30,29 @@ export class UpcomingAppointmentsPage implements OnInit {
         );
       },
       error: (err) => console.error('Error cargando citas', err)
+    });
+  }
+
+  confirmCancel(appointmentId: number) {
+    this.alertCtrl.create({
+      header: 'Cancelar cita',
+      message: '¿Estás segura de que deseas cancelar esta cita?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel'
+        },
+        {
+          text: 'Sí, cancelar',
+          handler: () => this.cancelAppointment(appointmentId)
+        }
+      ]
+    }).then(alert => alert.present());
+  }
+  
+  cancelAppointment(id: number) {
+    this.appointmentService.cancelAppointment(id).subscribe(() => {
+      this.loadAppointments(); // recargar citas tras cancelación
     });
   }
 }

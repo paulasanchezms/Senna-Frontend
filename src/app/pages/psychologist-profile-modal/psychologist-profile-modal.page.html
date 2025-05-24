@@ -40,27 +40,6 @@
         <span *ngIf="!psychologist.profile?.document">No disponible</span>
       </p>
     </div>
-
-    <!-- Botones -->
-    <div class="flex justify-center gap-4 pt-4">
-      <ion-button 
-        fill="solid"
-        size="small"
-        class="bg-mint text-green-900 font-semibold rounded-full px-6 py-2 text-sm hover:bg-green-200 transition"
-        (click)="approve()">
-        <ion-icon name="checkmark-circle" slot="start" class="px-2"></ion-icon>
-        Aprobar
-      </ion-button>
-
-      <ion-button 
-        fill="solid"
-        size="small"
-        class="bg-peach text-red-900 font-semibold rounded-full px-6 py-2 text-sm hover:bg-red-200 transition"
-        (click)="reject()">
-        <ion-icon name="close-circle" slot="start" class="px-2"></ion-icon>
-        Rechazar
-      </ion-button>
-    </div>
     
   </div>
 </ion-content>

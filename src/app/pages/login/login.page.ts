@@ -39,6 +39,7 @@ export class LoginPage implements OnInit {
 
         this.userService.me().subscribe({
           next: (user) => {
+            console.log(user);
             const role = user.role;
             const accepted = user.termsAccepted;
 
@@ -46,7 +47,7 @@ export class LoginPage implements OnInit {
               this.router.navigate(['/patient/home']);
             } else if (role === 'PSYCHOLOGIST') {
               if (!accepted) {
-                this.router.navigate(['/terms-psychologist']);
+                this.router.navigate(['/unauthorized']);
               } else {
                 this.router.navigate(['/calendar']);
               }

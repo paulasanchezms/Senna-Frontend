@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentService } from '../../services/appointment.service';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { WorkingHourModalPage } from '../working-hour-modal/working-hour-modal.page';
 import { UserService } from '../../services/user.service';
 import { AppointmentResponseDTO } from '../../models/appointment';
-import { WorkingHourService, WorkingHourDTO } from '../../services/working-hour.service';
+import {
+  WorkingHourService,
+  WorkingHourDTO,
+} from '../../services/working-hour.service';
 import { CalendarOptions } from '@fullcalendar/core';
 import { DateClickArg } from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -14,7 +17,7 @@ import { WorkingHourCustomService } from 'src/app/services/working-hour-custom.s
 import { WorkingHourCustomDTO } from 'src/app/models/working-hour-custom';
 
 @Component({
-  standalone:false,
+  standalone: false,
   selector: 'app-calendar',
   templateUrl: './calendar.page.html',
   styleUrls: ['./calendar.page.scss'],
@@ -30,15 +33,16 @@ export class CalendarPage {
     contentHeight: 'auto',
     allDaySlot: false,
     dateClick: this.handleDateClick.bind(this),
+    eventClick: this.handleEventClick.bind(this),
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'timeGridWeek,timeGridDay'
+      right: 'timeGridWeek,timeGridDay',
     },
     slotLabelFormat: {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
     },
     slotLabelClassNames: ['custom-slot-label'],
     dayHeaderDidMount: (info) => {
@@ -46,7 +50,7 @@ export class CalendarPage {
       info.el.style.setProperty('font-family', 'Poppins', 'important');
       info.el.style.setProperty('font-weight', '600', 'important');
       info.el.style.setProperty('font-size', '13px', 'important');
-    }
+    },
   };
 
   private userId!: number;
@@ -57,57 +61,62 @@ export class CalendarPage {
   workingHoursForDay: WorkingHourCustomDTO[] = [];
   selectedDay = 0;
 
-
   constructor(
     private appointmentService: AppointmentService,
     private modalCtrl: ModalController,
     private userService: UserService,
     private workingHourService: WorkingHourService,
-    private customWhService: WorkingHourCustomService
-
+    private customWhService: WorkingHourCustomService,
+    private alertCtrl: AlertController
   ) {}
 
   ionViewWillEnter() {
     this.userService.me().subscribe({
-      next: user => {
+      next: (user) => {
         this.userId = user.id_user;
         this.loadAppointments();
         this.loadWorkingHours();
       },
-      error: err => console.error('No se pudo obtener usuario', err)
+      error: (err) => console.error('No se pudo obtener usuario', err),
     });
   }
 
   loadAppointments() {
-    this.appointmentService.getPsychologistAppointments().subscribe((appointments: AppointmentResponseDTO[]) => {
-      const colors = ['#f17c63', '#c4a2e2', '#c7e2c3', '#ee9870', '#f4b098'];
-      let colorIndex = 0;
+    this.appointmentService
+      .getPsychologistAppointments()
+      .subscribe((appointments: AppointmentResponseDTO[]) => {
+        const colors = ['#f17c63', '#c4a2e2', '#c7e2c3', '#ee9870', '#f4b098'];
+        let colorIndex = 0;
 
-      const events = appointments
-        .filter(appt => appt.status === 'CONFIRMADA')
-        .map(appt => {
-          const name = appt.patient?.name || '';
-          const lastName = appt.patient?.last_name || '';
-          const fullName = `${name} ${lastName}`.trim();
+        const events = appointments
+          .filter((appt) => appt.status === 'CONFIRMADA')
+          .map((appt) => {
+            const name = appt.patient?.name || '';
+            const lastName = appt.patient?.last_name || '';
+            const fullName = `${name} ${lastName}`.trim();
 
-          return {
-            title: fullName || 'Paciente',
-            start: appt.dateTime,
-            end: this.calculateEndTime(appt.dateTime, appt.duration),
-            color: colors[colorIndex++ % colors.length]
-          };
-        });
+            return {
+              title: fullName || 'Paciente',
+              start: appt.dateTime,
+              end: this.calculateEndTime(appt.dateTime, appt.duration),
+              color: colors[colorIndex++ % colors.length],
+              id: appt.id.toString(),
+              extendedProps: { id: appt.id },
+            };
+          });
 
-      this.calendarOptions.events = events;
-    });
+        this.calendarOptions.events = events;
+      });
   }
 
   loadWorkingHours() {
-    this.workingHourService.getWorkingHours(this.userId).subscribe((hours: WorkingHourDTO[]) => {
-      this.allHours = hours;
-      this.highlightWorkingDays();
-      this.updateCalendarSlotTimes();
-    });
+    this.workingHourService
+      .getWorkingHours(this.userId)
+      .subscribe((hours: WorkingHourDTO[]) => {
+        this.allHours = hours;
+        this.highlightWorkingDays();
+        this.updateCalendarSlotTimes();
+      });
   }
 
   updateCalendarSlotTimes() {
@@ -117,15 +126,19 @@ export class CalendarPage {
       return;
     }
 
-    const allStartHours = this.allHours.map(h => parseInt(h.startTime.slice(0, 2)));
-    const allEndHours = this.allHours.map(h => parseInt(h.endTime.slice(0, 2)));
+    const allStartHours = this.allHours.map((h) =>
+      parseInt(h.startTime.slice(0, 2))
+    );
+    const allEndHours = this.allHours.map((h) =>
+      parseInt(h.endTime.slice(0, 2))
+    );
     const min = Math.min(...allStartHours);
     const max = Math.max(...allEndHours);
 
     this.calendarOptions = {
       ...this.calendarOptions,
       slotMinTime: `${min.toString().padStart(2, '0')}:00:00`,
-      slotMaxTime: `${(max + 1).toString().padStart(2, '0')}:00:00`
+      slotMaxTime: `${(max + 1).toString().padStart(2, '0')}:00:00`,
     };
   }
 
@@ -136,7 +149,7 @@ export class CalendarPage {
   }
 
   async handleDateClick(info: DateClickArg) {
-    console.log('Fecha clicada:', info.date); 
+    console.log('Fecha clicada:', info.date);
     const date = new Date(info.date);
     const jsDay = date.getDay();
     const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
@@ -147,8 +160,8 @@ export class CalendarPage {
         userId: this.userId,
         dayOfWeek: dayOfWeek,
         selectedDate: date.toISOString().split('T')[0],
-        allHours: this.allHours
-      }
+        allHours: this.allHours,
+      },
     });
     await modal.present();
 
@@ -163,15 +176,17 @@ export class CalendarPage {
   ngAfterViewInit() {
     const applyFullCalendarStyles = () => {
       // 🔸 Estilos para las horas laterales
-      const slotLabels = document.querySelectorAll('.fc-timegrid-slot-label-cushion');
-      slotLabels.forEach(el => {
+      const slotLabels = document.querySelectorAll(
+        '.fc-timegrid-slot-label-cushion'
+      );
+      slotLabels.forEach((el) => {
         const element = el as HTMLElement;
         element.style.setProperty('color', '#f17c63', 'important');
         element.style.setProperty('font-family', 'Poppins', 'important');
         element.style.setProperty('font-size', '13px', 'important');
         element.style.setProperty('font-weight', '600', 'important');
       });
-    
+
       // 🔸 Estilo para el título
       const calendarTitle = document.querySelector('.fc-toolbar-title');
       if (calendarTitle) {
@@ -194,14 +209,14 @@ export class CalendarPage {
       });
       observer.observe(calendarEl, {
         childList: true,
-        subtree: true
+        subtree: true,
       });
     }
   }
 
   highlightWorkingDays() {
-    const defaultWorkingDays = new Set(this.allHours.map(h => h.dayOfWeek));
-  
+    const defaultWorkingDays = new Set(this.allHours.map((h) => h.dayOfWeek));
+
     const daysInCurrentWeek = this.getCurrentWeekDates();
     const backgroundEvents = daysInCurrentWeek.map(({ date, dayOfWeek }) => {
       const isWorking = defaultWorkingDays.has(dayOfWeek);
@@ -210,20 +225,20 @@ export class CalendarPage {
         display: 'background',
         backgroundColor: isWorking ? '#d4f5e9' : '#fcd5d5',
         end: date,
-        allDay: true
+        allDay: true,
       };
     });
-  
-    const existingEvents = Array.isArray(this.calendarOptions.events)
-    ? this.calendarOptions.events
-    : [];
 
-  this.calendarOptions = {
-    ...this.calendarOptions,
-    events: [...existingEvents, ...backgroundEvents]
-  };
+    const existingEvents = Array.isArray(this.calendarOptions.events)
+      ? this.calendarOptions.events
+      : [];
+
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      events: [...existingEvents, ...backgroundEvents],
+    };
   }
-  
+
   getCurrentWeekDates(): { date: string; dayOfWeek: number }[] {
     const today = new Date();
     const start = today.getDate() - today.getDay();
@@ -233,33 +248,64 @@ export class CalendarPage {
       d.setDate(start + i + 1);
       dates.push({
         date: d.toISOString().split('T')[0],
-        dayOfWeek: i
+        dayOfWeek: i,
       });
     }
     return dates;
   }
-  
+
   // 2. WorkingHourModalPage.ts - forzar toggle activo si hay horario por defecto y bloquear si no puede trabajar
   loadHoursForDate(date: string) {
-    this.customWhService.getCustomHours(this.userId, date).subscribe(customHours => {
-      const fallback = this.allHours.filter(h => h.dayOfWeek === this.selectedDay);
-      if (customHours.length > 0) {
-        this.isCustomDate = true;
-        this.isDayEnabled = true;
-        this.workingHoursForDay = customHours.map(h => ({
-          startTime: h.startTime.slice(0, 5),
-          endTime: h.endTime.slice(0, 5),
-        }));
-      } else {
-        this.isCustomDate = false;
-        this.isDayEnabled = fallback.length > 0;
-        this.workingHoursForDay = fallback.map(h => ({
-          startTime: h.startTime.slice(0, 5),
-          endTime: h.endTime.slice(0, 5),
-        }));
-      }
-    });
+    this.customWhService
+      .getCustomHours(this.userId, date)
+      .subscribe((customHours) => {
+        const fallback = this.allHours.filter(
+          (h) => h.dayOfWeek === this.selectedDay
+        );
+        if (customHours.length > 0) {
+          this.isCustomDate = true;
+          this.isDayEnabled = true;
+          this.workingHoursForDay = customHours.map((h) => ({
+            startTime: h.startTime.slice(0, 5),
+            endTime: h.endTime.slice(0, 5),
+          }));
+        } else {
+          this.isCustomDate = false;
+          this.isDayEnabled = fallback.length > 0;
+          this.workingHoursForDay = fallback.map((h) => ({
+            startTime: h.startTime.slice(0, 5),
+            endTime: h.endTime.slice(0, 5),
+          }));
+        }
+      });
   }
-  
 
+  handleEventClick(info: any) {
+    const appointmentId = info.event.extendedProps?.id;
+
+    if (!appointmentId) return;
+
+    this.alertCtrl
+      .create({
+        header: 'Cancelar cita',
+        message: '¿Estás segura de que deseas cancelar esta cita?',
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+          },
+          {
+            text: 'Sí, cancelar',
+            handler: () => {
+              this.appointmentService
+                .cancelAppointment(appointmentId)
+                .subscribe(() => {
+                  this.loadAppointments(); // recarga citas y quita del calendario
+                });
+            },
+          },
+        ],
+      })
+      .then((alert) => alert.present());
+  }
 }
