@@ -3,6 +3,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { PatientGuard } from './guards/patient.guard';
 import { PsychologistGuard } from './guards/psychologist.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   // Redirección inicial → a login
@@ -106,6 +107,23 @@ const routes: Routes = [
   {
     path: 'public-register-modal',
     loadChildren: () => import('./pages/public-register-modal/public-register-modal.module').then( m => m.PublicRegisterModalPageModule)
+  },
+  {
+    path: 'admin',
+    canActivate: [AuthGuard,AdminGuard],
+    loadChildren: () => import('./pages/admin/admin.module').then( m => m.AdminPageModule)
+  },
+  {
+    path: 'psychologist-profile-modal',
+    loadChildren: () => import('./pages/psychologist-profile-modal/psychologist-profile-modal.module').then( m => m.PsychologistProfileModalPageModule)
+  },
+  {
+    path: 'terms-psychologist',
+    loadChildren: () => import('./pages/terms-psychologist/terms-psychologist.module').then( m => m.TermsPsychologistPageModule)
+  },
+  {
+    path: 'terms-patient',
+    loadChildren: () => import('./pages/terms-patient/terms-patient.module').then( m => m.TermsPatientPageModule)
   }
 ];
 

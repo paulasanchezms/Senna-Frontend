@@ -71,4 +71,23 @@ export class PsychologistProfileService {
       dtos
     );
   }
+
+  /**
+ * Comprueba si el perfil del psicólogo está completo.
+ */
+isProfileComplete(profile: PsychologistProfile): boolean {
+  return !!(profile.specialty &&
+    profile.location &&
+    profile.consultationDuration &&
+    profile.consultationPrice &&
+    profile.document &&
+    profile.description);
+}
+
+/**
+ * Devuelve true si el usuario está activo y aprobado por el administrador.
+ */
+canAccessFeatures(user: { active: boolean }, profile: PsychologistProfile): boolean {
+  return user.active && this.isProfileComplete(profile);
+}
 }

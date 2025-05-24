@@ -47,4 +47,8 @@ export class UserService {
       map(res => res.url)
     );
   }
+
+  acceptTerms(): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/users/accept-terms`, {});
+  }
 }

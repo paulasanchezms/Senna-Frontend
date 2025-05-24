@@ -1,0 +1,121 @@
+<ion-header class="bg-white sticky border-b border-peach w-full z-10">
+  <ion-toolbar class="py-2">
+    <div class="flex items-center justify-between max-w-7xl mx-auto px-4">
+      
+      <!-- Izquierda: Nombre de la app -->
+      <div class="flex items-center">
+        <span class="font-peachy text-2xl text-lavender font-bold">Senna</span>
+      </div>
+
+      <!-- Centro: Título -->
+      <div class="absolute left-1/2 transform -translate-x-1/2">
+        <span class="font-peachy text-lg text-salmon">Panel de Administración</span>
+      </div>
+
+      <!-- Derecha: Cerrar sesión -->
+      <ion-button fill="clear" (click)="logout()" class="text-salmon hover:text-red-500">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="p-4 bg-lightPeach min-h-screen">
+  <ion-segment [(ngModel)]="selectedTab" value="pending" class="my-4">
+    <ion-segment-button value="pending">
+      <ion-label class="font-semibold">Solicitudes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="users">
+      <ion-label class="font-semibold">Usuarios Activos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- SOLICITUDES -->
+  <div *ngIf="selectedTab === 'pending'" class="space-y-4">
+    <div *ngIf="loading" class="flex justify-center items-center h-32">
+      <ion-spinner name="dots"></ion-spinner>
+    </div>
+
+    <ion-card
+      *ngFor="let psy of pendingPsychologists"
+      class="rounded-2xl shadow-sm border border-peach hover:shadow-md transition-all duration-200 hover:scale-[1.01] px-4 py-3 bg-white"
+    >
+      <ion-card-header class="pb-1">
+        <ion-card-title class="text-xl text-salmon font-peachy">
+          {{ psy.name }} {{ psy.last_name }}
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content class="text-sm text-gray-700 font-medium space-y-1">
+        <p><span class="text-lavender">Email:</span> {{ psy.email }}</p>
+        <p>
+          <span class="text-lavender">Documento:</span>
+          <a *ngIf="psy.profile?.document" [href]="psy.profile?.document" target="_blank" class="text-blue-600 underline">Ver</a>
+          <span *ngIf="!psy.profile?.document">No disponible</span>
+        </p>
+      </ion-card-content>
+
+      <div class="flex justify-end gap-3 mt-4 pb-2 pr-2">
+        <ion-button
+          fill="solid"
+          size="small"
+          class="bg-gray-300 text-gray-800 font-semibold rounded-full px-4 py-1 text-sm hover:bg-gray-200"
+          (click)="viewProfile(psy)">
+          Ver perfil
+        </ion-button>
+        <ion-button
+          fill="solid"
+          size="small"
+          class="bg-mint text-green-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-green-200"
+          (click)="approve(psy.id_user)">
+          Aprobar
+        </ion-button>
+        <ion-button
+          fill="solid"
+          size="small"
+          class="bg-peach text-red-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-red-200"
+          (click)="reject(psy.id_user)">
+          Rechazar
+        </ion-button>
+      </div>
+    </ion-card>
+
+    <div *ngIf="!loading && pendingPsychologists.length === 0" class="text-center text-gray-500 text-sm mt-10 italic">
+      No hay solicitudes pendientes.
+    </div>
+  </div>
+
+  <!-- USUARIOS ACTIVOS -->
+  <div *ngIf="selectedTab === 'users'" class="space-y-4">
+    <ion-card
+      *ngFor="let user of activeUsers"
+      class="rounded-2xl shadow-sm border border-mint hover:shadow-md transition-all duration-200 hover:scale-[1.01] px-4 py-3 bg-white"
+    >
+      <ion-card-header class="pb-1">
+        <ion-card-title class="text-lg text-salmon font-peachy">
+          {{ user.name }} {{ user.last_name }}
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content class="text-sm text-gray-700 font-medium space-y-1">
+        <p><span class="text-lavender">Email:</span> {{ user.email }}</p>
+        <p><span class="text-lavender">Rol:</span> {{ user.role.toLowerCase() }}</p>
+      </ion-card-content>
+
+      <div class="flex justify-end gap-3 mt-4 pb-2 pr-2">
+        <ion-button
+          fill="solid"
+          size="small"
+          class="bg-peach text-red-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-red-200"
+          (click)="ban(user.id_user)">
+          Banear
+        </ion-button>
+      </div>
+    </ion-card>
+
+    <div *ngIf="activeUsers.length === 0" class="text-center text-gray-500 text-sm mt-10 italic">
+      No hay usuarios activos.
+    </div>
+  </div>
+</ion-content>

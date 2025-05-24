@@ -396,4 +396,11 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.averageRating = total / this.reviews.length;
   }
   
+  get shouldShowIncompleteAlert(): boolean {
+    return !!(this.profile && !this.profileService.isProfileComplete(this.profile));
+  }
+  
+  get isAccessBlocked(): boolean {
+    return !!(this.user && this.profile && !this.profileService.canAccessFeatures(this.user, this.profile));
+  }
 }

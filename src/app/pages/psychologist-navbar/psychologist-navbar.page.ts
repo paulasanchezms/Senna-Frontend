@@ -3,16 +3,19 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-  standalone:false,
+  standalone: false,
   selector: 'app-psychologist-navbar',
   templateUrl: './psychologist-navbar.page.html',
   styleUrls: ['./psychologist-navbar.page.scss']
 })
 export class PsychologistNavbarPage {
-
-  constructor(private authService: AuthService, private router: Router) {}
-
   isMenuOpen = false;
+  isAdmin = false;
+
+  constructor(private authService: AuthService, private router: Router) {
+    const role = this.authService.getRole();
+    this.isAdmin = role === 'ADMIN';
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;

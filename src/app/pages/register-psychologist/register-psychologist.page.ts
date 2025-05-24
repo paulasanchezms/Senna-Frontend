@@ -8,8 +8,10 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, AuthResponse } from '../../services/auth.service';
+import { ModalController } from '@ionic/angular';
+import { TermsPsychologistPage } from '../terms-psychologist/terms-psychologist.page';
 
-declare var google: any; // Importante para acceder a la API de Google fuera de TypeScript
+declare var google: any; 
 
 @Component({
   standalone: false,
@@ -21,35 +23,36 @@ export class RegisterPsychologistPage implements OnInit {
   registerForm!: FormGroup;
   formSubmitted = false;
   isMobile = false;
-  selectedFile: File | null = null;
   message: string = '';
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalController: ModalController,
+
   ) {}
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
-      name: ['', [Validators.required, this.onlyLettersValidator]],
-      last_name: ['', [Validators.required, this.twoLastNamesValidator]],
+      name: ['', [Validators.required, this.textValidator]],
+      last_name: ['', [Validators.required, this.textValidator]],
       email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
       password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
-      dni: ['', [Validators.required]],
-      qualification: ['', [Validators.required]],
+      qualification: [''],
       consultationDuration: [null],
       consultationPrice: [null],
       specialty: [''],
       location: [''],
+      termsAccepted: [false, Validators.requiredTrue]
     });
 
-    this.registerForm.get('name')!.valueChanges.subscribe((value) => {
-      if (typeof value === 'string') {
-        this.registerForm
-          .get('name')!
-          .setValue(value.trim(), { emitEvent: false });
-      }
+    ['name', 'last_name', 'qualification', 'specialty', 'location'].forEach(field => {
+      this.registerForm.get(field)?.valueChanges.subscribe(value => {
+        if (typeof value === 'string') {
+          this.registerForm.get(field)?.setValue(value.replace(/^\s+/, ''), { emitEvent: false });
+        }
+      });
     });
 
     this.checkScreenSize();
@@ -76,46 +79,30 @@ export class RegisterPsychologistPage implements OnInit {
   onRegister(): void {
     this.formSubmitted = true;
     if (this.registerForm.invalid) return;
-  
+
     const v = this.registerForm.value;
-  
-    // 1) Creamos objeto user
+
     const userPart = {
       name: v.name,
       last_name: v.last_name,
       email: v.email,
       password: v.password
     };
-  
-    // 2) Creamos objeto profile
+
     const profilePart = {
       consultationDuration: v.consultationDuration,
       consultationPrice: v.consultationPrice,
       specialty: v.specialty,
       location: v.location,
-      workingHours: []  // Ajusta si manejas horas de trabajo
+      workingHours: []
     };
-  
+
     const formData = new FormData();
-  
-    // 3) Añadimos la parte 'user' como JSON
-    formData.append(
-      'user',
-      new Blob([JSON.stringify(userPart)], { type: 'application/json' })
-    );
-  
-    // 4) Añadimos la parte 'profile' como JSON
-    formData.append(
-      'profile',
-      new Blob([JSON.stringify(profilePart)], { type: 'application/json' })
-    );
-  
-    // 5) Si hay fichero, lo añadimos bajo 'document'
-    if (this.selectedFile) {
-      formData.append('document', this.selectedFile);
-    }
-  
-    // 6) Llamada al servicio
+
+    formData.append('user', new Blob([JSON.stringify(userPart)], { type: 'application/json' }));
+    formData.append('profile', new Blob([JSON.stringify(profilePart)], { type: 'application/json' }));
+
+
     this.authService.registerPsychologist(formData).subscribe({
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
@@ -123,8 +110,7 @@ export class RegisterPsychologistPage implements OnInit {
       },
       error: (error) => {
         console.error('error registro', error);
-        this.message =
-          'Error en el registro: ' + (error.error?.message || error.message);
+        this.message = 'Error en el registro: ' + (error.error?.message || error.message);
       },
     });
   }
@@ -141,12 +127,10 @@ export class RegisterPsychologistPage implements OnInit {
     return null;
   }
 
-  onlyLettersValidator(control: AbstractControl): ValidationErrors | null {
-    const onlyLettersRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
-    if (control.value && !onlyLettersRegex.test(control.value.trim())) {
-      return { onlyLetters: true };
-    }
-    return null;
+  textValidator(control: AbstractControl): ValidationErrors | null {
+    const trimmed = (control.value || '').trim();
+    const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?: [A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/;
+    return trimmed && !regex.test(trimmed) ? { invalidText: true } : null;
   }
 
   customEmailValidator(control: AbstractControl): ValidationErrors | null {
@@ -159,14 +143,6 @@ export class RegisterPsychologistPage implements OnInit {
     return null;
   }
 
-  twoLastNamesValidator(control: AbstractControl): ValidationErrors | null {
-    const value = control.value?.trim();
-    if (!value) return null;
-
-    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)+$/;
-    return regex.test(value) ? null : { invalidLastName: true };
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.checkScreenSize();
@@ -174,21 +150,6 @@ export class RegisterPsychologistPage implements OnInit {
 
   checkScreenSize() {
     this.isMobile = window.innerWidth <= 768;
-  }
-
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ];
-
-    if (file && allowedTypes.includes(file.type)) {
-      this.selectedFile = file;
-    } else {
-      this.selectedFile = null;
-    }
   }
 
   get name() {
@@ -203,9 +164,6 @@ export class RegisterPsychologistPage implements OnInit {
   get password() {
     return this.registerForm.get('password');
   }
-  get dni() {
-    return this.registerForm.get('dni');
-  }
   get qualification() {
     return this.registerForm.get('qualification');
   }
@@ -217,5 +175,15 @@ export class RegisterPsychologistPage implements OnInit {
   }
   get document() {
     return this.registerForm.get('document');
+  }
+
+  async openTermsModal() {
+    const modal = await this.modalController.create({
+      component: TermsPsychologistPage,
+      breakpoints: [0.3, 0.5, 0.9],
+      initialBreakpoint: 0.8,
+      cssClass: 'custom-modal'
+    });
+    await modal.present();
   }
 }
