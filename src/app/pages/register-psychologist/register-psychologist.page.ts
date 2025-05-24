@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, AuthResponse } from '../../services/auth.service';
+import { ModalController } from '@ionic/angular';
+import { TermsPsychologistPage } from '../terms-psychologist/terms-psychologist.page';
 
 declare var google: any; 
 
@@ -26,7 +28,9 @@ export class RegisterPsychologistPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalController: ModalController,
+
   ) {}
 
   ngOnInit(): void {
@@ -171,5 +175,15 @@ export class RegisterPsychologistPage implements OnInit {
   }
   get document() {
     return this.registerForm.get('document');
+  }
+
+  async openTermsModal() {
+    const modal = await this.modalController.create({
+      component: TermsPsychologistPage,
+      breakpoints: [0.3, 0.5, 0.9],
+      initialBreakpoint: 0.8,
+      cssClass: 'custom-modal'
+    });
+    await modal.present();
   }
 }
