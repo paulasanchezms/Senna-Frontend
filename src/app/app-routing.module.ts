@@ -116,6 +116,14 @@ const routes: Routes = [
   {
     path: 'psychologist-profile-modal',
     loadChildren: () => import('./pages/psychologist-profile-modal/psychologist-profile-modal.module').then( m => m.PsychologistProfileModalPageModule)
+  },
+  {
+    path: 'terms-psychologist',
+    loadChildren: () => import('./pages/terms-psychologist/terms-psychologist.module').then( m => m.TermsPsychologistPageModule)
+  },
+  {
+    path: 'terms-patient',
+    loadChildren: () => import('./pages/terms-patient/terms-patient.module').then( m => m.TermsPatientPageModule)
   }
 ];
 

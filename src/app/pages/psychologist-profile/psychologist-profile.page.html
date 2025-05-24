@@ -5,6 +5,16 @@
   <div
     class="bg-white shadow-xl rounded-2xl p-8 w-full mb-20 max-w-8xl space-y-6"
   >
+    <div
+      *ngIf="shouldShowIncompleteAlert"
+      class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-xl mb-6"
+    >
+      <p class="font-semibold">Tu perfil está incompleto.</p>
+      <p>
+        Rellena todos los campos profesionales y sube tu documento para ser
+        activado.
+      </p>
+    </div>
     <!-- Encabezado con imagen editable -->
     <div class="flex justify-between items-start">
       <div class="flex items-center space-x-4">
@@ -207,6 +217,13 @@
           </h4>
 
           <div
+            *ngIf="isAccessBlocked"
+            class="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"
+          >
+            No puedes configurar tus horarios hasta que tu cuenta sea revisada y
+            activada por el administrador.
+          </div>
+          <div
             *ngFor="let d of [0,1,2,3,4,5,6]"
             class="mb-4 p-4 border border-lavender rounded-lg"
           >
@@ -258,6 +275,7 @@
           <ion-button
             size="small"
             type="submit"
+            [disabled]="isAccessBlocked"
             class="bg-peach text-white px-4 py-2 rounded-xl font-semibold shadow hover:opacity-90"
           >
             Guardar horario
@@ -326,34 +344,61 @@
           </ng-template>
         </div>
         <!-- Sección de valoraciones recibidas -->
-      <div class="mt-6">
-        <h4 class="text-xl font-semibold text-peach">Valoraciones recibidas</h4>
+        <div class="mt-6">
+          <h4 class="text-xl font-semibold text-peach">
+            Valoraciones recibidas
+          </h4>
 
-        <div *ngIf="reviews.length > 0; else noReviews" class="space-y-4 mt-4">
-          <div class="flex items-center gap-2 text-yellow-500">
-            <ion-icon *ngFor="let s of [1,2,3,4,5]" [name]="averageRating >= s ? 'star' : 'star-outline'"></ion-icon>
-            <span class="text-sm text-gray-700 ml-2">({{ averageRating.toFixed(1) }}/5)</span>
-          </div>
-
-          <div *ngFor="let r of visibleReviews" class="border border-lavender rounded-lg p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold text-gray-800">{{ r.patientName }}</div>
-              <div class="text-yellow-400">
-                <ion-icon *ngFor="let s of [1,2,3,4,5]" [name]="r.rating >= s ? 'star' : 'star-outline'"></ion-icon>
-              </div>
+          <div
+            *ngIf="reviews.length > 0; else noReviews"
+            class="space-y-4 mt-4"
+          >
+            <div class="flex items-center gap-2 text-yellow-500">
+              <ion-icon
+                *ngFor="let s of [1,2,3,4,5]"
+                [name]="averageRating >= s ? 'star' : 'star-outline'"
+              ></ion-icon>
+              <span class="text-sm text-gray-700 ml-2"
+                >({{ averageRating.toFixed(1) }}/5)</span
+              >
             </div>
-            <div class="text-sm text-gray-500">{{ r.createdAt | date: 'dd/MM/yyyy' }}</div>
-            <p class="text-sm text-gray-700 mt-2">{{ r.comment }}</p>
-          </div>
 
-          <ion-button *ngIf="visibleReviews.length < reviews.length" expand="block" class="bg-lavender text-white rounded-xl font-semibold mt-2" (click)="showMoreReviews()">
-            Ver más valoraciones
-          </ion-button>
+            <div
+              *ngFor="let r of visibleReviews"
+              class="border border-lavender rounded-lg p-4"
+            >
+              <div class="flex items-center justify-between">
+                <div class="font-semibold text-gray-800">
+                  {{ r.patientName }}
+                </div>
+                <div class="text-yellow-400">
+                  <ion-icon
+                    *ngFor="let s of [1,2,3,4,5]"
+                    [name]="r.rating >= s ? 'star' : 'star-outline'"
+                  ></ion-icon>
+                </div>
+              </div>
+              <div class="text-sm text-gray-500">
+                {{ r.createdAt | date: 'dd/MM/yyyy' }}
+              </div>
+              <p class="text-sm text-gray-700 mt-2">{{ r.comment }}</p>
+            </div>
+
+            <ion-button
+              *ngIf="visibleReviews.length < reviews.length"
+              expand="block"
+              class="bg-lavender text-white rounded-xl font-semibold mt-2"
+              (click)="showMoreReviews()"
+            >
+              Ver más valoraciones
+            </ion-button>
+          </div>
+          <ng-template #noReviews>
+            <p class="text-sm text-gray-500 mt-2">
+              Aún no has recibido valoraciones.
+            </p>
+          </ng-template>
         </div>
-        <ng-template #noReviews>
-          <p class="text-sm text-gray-500 mt-2">Aún no has recibido valoraciones.</p>
-        </ng-template>
-      </div>
       </div>
     </div>
   </div>

@@ -20,4 +20,8 @@ export interface UserResponseDTO {
   location?: string;
   document?: string;
   profileImageUrl?: string;
+
+  // Nuevos campos para control de acceso
+  termsAccepted: boolean;
+  active: boolean;
 }
