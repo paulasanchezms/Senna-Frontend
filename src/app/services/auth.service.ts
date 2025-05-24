@@ -83,8 +83,8 @@ export class AuthService {
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Payload del token:', payload); 
       return payload.role ?? null;
-      console.log('Payload del token:', payload);
     } catch (e) {
       console.error('Error decodificando token', e);
       return null;

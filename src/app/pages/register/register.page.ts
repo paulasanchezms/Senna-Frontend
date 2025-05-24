@@ -62,7 +62,8 @@ export class RegisterPage implements OnInit {
       next: (response: AuthResponse) => {
         localStorage.setItem('authToken', response.jwt);
         this.message = 'Registro exitoso. ¡Bienvenido!';
-        this.router.navigate(['/home']);
+  
+        this.router.navigate(['/patient/home']);
       },
       error: (error) => {
         this.message = 'Error en el registro: ' + (error.error?.message || error.message);
