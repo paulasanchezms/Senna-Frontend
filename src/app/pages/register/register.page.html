@@ -5,7 +5,7 @@
       <div class="text-4xl text-lavender">Senna</div>
 
       <div>
-        <h2 class="text-xl text-peach font-semibold">Crea tu cuenta</h2>
+        <h2 class="text-xl text-salmon font-semibold">Crea tu cuenta</h2>
         <p class="text-md text-lavender">EL camino hacia el bienestar comienza aquí</p>
       </div>
 
@@ -14,34 +14,84 @@
 
         <div class="flex flex-col space-y-1">
           <input type="text" formControlName="name" placeholder="Nombre" class="input"
-            [ngClass]="{ 'border-red-500': name?.invalid && formSubmitted }" />
-          <p *ngIf="name?.invalid && formSubmitted" class="error">Nombre requerido</p>
+            [ngClass]="{ 'border-red-500': name?.invalid && (name?.touched || name?.dirty) }" />
+          <p *ngIf="name?.invalid && (name?.touched || name?.dirty)" class="error">Nombre requerido</p>
         </div>
 
         <div class="flex flex-col space-y-1">
           <input type="text" formControlName="last_name" placeholder="Apellidos" class="input"
-            [ngClass]="{ 'border-red-500': last_name?.invalid && formSubmitted }" />
-          <p *ngIf="last_name?.invalid && formSubmitted" class="error">Apellidos requeridos</p>
+            [ngClass]="{ 'border-red-500': last_name?.invalid && (last_name?.touched || last_name?.dirty) }" />
+          <p *ngIf="last_name?.invalid && (last_name?.touched || last_name?.dirty)" class="error">Apellidos requeridos</p>
         </div>
 
         <div class="flex flex-col space-y-1">
           <input type="email" formControlName="email" placeholder="Email" class="input"
-            [ngClass]="{ 'border-red-500': email?.invalid && formSubmitted }" />
-          <p *ngIf="email?.invalid && formSubmitted" class="error">Correo inválido</p>
+            [ngClass]="{ 'border-red-500': email?.invalid && (email?.touched || email?.dirty) }" />
+          <p *ngIf="email?.invalid && (email?.touched || email?.dirty)" class="error">Correo inválido</p>
         </div>
 
         <div class="flex flex-col space-y-1">
           <input type="password" formControlName="password" placeholder="Contraseña" class="input"
-            [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }" />
-          <p *ngIf="password?.invalid && formSubmitted" class="error">Mínimo 6 caracteres, mayúscula, número y símbolo</p>
+            [ngClass]="{ 'border-red-500': password?.invalid && (password?.touched || password?.dirty) }" />
+          <p *ngIf="password?.invalid && (password?.touched || password?.dirty)" class="error">
+            Mínimo 6 caracteres, mayúscula, número y símbolo
+          </p>
         </div>
 
-        <button type="submit"
-          class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition">
-          Registrarse
-        </button>
+        <!-- Confirmar contraseña -->
+        <div class="flex flex-col space-y-1 ">
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirmar contraseña"
+            class="input"
+            [ngClass]="{
+              'border-red-500':
+                (registerForm.hasError('passwordsMismatch') && confirmPassword?.touched) ||
+                (confirmPassword?.invalid && (confirmPassword?.touched || confirmPassword?.dirty))
+            }"
+          />
+          <p
+            *ngIf="confirmPassword?.invalid && (confirmPassword?.touched || confirmPassword?.dirty)"
+            class="text-sm text-red-500"
+          >
+            Campo requerido
+          </p>
+          <p
+            *ngIf="registerForm.hasError('passwordsMismatch') && confirmPassword?.touched"
+            class="text-sm text-red-500"
+          >
+            Las contraseñas no coinciden
+          </p>
+        </div>
 
-        <p *ngIf="message" class="text-red-500 text-center text-sm">{{ message }}</p>
+        <div class="flex items-center gap-2 col-span-2">
+          <ion-checkbox
+            [checked]="termsAccepted?.value"
+            (ionChange)="termsAccepted?.setValue($event.detail.checked)">
+          </ion-checkbox>
+          <label class="text-gray-500">
+            Acepto los
+            <a (click)="openTermsModal()" class="text-lavender underline cursor-pointer">
+              términos y condiciones
+            </a>
+          </label>
+        </div>
+        <p *ngIf="termsAccepted?.invalid && (termsAccepted?.touched || termsAccepted?.dirty)" class="error text-red-500 text-sm">
+          Debes aceptar los términos y condiciones
+        </p>
+
+        <!-- Botón -->
+        <div class="col-span-2">
+          <button type="submit"
+            [disabled]="!registerForm.valid"
+            class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition disabled:opacity-50 disabled:cursor-not-allowed">
+            Registrarse
+          </button>
+          <p *ngIf="message" class="text-red-500 text-center text-sm mt-2">
+            {{ message }}
+          </p>
+        </div>
       </form>
 
       <!-- Separador -->
@@ -64,4 +114,3 @@
     </div>
   </div>
 </ion-content>
-
