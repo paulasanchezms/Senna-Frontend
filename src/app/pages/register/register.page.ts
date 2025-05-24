@@ -104,7 +104,6 @@ export class RegisterPage implements OnInit {
     const modal = await this.modalController.create({
       component: TermsPatientPage,
       breakpoints: [0.3, 0.5, 0.9],
-      initialBreakpoint: 0.8
     });
     await modal.present();
   }

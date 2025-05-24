@@ -192,7 +192,6 @@ export class RegisterPsychologistPage implements OnInit {
     const modal = await this.modalController.create({
       component: TermsPsychologistPage,
       breakpoints: [0.3, 0.5, 0.9],
-      initialBreakpoint: 0.8
         });
     await modal.present();
   }
