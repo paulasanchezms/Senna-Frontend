@@ -39,12 +39,15 @@ export class RegisterPsychologistPage implements OnInit {
       last_name: ['', [Validators.required, this.textValidator]],
       email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
       password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
+      confirmPassword: ['', Validators.required],
       qualification: [''],
       consultationDuration: [null],
       consultationPrice: [null],
       specialty: [''],
       location: [''],
       termsAccepted: [false, Validators.requiredTrue]
+    }, {
+      validators: [this.passwordsMatchValidator]
     });
 
     ['name', 'last_name', 'qualification', 'specialty', 'location'].forEach(field => {
@@ -177,13 +180,28 @@ export class RegisterPsychologistPage implements OnInit {
     return this.registerForm.get('document');
   }
 
+  get termsAccepted() {
+    return this.registerForm.get('termsAccepted');
+  }
+
+  get confirmPassword() {
+    return this.registerForm.get('confirmPassword');
+  }
+
   async openTermsModal() {
     const modal = await this.modalController.create({
       component: TermsPsychologistPage,
       breakpoints: [0.3, 0.5, 0.9],
-      initialBreakpoint: 0.8,
-      cssClass: 'custom-modal'
-    });
+        });
     await modal.present();
+  }
+
+  passwordsMatchValidator(form: AbstractControl): ValidationErrors | null {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    if (password !== confirmPassword) {
+      return { passwordsMismatch: true };
+    }
+    return null;
   }
 }

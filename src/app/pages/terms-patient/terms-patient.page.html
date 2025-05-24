@@ -1,13 +1,38 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>terms-patient</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding">
+  <div class="flex justify-center items-center h-full">
+    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 max-w-2xl text-peach space-y-4">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">terms-patient</ion-title>
-    </ion-toolbar>
-  </ion-header>
+      <!-- Encabezado -->
+      <h2 class="text-xl text-lavender font-semibold text-center">
+        Protección de Datos
+      </h2>
+
+      <!-- Texto -->
+      <p>
+        Al registrarte en la plataforma <strong>Senna</strong>, consientes que tus datos personales
+        (nombre, email, ubicación y los registros relacionados con tu bienestar emocional)
+        sean tratados de forma confidencial y compartidos únicamente con profesionales
+        debidamente acreditados dentro de la plataforma.
+      </p>
+
+      <p>
+        Este tratamiento se realiza de acuerdo con el
+        <strong>Reglamento General de Protección de Datos (RGPD)</strong> y la
+        <strong>Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD)</strong>.
+      </p>
+
+      <p>
+        En todo momento podrás ejercer tus derechos de acceso, rectificación, supresión y oposición
+        contactando con nuestro equipo a través del correo oficial de Senna.
+      </p>
+
+      <!-- Botón cerrar -->
+      <div class="flex justify-center pt-4">
+        <ion-button fill="outline" color="danger" (click)="dismissModal()">
+          Cerrar
+        </ion-button>
+      </div>
+      
+    </div>
+  </div>
 </ion-content>

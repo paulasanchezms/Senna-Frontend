@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   standalone:false,
@@ -6,11 +7,12 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './terms-patient.page.html',
   styleUrls: ['./terms-patient.page.scss'],
 })
-export class TermsPatientPage implements OnInit {
+export class TermsPatientPage {
 
-  constructor() { }
+  constructor(private modalController: ModalController) {}
 
-  ngOnInit() {
+  dismissModal() {
+    this.modalController.dismiss();
   }
 
 }
