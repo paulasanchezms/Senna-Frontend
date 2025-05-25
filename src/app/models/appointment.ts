@@ -1,7 +1,7 @@
 import { UserResponseDTO } from './user';
 
 export interface AppointmentDTO {
-    dateTime: string;  // o Date, según lo que manejes en el frontend
+    dateTime: string; 
     duration: number;
     status?: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA';
     description: string;
@@ -10,7 +10,7 @@ export interface AppointmentDTO {
 
 export interface AppointmentResponseDTO {
     id: number;
-    dateTime: string;  // o Date
+    dateTime: string; 
     duration: number;
     status: 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA';
     description: string;
