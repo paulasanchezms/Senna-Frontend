@@ -1,8 +1,8 @@
-<ion-header>
-  <ion-toolbar class="bg-lightPeach">
+<ion-header class="bg-white shadow">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button
-        defaultHref="/search-psychologist"
+        defaultHref="/patient/search-psychologist"
         class="text-lavender"
       ></ion-back-button>
     </ion-buttons>
@@ -12,7 +12,7 @@
 
 <ion-content class="bg-lightPeach p-4 flex flex-col">
   <!-- 1) CALENDARIO -->
-  <div class="mb-4 flex justify-center">
+  <div class="mb-4 flex justify-center p-4">
     <ion-datetime
       presentation="date"
       locale="es-ES"
@@ -34,7 +34,7 @@
   </div>
 
   <!-- 2) FRANJAS HORARIAS -->
-  <div class="mb-6" *ngIf="availableTimes.length > 0">
+  <div class="mb-6 px-4" *ngIf="availableTimes.length > 0">
     <div class="flex space-x-3 overflow-x-auto pb-2">
       <button
         *ngFor="let time of availableTimes"
@@ -52,6 +52,7 @@
   </div>
 
   <!-- 3) TARJETA DE SERVICIO -->
+  <div class="px-2">
   <div
     class="bg-white rounded-2xl shadow p-4 flex justify-between items-center mb-4"
   >
@@ -72,8 +73,8 @@
       </p>
     </div>
   </div>
+</div>
 
-  <div class="flex-1"></div>
 </ion-content>
 
 <ion-footer translucent>
@@ -89,11 +90,11 @@
       </div>
       <ion-button
         expand="block"
-        class="bg-salmon"
+        class="px-3 py-1 rounded-full text-peachy font-xl text-white bg-lavender"
         [disabled]="!selectedTime"
         (click)="confirm()"
       >
-        <span class="text-white font-bold">Continuar</span>
+        Continuar
       </ion-button>
     </div>
   </ion-toolbar>

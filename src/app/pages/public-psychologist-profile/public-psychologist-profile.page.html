@@ -1,14 +1,14 @@
 <ion-header class="bg-white shadow">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/patient"></ion-back-button>
+      <ion-back-button defaultHref="/patient" class="text-lavender"></ion-back-button>
     </ion-buttons>
-    <ion-title class="text-lavender font-semibold">Perfil del psicólogo</ion-title>
+    <ion-title class="text-lavender font-semibold">Perfil de {{ psychologist?.name }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="psychologist; else loading" fullscreen class="bg-lightPeach font-peachy">
-  <div class="max-w-4xl mx-auto px-4 py-6 pb-36">
+  <div class="max-w-4xl mx-auto px-4 py-6 pb-36 pt-16">
     <!-- Perfil -->
     <div class="bg-white rounded-2xl shadow-xl p-6 flex gap-6 items-center">
       <img
@@ -116,14 +116,19 @@
   <div class="text-center p-8 text-gray-500">Cargando perfil...</div>
 </ng-template>
 
-<ion-footer *ngIf="psychologist" class="bg-white border-t border-peach shadow-inner fixed bottom-0 left-0 right-0 z-50">
+<ion-footer
+  *ngIf="psychologist"
+  class="bg-white border-t border-peach shadow-inner fixed bottom-0 left-0 right-0 z-50"
+>
   <ion-toolbar class="p-4">
-    <ion-button
-      expand="block"
-      class="bg-peach text-white font-semibold rounded-xl hover:opacity-90"
-      (click)="goToPsychologistSchedule(psychologist.id_user)"
-    >
-      Solicitar cita con {{ psychologist.name }}
-    </ion-button>
+    <div class="flex justify-center">
+      <ion-button
+        expand="block"
+        class="bg-salmon text-white font-bold rounded-full text-lg px-6 py-2"
+        (click)="goToPsychologistSchedule(psychologist.id_user)"
+      >
+        Solicitar cita con {{ psychologist.name }}
+      </ion-button>
+    </div>
   </ion-toolbar>
 </ion-footer>

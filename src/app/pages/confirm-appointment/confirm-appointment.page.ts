@@ -53,4 +53,8 @@ export class ConfirmAppointmentPage implements OnInit {
       }
     });
   }
+
+  get formattedTime(): string {
+    return this.appointmentSummary.time?.substring(0, 5) || '';
+  }
 }
