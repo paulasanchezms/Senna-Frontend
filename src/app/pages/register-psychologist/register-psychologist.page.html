@@ -75,7 +75,7 @@
           <input
             type="text"
             formControlName="qualification"
-            placeholder="Titulación - opcional"
+            placeholder="Titulación"
             class="w-full px-4 py-2.5 rounded-xl bg-white/90 placeholder-peach text-peach border border-lavender focus:outline-none focus:ring-2 focus:ring-lavender transition"
             [ngClass]="{ 'border-red-500': qualification?.invalid && formSubmitted }"
           />
@@ -92,8 +92,9 @@
           <input
             type="number"
             formControlName="consultationDuration"
-            placeholder="Duración consulta (min) — opcional"
+            placeholder="Duración consulta (min) "
             class="w-full px-4 py-2.5 rounded-xl bg-white/90 placeholder-peach text-peach border border-lavender focus:outline-none focus:ring-2 focus:ring-lavender transition"
+            min="0"
           />
         </div>
 
@@ -102,7 +103,7 @@
           <input
             type="number"
             formControlName="consultationPrice"
-            placeholder="Precio consulta (€) — opcional"
+            placeholder="Precio consulta (€)"
             class="w-full px-4 py-2.5 rounded-xl bg-white/90 placeholder-peach text-peach border border-lavender focus:outline-none focus:ring-2 focus:ring-lavender transition"
             step="0.01"
             min="0"
@@ -114,7 +115,7 @@
           <input
             type="text"
             formControlName="specialty"
-            placeholder="Especialidad — opcional"
+            placeholder="Especialidad"
             class="w-full px-4 py-2.5 rounded-xl bg-white/90 placeholder-peach text-peach border border-lavender focus:outline-none focus:ring-2 focus:ring-lavender transition"
           />
           
@@ -125,7 +126,7 @@
           <input
             type="text"
             id="autocomplete"
-            placeholder="Ubicación — opcional"
+            placeholder="Ubicación"
             class="w-full px-4 py-2.5 rounded-xl bg-white/90 placeholder-peach text-peach border border-lavender focus:outline-none focus:ring-2 focus:ring-lavender transition"
           />
         </div>

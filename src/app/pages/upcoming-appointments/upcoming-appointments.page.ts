@@ -52,7 +52,7 @@ export class UpcomingAppointmentsPage implements OnInit {
   
   cancelAppointment(id: number) {
     this.appointmentService.cancelAppointment(id).subscribe(() => {
-      this.loadAppointments(); // recargar citas tras cancelación
+      this.loadAppointments();
     });
   }
 }
