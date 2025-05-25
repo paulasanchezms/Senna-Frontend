@@ -58,4 +58,8 @@ export class AppointmentService {
       getPatientsForPsychologist(): Observable<UserResponseDTO[]> {
         return this.http.get<UserResponseDTO[]>(`${this.baseUrl}/psychologist/patients`);
       }
+
+      cancelAllWithPsychologist(psychologistId: number) {
+        return this.http.delete(`${this.baseUrl}/cancel-by-psychologist/${psychologistId}`);
+      }
 }

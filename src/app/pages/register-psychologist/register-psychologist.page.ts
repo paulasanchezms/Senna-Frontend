@@ -89,7 +89,8 @@ export class RegisterPsychologistPage implements OnInit {
       name: v.name,
       last_name: v.last_name,
       email: v.email,
-      password: v.password
+      password: v.password,
+      termsAccepted: v.termsAccepted 
     };
 
     const profilePart = {
