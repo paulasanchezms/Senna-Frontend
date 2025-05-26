@@ -12,7 +12,9 @@ export interface Symptom {
   providedIn: 'root'
 })
 export class SymptomService {
-  private baseUrl = 'http://localhost:8080/api/symptoms';
+  private baseUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api/symptoms'
+    : 'https://senna-production-45cb.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 

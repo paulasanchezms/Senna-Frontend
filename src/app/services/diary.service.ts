@@ -10,12 +10,11 @@ export interface DiaryEntryDTO {
   moodLevel: number;
 }
 
-
 export interface DiaryEntryResponseDTO {
   id: number;
   date: string;
   moods: { id: number; name: string }[];
-  symptoms: { id: number; name: string }[]; 
+  symptoms: { id: number; name: string }[];
   notes: string;
   user: UserResponseDTO;
   moodLevel: number;
@@ -35,13 +34,17 @@ export interface UserResponseDTO {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DiaryService {
-  private baseUrl = 'http://localhost:8080/api/diary';
-  private moodsUrl = 'http://localhost:8080/api/moods';
-  private symptomsUrl = 'http://localhost:8080/api/symptoms';
+  private readonly apiRoot =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:8080/api'
+      : 'https://senna-production-45cb.up.railway.app/api';
 
+  private baseUrl = `${this.apiRoot}/diary`;
+  private moodsUrl = `${this.apiRoot}/moods`;
+  private symptomsUrl = `${this.apiRoot}/symptoms`;
   constructor(private http: HttpClient) {}
 
   getAllEntries(): Observable<DiaryEntryResponseDTO[]> {
@@ -56,13 +59,18 @@ export class DiaryService {
     return this.http.post<DiaryEntryResponseDTO>(this.baseUrl, entry);
   }
 
-  updateEntry(id: number, entry: DiaryEntryDTO): Observable<DiaryEntryResponseDTO> {
-    return this.http.put<DiaryEntryResponseDTO>(`${this.baseUrl}/entry/${id}`, entry);
+  updateEntry(
+    id: number,
+    entry: DiaryEntryDTO
+  ): Observable<DiaryEntryResponseDTO> {
+    return this.http.put<DiaryEntryResponseDTO>(
+      `${this.baseUrl}/entry/${id}`,
+      entry
+    );
   }
 
   deleteEntry(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/entry/${id}`);
-
   }
 
   getMoods(): Observable<any[]> {
@@ -70,13 +78,12 @@ export class DiaryService {
   }
 
   getSymptoms(): Observable<any[]> {
-    return this.http
-    
-    .get<any[]>(this.symptomsUrl);
+    return this.http.get<any[]>(this.symptomsUrl);
   }
 
   getEntryForPatientByDate(patientId: number, date: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/psychologist/patient/${patientId}?date=${date}`);
+    return this.http.get<any>(
+      `${this.baseUrl}/psychologist/patient/${patientId}?date=${date}`
+    );
   }
-
 }
