@@ -3,12 +3,11 @@
   <ion-toolbar class="px-6 py-3 flex items-center justify-between">
     <ion-buttons slot="start">
       <ion-button fill="clear" class="text-peach text-base font-semibold" (click)="goBack()">
-        <ion-icon name="arrow-back-outline" slot="start" class="text-lg mr-1"></ion-icon>
-        Volver
+        <ion-icon name="arrow-back-outline" slot="start" class="text-lg mr-1 text-lavender"></ion-icon> 
       </ion-button>
     </ion-buttons>
 
-    <ion-title class="text-peach text-xl font-bold font-peachy text-end w-full">
+    <ion-title class="text-lavender text-xl font-bold font-peachy text-center w-full">
       Estadísticas de {{ patient?.name }} {{ patient?.last_name }}
     </ion-title>
   </ion-toolbar>
@@ -22,7 +21,7 @@
     'pt-6 pb-36': !isPsychologist 
   }"
 >
-    <!-- Título para PACIENTE (no psicólogo) -->
+    <!-- Título para PACIENTE-->
     <h2 *ngIf="!isPsychologist" class="text-4xl font-bold text-salmon tracking-wide border-b-2 border-salmon text-center mb-6">
       Estadísticas
     </h2>
