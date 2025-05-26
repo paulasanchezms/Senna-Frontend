@@ -27,5 +27,6 @@ export class PsychologistNavbarPage {
 
   logout() {
     this.authService.logout();
-    window.location.href = '/login';  }
+    window.location.href = '/login';
+    }
 }
