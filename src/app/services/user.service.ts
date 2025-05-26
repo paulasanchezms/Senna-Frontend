@@ -8,7 +8,9 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = 'http://localhost:8080/api/users';
+private baseUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api/users'
+    : 'https://senna-production-45cb.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 

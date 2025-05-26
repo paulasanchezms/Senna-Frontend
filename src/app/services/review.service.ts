@@ -6,7 +6,9 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ReviewService {
-  private baseUrl = 'http://localhost:8080/api/reviews';
+  private baseUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api/reviews'
+    : 'https://senna-production-45cb.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 
