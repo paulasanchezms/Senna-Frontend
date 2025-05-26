@@ -11,7 +11,7 @@ import { AuthService, AuthResponse } from '../../services/auth.service';
 import { ModalController } from '@ionic/angular';
 import { TermsPsychologistPage } from '../terms-psychologist/terms-psychologist.page';
 
-declare var google: any; 
+declare var google: any;
 
 @Component({
   standalone: false,
@@ -24,39 +24,57 @@ export class RegisterPsychologistPage implements OnInit {
   formSubmitted = false;
   isMobile = false;
   message: string = '';
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService,
-    private modalController: ModalController,
-
+    private modalController: ModalController
   ) {}
 
   ngOnInit(): void {
-    this.registerForm = this.fb.group({
-      name: ['', [Validators.required, this.textValidator]],
-      last_name: ['', [Validators.required, this.textValidator]],
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
-      password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
-      confirmPassword: ['', Validators.required],
-      qualification: [''],
-      consultationDuration: [null],
-      consultationPrice: [null],
-      specialty: [''],
-      location: [''],
-      termsAccepted: [false, Validators.requiredTrue]
-    }, {
-      validators: [this.passwordsMatchValidator]
-    });
+    this.registerForm = this.fb.group(
+      {
+        name: ['', [Validators.required, this.textValidator]],
+        last_name: ['', [Validators.required, this.textValidator]],
+        email: [
+          '',
+          [Validators.required, Validators.email, this.customEmailValidator],
+        ],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(6),
+            this.passwordValidator,
+          ],
+        ],
+        confirmPassword: ['', Validators.required],
+        qualification: [''],
+        consultationDuration: [null],
+        consultationPrice: [null],
+        specialty: [''],
+        location: [''],
+        termsAccepted: [false, Validators.requiredTrue],
+      },
+      {
+        validators: [this.passwordsMatchValidator],
+      }
+    );
 
-    ['name', 'last_name', 'qualification', 'specialty', 'location'].forEach(field => {
-      this.registerForm.get(field)?.valueChanges.subscribe(value => {
-        if (typeof value === 'string') {
-          this.registerForm.get(field)?.setValue(value.replace(/^\s+/, ''), { emitEvent: false });
-        }
-      });
-    });
+    ['name', 'last_name', 'qualification', 'specialty', 'location'].forEach(
+      (field) => {
+        this.registerForm.get(field)?.valueChanges.subscribe((value) => {
+          if (typeof value === 'string') {
+            this.registerForm
+              .get(field)
+              ?.setValue(value.replace(/^\s+/, ''), { emitEvent: false });
+          }
+        });
+      }
+    );
 
     this.checkScreenSize();
   }
@@ -90,7 +108,7 @@ export class RegisterPsychologistPage implements OnInit {
       last_name: v.last_name,
       email: v.email,
       password: v.password,
-      termsAccepted: v.termsAccepted 
+      termsAccepted: v.termsAccepted,
     };
 
     const profilePart = {
@@ -98,14 +116,19 @@ export class RegisterPsychologistPage implements OnInit {
       consultationPrice: v.consultationPrice,
       specialty: v.specialty,
       location: v.location,
-      workingHours: []
+      workingHours: [],
     };
 
     const formData = new FormData();
 
-    formData.append('user', new Blob([JSON.stringify(userPart)], { type: 'application/json' }));
-    formData.append('profile', new Blob([JSON.stringify(profilePart)], { type: 'application/json' }));
-
+    formData.append(
+      'user',
+      new Blob([JSON.stringify(userPart)], { type: 'application/json' })
+    );
+    formData.append(
+      'profile',
+      new Blob([JSON.stringify(profilePart)], { type: 'application/json' })
+    );
 
     this.authService.registerPsychologist(formData).subscribe({
       next: (response: AuthResponse) => {
@@ -114,7 +137,8 @@ export class RegisterPsychologistPage implements OnInit {
       },
       error: (error) => {
         console.error('error registro', error);
-        this.message = 'Error en el registro: ' + (error.error?.message || error.message);
+        this.message =
+          'Error en el registro: ' + (error.error?.message || error.message);
       },
     });
   }
@@ -193,7 +217,7 @@ export class RegisterPsychologistPage implements OnInit {
     const modal = await this.modalController.create({
       component: TermsPsychologistPage,
       breakpoints: [0.3, 0.5, 0.9],
-        });
+    });
     await modal.present();
   }
 

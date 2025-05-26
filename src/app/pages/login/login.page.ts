@@ -14,19 +14,22 @@ export class LoginPage implements OnInit {
   loginForm!: FormGroup;
   formSubmitted = false;
   message: string = '';
-
+  showPassword: boolean = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private userService: UserService, // ← Inyectado
+    private userService: UserService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
     });
+    this.loginForm.reset();
+    this.message = '';
+    this.formSubmitted = false;
   }
 
   onLogin(): void {
@@ -61,12 +64,14 @@ export class LoginPage implements OnInit {
           error: () => {
             this.message = 'No se pudieron obtener los datos del usuario.';
             this.router.navigate(['/unauthorized']);
-          }
+          },
         });
       },
       error: (error) => {
-        this.message = 'Error en el inicio de sesión: ' + (error.error?.message || error.message);
-      }
+        this.message =
+          'Error en el inicio de sesión: ' +
+          (error.error?.message || error.message);
+      },
     });
   }
 

@@ -22,6 +22,8 @@ export class RegisterPage implements OnInit {
   formSubmitted = false;
   message: string = '';
   isMobile = false;
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -31,22 +33,37 @@ export class RegisterPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.registerForm = this.fb.group({
-      name: ['', [Validators.required, this.textValidator]],
-      last_name: ['', [Validators.required, this.textValidator]],
-      email: ['', [Validators.required, Validators.email, this.customEmailValidator]],
-      password: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
-      role: ['PATIENT'],
-      confirmPassword: ['', Validators.required],
-      termsAccepted: [false, Validators.requiredTrue]
-    }, {
-      validators: [this.passwordsMatchValidator]
-    });
+    this.registerForm = this.fb.group(
+      {
+        name: ['', [Validators.required, this.textValidator]],
+        last_name: ['', [Validators.required, this.textValidator]],
+        email: [
+          '',
+          [Validators.required, Validators.email, this.customEmailValidator],
+        ],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(6),
+            this.passwordValidator,
+          ],
+        ],
+        role: ['PATIENT'],
+        confirmPassword: ['', Validators.required],
+        termsAccepted: [false, Validators.requiredTrue],
+      },
+      {
+        validators: [this.passwordsMatchValidator],
+      }
+    );
 
-    ['name', 'last_name'].forEach(field => {
-      this.registerForm.get(field)?.valueChanges.subscribe(value => {
+    ['name', 'last_name'].forEach((field) => {
+      this.registerForm.get(field)?.valueChanges.subscribe((value) => {
         if (typeof value === 'string') {
-          this.registerForm.get(field)?.setValue(value.replace(/^\s+/, ''), { emitEvent: false });
+          this.registerForm
+            .get(field)
+            ?.setValue(value.replace(/^\s+/, ''), { emitEvent: false });
         }
       });
     });
@@ -67,8 +84,9 @@ export class RegisterPage implements OnInit {
         this.router.navigate(['/patient/home']);
       },
       error: (error) => {
-        this.message = 'Error en el registro: ' + (error.error?.message || error.message);
-      }
+        this.message =
+          'Error en el registro: ' + (error.error?.message || error.message);
+      },
     });
   }
 

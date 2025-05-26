@@ -1,16 +1,28 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AppointmentDTO, AppointmentResponseDTO } from '../models/appointment';
 import { UserResponseDTO } from '../models/user';
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
+
+  private pendingCount$ = new BehaviorSubject<number>(0);
+
   private baseUrl = 'http://localhost:8080/api/appointments';
 
   constructor(private http: HttpClient) {}
 
-  
+  getPendingCountObservable(): Observable<number> {
+    return this.pendingCount$.asObservable();
+  }
+
+  fetchAndUpdatePendingCount(): void {
+    this.getPendingAppointmentsForPsychologist().subscribe({
+      next: (appointments) => this.pendingCount$.next(appointments.length),
+      error: () => this.pendingCount$.next(0)
+    });
+  }
 
   getPatientAppointments(): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>(`${this.baseUrl}/patient`);
