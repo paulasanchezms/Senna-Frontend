@@ -38,16 +38,18 @@ export class AppointmentRequestsPage implements OnInit {
       next: () => {
         this.showToast('Cita aceptada');
         this.loadPendingAppointments();
+        this.appointmentService.fetchAndUpdatePendingCount(); 
       },
       error: () => this.showToast('Error al aceptar cita')
     });
   }
-
+  
   reject(id: number) {
     this.appointmentService.rejectAppointment(id).subscribe({
       next: () => {
         this.showToast('Cita rechazada');
         this.loadPendingAppointments();
+        this.appointmentService.fetchAndUpdatePendingCount(); 
       },
       error: () => this.showToast('Error al rechazar cita')
     });
