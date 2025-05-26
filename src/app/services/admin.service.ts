@@ -2,19 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UserResponseDTO } from '../models/user';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
+  private baseUrl = `${environment.apiUrl}/admin`;
 
-  private baseUrl: string;
-
-  constructor(private http: HttpClient) {
-    this.baseUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:8080/api/admin'
-      : 'https://senna-production-45cb.up.railway.app/api/admin';
-  }
+  constructor(private http: HttpClient) {}
 
   getPendingPsychologists(): Observable<UserResponseDTO[]> {
     return this.http.get<UserResponseDTO[]>(`${this.baseUrl}/pending-psychologists`);

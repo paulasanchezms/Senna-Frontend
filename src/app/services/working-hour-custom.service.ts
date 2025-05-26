@@ -2,19 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WorkingHourCustomDTO } from '../models/working-hour-custom';
-
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WorkingHourCustomService {
-  private baseUrl = window.location.hostname === 'localhost'
-    ? 'http://localhost:8080/api'
-    : 'https://senna-production-45cb.up.railway.app/api';
+  private baseUrl = `${environment.apiUrl}/working-hours/custom`;
 
   constructor(private http: HttpClient) {}
 
   getCustomHours(profileId: number, date: string): Observable<WorkingHourCustomDTO[]> {
     return this.http.get<WorkingHourCustomDTO[]>(
-      `${this.baseUrl}/working-hours/custom?profileId=${profileId}&date=${date}`
+      `${this.baseUrl}?profileId=${profileId}&date=${date}`
     );
   }
 
@@ -24,7 +22,7 @@ export class WorkingHourCustomService {
     hours: WorkingHourCustomDTO[]
   ): Observable<void> {
     return this.http.post<void>(
-      `${this.baseUrl}/working-hours/custom?profileId=${profileId}&date=${date}`,
+      `${this.baseUrl}?profileId=${profileId}&date=${date}`,
       hours
     );
   }

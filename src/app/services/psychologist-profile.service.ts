@@ -1,19 +1,17 @@
-// src/app/services/psychologist-profile.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PsychologistProfile } from '../models/psychologist-profile';
 import { WorkingHourDTO } from '../models/working-hour';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PsychologistProfileService {
-  private baseUrl = window.location.hostname === 'localhost'
-    ? 'http://localhost:8080/api'
-    : 'https://senna-production-45cb.up.railway.app/api';
+  private baseUrl = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   /**
    * Obtiene el perfil completo del psicólogo (incluye consultationDuration, price, etc.).
@@ -22,8 +20,6 @@ export class PsychologistProfileService {
     return this.http.get<PsychologistProfile>(
       `${this.baseUrl}/psychologists/${userId}/profile`
     );
-
-    
   }
 
   /**
@@ -62,10 +58,7 @@ export class PsychologistProfileService {
     );
   }
 
-  replaceWorkingHours(
-    userId: number,
-    dtos: WorkingHourDTO[]
-  ): Observable<WorkingHourDTO[]> {
+  replaceWorkingHours(userId: number, dtos: WorkingHourDTO[]): Observable<WorkingHourDTO[]> {
     return this.http.put<WorkingHourDTO[]>(
       `${this.baseUrl}/psychologists/${userId}/profile/hours`,
       dtos
@@ -73,21 +66,23 @@ export class PsychologistProfileService {
   }
 
   /**
- * Comprueba si el perfil del psicólogo está completo.
- */
-isProfileComplete(profile: PsychologistProfile): boolean {
-  return !!(profile.specialty &&
-    profile.location &&
-    profile.consultationDuration &&
-    profile.consultationPrice &&
-    profile.document &&
-    profile.description);
-}
+   * Comprueba si el perfil del psicólogo está completo.
+   */
+  isProfileComplete(profile: PsychologistProfile): boolean {
+    return !!(
+      profile.specialty &&
+      profile.location &&
+      profile.consultationDuration &&
+      profile.consultationPrice &&
+      profile.document &&
+      profile.description
+    );
+  }
 
-/**
- * Devuelve true si el usuario está activo y aprobado por el administrador.
- */
-canAccessFeatures(user: { active: boolean }, profile: PsychologistProfile): boolean {
-  return user.active && this.isProfileComplete(profile);
-}
+  /**
+   * Devuelve true si el usuario está activo y aprobado por el administrador.
+   */
+  canAccessFeatures(user: { active: boolean }, profile: PsychologistProfile): boolean {
+    return user.active && this.isProfileComplete(profile);
+  }
 }

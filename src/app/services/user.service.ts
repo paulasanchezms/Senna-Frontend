@@ -3,14 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UserResponseDTO } from '../models/user';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-private baseUrl = window.location.hostname === 'localhost'
-    ? 'http://localhost:8080/api/users'
-    : 'https://senna-production-45cb.up.railway.app/api/users';
+  private baseUrl = `${environment.apiUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
@@ -43,7 +42,7 @@ private baseUrl = window.location.hostname === 'localhost'
     formData.append('image', file);
 
     return this.http.post<{ url: string }>(
-      'http://localhost:8080/api/users/upload-image',
+      `${this.baseUrl}/upload-image`,
       formData
     ).pipe(
       map(res => res.url)
@@ -51,6 +50,6 @@ private baseUrl = window.location.hostname === 'localhost'
   }
 
   acceptTerms(): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/users/accept-terms`, {});
+    return this.http.put<void>(`${this.baseUrl}/accept-terms`, {});
   }
 }
