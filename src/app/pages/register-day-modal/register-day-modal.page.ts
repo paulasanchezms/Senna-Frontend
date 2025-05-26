@@ -17,7 +17,7 @@ export class RegisterDayModalPage implements OnInit {
   selectedMoodIds: number[] = [];
   selectedSymptomIds: number[] = [];
   notes: string = '';
-  moodLevel: number = 3; 
+  moodLevel: number = 3;
 
   constructor(
     private modalCtrl: ModalController,
@@ -25,25 +25,34 @@ export class RegisterDayModalPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.diaryService.getMoods().subscribe(data => {
-      this.moods = data;
+    // Cargar estados de ánimo
+    this.diaryService.getMoods().subscribe({
+      next: (data) => {
+        this.moods = data;
 
-      if (this.existingEntry) {
-        this.selectedMoodIds = this.existingEntry.mood.map((m: any) => m.id);
-      }
+        if (this.existingEntry?.moods) {
+          this.selectedMoodIds = this.existingEntry.moods.map((m: any) => m.id);
+        }
+      },
+      error: (err) => console.error('Error cargando moods:', err)
     });
 
-    this.diaryService.getSymptoms().subscribe(data => {
-      this.symptoms = data;
+    // Cargar síntomas
+    this.diaryService.getSymptoms().subscribe({
+      next: (data) => {
+        this.symptoms = data;
 
-      if (this.existingEntry) {
-        this.selectedSymptomIds = this.existingEntry.symptoms.map((s: any) => s.id);
-      }
+        if (this.existingEntry?.symptoms) {
+          this.selectedSymptomIds = this.existingEntry.symptoms.map((s: any) => s.id);
+        }
+      },
+      error: (err) => console.error('Error cargando symptoms:', err)
     });
 
+    // Cargar campos simples
     if (this.existingEntry) {
-      this.notes = this.existingEntry.notes;
-      this.moodLevel = this.existingEntry.moodLevel || 3;  
+      this.notes = this.existingEntry.notes ?? '';
+      this.moodLevel = this.existingEntry.moodLevel ?? 3;
     }
   }
 
@@ -79,7 +88,7 @@ export class RegisterDayModalPage implements OnInit {
       moodIds: this.selectedMoodIds,
       symptomIds: this.selectedSymptomIds,
       notes: this.notes,
-      moodLevel: this.moodLevel 
+      moodLevel: this.moodLevel
     };
 
     console.log('Enviando entrada al backend:', entry);

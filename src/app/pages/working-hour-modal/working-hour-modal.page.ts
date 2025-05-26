@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
-import { WorkingHourService, WorkingHourDTO } from '../../services/working-hour.service';
+import { WorkingHourDTO } from '../../services/working-hour.service';
+import { WorkingHourCustomDTO } from 'src/app/models/working-hour-custom';
+import { WorkingHourCustomService } from 'src/app/services/working-hour-custom.service';
 
 @Component({
   standalone: false,
@@ -11,66 +13,79 @@ import { WorkingHourService, WorkingHourDTO } from '../../services/working-hour.
 export class WorkingHourModalPage implements OnInit {
   @Input() userId!: number;
   @Input() allHours: WorkingHourDTO[] = [];
+  @Input() selectedDate!: string; // 'YYYY-MM-DD'
+  @Input() dayOfWeek!: number; // 0-6 (lunes a domingo)
 
   days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   selectedDay = 0;
-  workingHoursForDay: WorkingHourDTO[] = [];
+  workingHoursForDay: WorkingHourCustomDTO[] = [];
+
+  isCustomDate = false;
+  isDayEnabled = true;
 
   constructor(
-    private whService: WorkingHourService,
+    private customWhService: WorkingHourCustomService,
     private modalCtrl: ModalController,
     private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
-    this.loadHoursForDay(this.selectedDay);
+    this.selectedDay = this.dayOfWeek;
+    this.loadHoursForDate(this.selectedDate);
   }
 
-  loadHoursForDay(dayIndex: number) {
-    this.workingHoursForDay = this.allHours
-      .filter(wh => wh.dayOfWeek === dayIndex)
-      .map(wh => ({
-        ...wh,
-        startTime: wh.startTime.slice(0, 5),
-        endTime: wh.endTime.slice(0, 5)
-      }));
-  }
-
-  selectDay(index: number) {
-    this.selectedDay = index;
-    this.loadHoursForDay(index);
+  loadHoursForDate(date: string) {
+    this.customWhService.getCustomHours(this.userId, date).subscribe(customHours => {
+      if (customHours.length > 0) {
+        this.isCustomDate = true;
+        this.isDayEnabled = true;
+        this.workingHoursForDay = customHours.map(h => ({
+          startTime: h.startTime.slice(0, 5),
+          endTime: h.endTime.slice(0, 5),
+        }));
+      } else {
+        const fallback = this.allHours.filter(h => h.dayOfWeek === this.dayOfWeek);        this.isCustomDate = false;
+        this.isDayEnabled = fallback.length > 0;
+        this.workingHoursForDay = fallback.map(h => ({
+          startTime: h.startTime.slice(0, 5),
+          endTime: h.endTime.slice(0, 5),
+        }));
+        console.log('Fallback hours for day:', fallback);
+      }
+    });
   }
 
   addEmptyRow() {
     this.workingHoursForDay.push({
-      dayOfWeek: this.selectedDay,
       startTime: '',
       endTime: ''
     });
   }
 
-  async deleteHour(hour: WorkingHourDTO) {
-    if ((hour as any).id) {
-      await this.whService.deleteWorkingHour(this.userId, (hour as any).id).toPromise();
-    }
+  async deleteHour(hour: WorkingHourCustomDTO) {
     this.workingHoursForDay = this.workingHoursForDay.filter(h => h !== hour);
   }
 
   async saveAll() {
-    // VALIDACIONES
-    for (const [index, hour] of this.workingHoursForDay.entries()) {
+    if (!this.selectedDate) return;
+
+    if (!this.isDayEnabled) {
+      await this.customWhService.replaceCustomHours(this.userId, this.selectedDate, []).toPromise();
+      this.modalCtrl.dismiss({ status: 'saved' });
+      return;
+    }
+
+    for (const [i, hour] of this.workingHoursForDay.entries()) {
       if (!hour.startTime || !hour.endTime) {
-        this.showToast(`Franja ${index + 1}: Por favor completa ambas horas.`);
+        this.showToast(`Franja ${i + 1}: completa ambas horas.`);
         return;
       }
-
       if (hour.startTime >= hour.endTime) {
-        this.showToast(`Franja ${index + 1}: La hora de inicio debe ser anterior a la de fin.`);
+        this.showToast(`Franja ${i + 1}: la hora de inicio debe ser menor.`);
         return;
       }
     }
 
-    // OPCIONAL: comprobar solapamientos
     const sorted = [...this.workingHoursForDay].sort((a, b) => a.startTime.localeCompare(b.startTime));
     for (let i = 0; i < sorted.length - 1; i++) {
       if (sorted[i].endTime > sorted[i + 1].startTime) {
@@ -79,26 +94,11 @@ export class WorkingHourModalPage implements OnInit {
       }
     }
 
-    // SI TODO OK -> guardar
-    for (const hour of this.workingHoursForDay) {
-      const dto: WorkingHourDTO = {
-        dayOfWeek: this.selectedDay,
-        startTime: hour.startTime + ':00',
-        endTime: hour.endTime + ':00'
-      };
+    await this.customWhService
+      .replaceCustomHours(this.userId, this.selectedDate, this.workingHoursForDay)
+      .toPromise();
 
-      if ((hour as any).id) {
-        await this.whService.updateWorkingHour(this.userId, (hour as any).id, dto).toPromise();
-      } else {
-        await this.whService.createWorkingHour(this.userId, dto).toPromise();
-      }
-    }
-
-    const updatedHours = await this.whService.getWorkingHours(this.userId).toPromise() ?? [];
-    this.allHours = updatedHours;
-    this.loadHoursForDay(this.selectedDay);
-
-    this.modalCtrl.dismiss('saved');
+    this.modalCtrl.dismiss({ status: 'saved' });
   }
 
   async showToast(message: string) {
@@ -111,6 +111,6 @@ export class WorkingHourModalPage implements OnInit {
   }
 
   close() {
-    this.modalCtrl.dismiss('cancelled');
+    this.modalCtrl.dismiss({ status: 'cancelled' });
   }
 }

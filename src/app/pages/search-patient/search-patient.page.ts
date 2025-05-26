@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserResponseDTO } from '../../models/user';
 import { AppointmentService } from '../../services/appointment.service';
+import { Router } from '@angular/router';
 
 @Component({
   standalone:false,
@@ -13,7 +14,7 @@ export class SearchPatientPage implements OnInit {
   filteredPatients: UserResponseDTO[] = [];
   searchTerm: string = '';
 
-  constructor(private appointmentService: AppointmentService) {}
+  constructor(private appointmentService: AppointmentService, private router: Router) {}
 
   ngOnInit() {
     this.loadPatients();
@@ -38,5 +39,9 @@ export class SearchPatientPage implements OnInit {
 
   search() {
     this.onInputChange();
+  }
+
+  goToPatientView(id_user: number) {
+    this.router.navigate(['/public-patient-profile', id_user]);
   }
 }

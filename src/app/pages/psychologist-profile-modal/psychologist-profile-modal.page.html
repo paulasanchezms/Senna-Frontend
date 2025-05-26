@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar class="bg-white shadow-none">
+    <ion-title class="font-peachy text-lavender text-lg">
+      Perfil de {{ psychologist.name }} 
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg-lightPeach">
+  <div class="bg-white mt-8 rounded-2xl shadow-md p-6 space-y-6 max-w-xl mx-auto text-gray-700 text-sm">
+
+    <!-- Nombre -->
+    <h2 class="text-2xl text-salmon font-bold font-peachy text-center">
+      {{ psychologist.name }} {{ psychologist.last_name }}
+    </h2>
+
+    <!-- Contacto -->
+    <div class="space-y-1">
+      <p><strong>Email:</strong> {{ psychologist.email }}</p>
+      <p><strong>Teléfono:</strong> {{ psychologist.phone || 'No disponible' }}</p>
+    </div>
+
+    <!-- Perfil Profesional -->
+    <div class="space-y-1">
+      <p><strong>Especialidad:</strong> {{ psychologist.profile?.specialty || 'No disponible' }}</p>
+      <p><strong>Ubicación:</strong> {{ psychologist.profile?.location || 'No disponible' }}</p>
+      <p><strong>Descripción:</strong> {{ psychologist.profile?.description || 'No disponible' }}</p>
+    </div>
+
+    <!-- Documento -->
+    <div class="text-center pt-2">
+      <p>
+        <strong>Documento acreditativo:</strong>
+        <a *ngIf="psychologist.profile?.document" 
+           [href]="psychologist.profile?.document" 
+           target="_blank" 
+           class="text-lavender underline hover:text-indigo-500 transition">
+          Ver documento
+        </a>
+        <span *ngIf="!psychologist.profile?.document">No disponible</span>
+      </p>
+    </div>
+    
+  </div>
+</ion-content>

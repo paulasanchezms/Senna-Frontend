@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -15,6 +15,7 @@ import { ScheduleAppointmentPage } from './schedule-appointment.page';
     IonicModule,
     ScheduleAppointmentPageRoutingModule
   ],
-  declarations: [ScheduleAppointmentPage]
+  declarations: [ScheduleAppointmentPage],
+  providers: [{ provide: LOCALE_ID, useValue: 'es-ES' }]
 })
 export class ScheduleAppointmentPageModule {}

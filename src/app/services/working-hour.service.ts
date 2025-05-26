@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface WorkingHourDTO {
   dayOfWeek: number;
-  startTime: string; // "HH:mm:ss"
+  startTime: string;
   endTime:   string;
 }
 

@@ -14,10 +14,11 @@ export interface DiaryEntryDTO {
 export interface DiaryEntryResponseDTO {
   id: number;
   date: string;
-  mood: string;
-  symptoms: string;
+  moods: { id: number; name: string }[];
+  symptoms: { id: number; name: string }[]; 
   notes: string;
   user: UserResponseDTO;
+  moodLevel: number;
 }
 
 export interface UserResponseDTO {
@@ -69,8 +70,13 @@ export class DiaryService {
   }
 
   getSymptoms(): Observable<any[]> {
-    return this.http.get<any[]>(this.symptomsUrl);
+    return this.http
+    
+    .get<any[]>(this.symptomsUrl);
   }
 
+  getEntryForPatientByDate(patientId: number, date: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/psychologist/patient/${patientId}?date=${date}`);
+  }
 
 }

@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   /** Registro de paciente → POST /api/auth/register */
-  register(data: FormData): Observable<AuthResponse> {
+  register(data: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
       `${this.baseUrl}/register`,
       data
@@ -83,9 +83,27 @@ export class AuthService {
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Payload del token:', payload); 
       return payload.role ?? null;
     } catch (e) {
       console.error('Error decodificando token', e);
+      return null;
+    }
+  }
+
+  getCurrentUser(): { id_user: number; role: string; name?: string; email?: string } | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        id_user: payload.userId ?? payload.sub ?? 0,
+        role: payload.role,
+        name: payload.name,
+        email: payload.email
+      };
+    } catch (e) {
+      console.error('Error al decodificar el token JWT', e);
       return null;
     }
   }

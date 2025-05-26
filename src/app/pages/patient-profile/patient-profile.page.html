@@ -1,0 +1,86 @@
+<ng-container *ngIf="user">
+  <ion-content class="bg-lightPeach min-h-screen">
+    <div class="max-w-md mx-auto py-8 px-4">
+
+      <!-- Tarjeta principal -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col items-center space-y-6">
+
+        <!-- Título -->
+        <h2 class="text-2xl font-bold text-lavender">Mi Perfil</h2>
+
+        <!-- Imagen de perfil -->
+        <div class="relative">
+          <img
+            [src]="previewUrl || user?.photoUrl || 'https://ui-avatars.com/api/?name=' + user?.name + '+' + user?.last_name"
+            alt="Foto de perfil"
+            class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
+          />
+          <label class="absolute bottom-0 right-0 bg-white rounded-full shadow p-1 cursor-pointer hover:bg-gray-100 transition">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+            <ion-icon name="camera" class="text-coral text-lg"></ion-icon>
+          </label>
+        </div>
+
+        <!-- Formulario -->
+        <div class="w-full space-y-4">
+
+          <div>
+            <label class="block text-sm font-semibold text-lavender mb-1">Nombre</label>
+            <input
+              type="text"
+              [(ngModel)]="user.name"
+              class="w-full bg-white border border-peach rounded-xl p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-lavender"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-lavender mb-1">Apellidos</label>
+            <input
+              type="text"
+              [(ngModel)]="user.last_name"
+              class="w-full bg-white border border-peach rounded-xl p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-lavender"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-lavender mb-1">Email</label>
+            <input
+              type="text"
+              [value]="user.email"
+              disabled
+              class="w-full bg-gray-100 border border-peach text-gray-500 italic p-3 rounded-xl cursor-not-allowed"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-lavender mb-1">Teléfono</label>
+            <input
+              type="text"
+              [(ngModel)]="user.phone"
+              placeholder="No añadido"
+              class="w-full bg-white border border-peach rounded-xl p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-lavender"
+            />
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <ion-button
+          expand="block"
+          fill="solid"
+          class="w-80 bg-salmon text-white text-base font-bold rounded-xl mt-4 shadow hover:opacity-90 transition"
+          (click)="saveChanges()"
+        >
+          Guardar cambios
+        </ion-button>
+
+        <ion-button
+          fill="clear"
+          class="text-salmon hover:text-lavender text-sm font-medium transition"
+          (click)="logout()"
+        >
+          Cerrar sesión
+        </ion-button>
+      </div>
+    </div>
+  </ion-content>
+</ng-container>

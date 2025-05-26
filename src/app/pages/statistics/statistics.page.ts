@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import {
   StatisticsService,
@@ -9,6 +9,13 @@ import { ModalController } from '@ionic/angular';
 import { RegisterDayModalPage } from '../register-day-modal/register-day-modal.page';
 import { ChartConfiguration } from 'chart.js';
 import { catchError, firstValueFrom, of } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { PublicRegisterModalPage } from '../public-register-modal/public-register-modal.page';
+import { Location } from '@angular/common';
+import { UserService } from 'src/app/services/user.service';
+
+
 
 @Component({
   standalone: false,
@@ -16,12 +23,13 @@ import { catchError, firstValueFrom, of } from 'rxjs';
   templateUrl: './statistics.page.html',
   styleUrls: ['./statistics.page.scss'],
 })
-export class StatisticsPage implements OnInit {
+export class StatisticsPage implements OnInit, AfterViewInit {
   @ViewChild('weeklyChart', { static: true }) weeklyChart!: BaseChartDirective;
   @ViewChild('monthlyChart', { static: true })
   monthlyChart!: BaseChartDirective;
 
-  // Navegación de semana (ISO) y mes
+  patient: { name: string; last_name: string } | null = null;
+
   displayWeekYear!: number;
   displayWeekNum!: number;
   displayMonthYear!: number;
@@ -29,21 +37,20 @@ export class StatisticsPage implements OnInit {
   showWeekPicker = false;
   showMonthPicker = false;
 
-  // Rangos para los pickers
   minWeekDate!: string;
   maxWeekDate!: string;
   minMonth!: string;
   maxMonth!: string;
 
-  // Etiquetas dinámicas
   weekLabel = '';
   monthLabel = '';
-
-  // Flags para deshabilitar avance si ya estamos en el período actual
   isCurrentWeek = false;
   isCurrentMonth = false;
 
-  // ——— Configuración de los gráficos ———
+  viewingPatientId!: number;
+  isPsychologist = false;
+  
+
   weeklyChartConfig: ChartConfiguration<'line'> = {
     type: 'line',
     data: {
@@ -162,12 +169,40 @@ export class StatisticsPage implements OnInit {
   };
 
   constructor(
+    private location: Location,
     private statisticsService: StatisticsService,
     private diaryService: DiaryService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private userService: UserService 
   ) {}
 
   ngOnInit(): void {
+    const currentUser = this.authService.getCurrentUser();
+
+    if (!currentUser) {
+      alert('No se pudo identificar al usuario.');
+      return;
+    }
+
+    this.isPsychologist = currentUser.role === 'PSYCHOLOGIST';
+
+    if (this.isPsychologist) {
+      const idFromRoute = this.route.snapshot.queryParamMap.get('patientId');
+      if (!idFromRoute) {
+        alert('No se proporcionó ID de paciente.');
+        return;
+      }
+      this.viewingPatientId = +idFromRoute;
+    
+      this.userService.getPatientById(this.viewingPatientId).subscribe({
+        next: (data) => {
+          this.patient = { name: data.name, last_name: data.last_name };
+        },
+        error: (err) => console.error('Error cargando paciente:', err),
+      });
+    }
     const today = new Date();
     const lastYear = new Date(today);
     lastYear.setFullYear(lastYear.getFullYear() - 1);
@@ -184,12 +219,15 @@ export class StatisticsPage implements OnInit {
 
     this.updateWeekLabel();
     this.updateMonthLabel();
-
-    this.loadWeeklyStatistics();
-    this.loadMonthlyStatistics();
   }
 
-  /** Lanza el datetime de semana */
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.loadWeeklyStatistics();
+      this.loadMonthlyStatistics();
+    }, 100); 
+  }
+
   onWeekDateChange(val: string | string[] | null | undefined): void {
     if (!val || Array.isArray(val)) return;
     const d = new Date(val);
@@ -199,7 +237,6 @@ export class StatisticsPage implements OnInit {
     this.loadWeeklyStatistics();
   }
 
-  /** Lanza el datetime de mes */
   onMonthPickerChange(val: string | string[] | null | undefined): void {
     if (!val || Array.isArray(val)) return;
     const d = new Date(val);
@@ -218,6 +255,7 @@ export class StatisticsPage implements OnInit {
     this.updateWeekLabel();
     this.loadWeeklyStatistics();
   }
+
   nextWeek(): void {
     this.displayWeekNum++;
     if (this.displayWeekNum > this.weeksInYear(this.displayWeekYear)) {
@@ -227,6 +265,7 @@ export class StatisticsPage implements OnInit {
     this.updateWeekLabel();
     this.loadWeeklyStatistics();
   }
+
   prevMonth(): void {
     this.displayMonth--;
     if (this.displayMonth < 0) {
@@ -236,6 +275,7 @@ export class StatisticsPage implements OnInit {
     this.updateMonthLabel();
     this.loadMonthlyStatistics();
   }
+
   nextMonth(): void {
     this.displayMonth++;
     if (this.displayMonth > 11) {
@@ -247,60 +287,74 @@ export class StatisticsPage implements OnInit {
   }
 
   loadWeeklyStatistics(): void {
+    const patientId = this.isPsychologist ? this.viewingPatientId : undefined;
+
     this.statisticsService
-      .getWeeklyStatistics(this.displayWeekYear, this.displayWeekNum)
+      .getWeeklyStatistics(this.displayWeekYear, this.displayWeekNum, patientId)
       .subscribe((data: StatisticsResponse) => {
-        // 1) Generamos el nuevo array de datos (l>0?l:null)
-        const raw = data.weeklyMoodLevels.map(l => (l > 0 ? l : null));
-        // 2) Si todos son null, dejamos el array vacío
-        const newData = raw.every(v => v === null) ? [] : raw;
-  
-        // 3) Reasignamos por completo el objeto data
+        const raw = data.weeklyMoodLevels.map((l) => (l > 0 ? l : null));
+        const newData = raw.every((v) => v === null) ? [] : raw;
+
         this.weeklyChartConfig = {
           ...this.weeklyChartConfig,
           data: {
-            labels: ['L','M','X','J','V','S','D'],
-            datasets: [{
-              ...this.weeklyChartConfig.data.datasets[0],
-              data: newData,
-            }]
-          }
+            labels: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
+            datasets: [
+              {
+                ...this.weeklyChartConfig.data.datasets[0],
+                data: newData,
+              },
+            ],
+          },
         };
-  
-        // 4) Forzamos actualización (un tick después)
+
         setTimeout(() => this.weeklyChart?.update(), 0);
       });
   }
 
-loadMonthlyStatistics(): void {
-  const lastDay = new Date(this.displayMonthYear, this.displayMonth + 1, 0).getDate();
-  const labels = Array.from({ length: lastDay }, (_, i) => `${i+1}`);
+  loadMonthlyStatistics(): void {
+    const lastDay = new Date(
+      this.displayMonthYear,
+      this.displayMonth + 1,
+      0
+    ).getDate();
+    const labels = Array.from({ length: lastDay }, (_, i) => `${i + 1}`);
+    const patientId = this.isPsychologist ? this.viewingPatientId : undefined;
 
-  this.statisticsService
-    .getMonthlyStatistics(this.displayMonthYear, this.displayMonth + 1)
-    .subscribe((data: StatisticsResponse) => {
-      const raw = data.monthlyMoodLevels.map(l => (l > 0 ? l : null));
-      const newData = raw.every(v => v === null) ? [] : raw;
+    this.statisticsService
+      .getMonthlyStatistics(
+        this.displayMonthYear,
+        this.displayMonth + 1,
+        patientId
+      )
+      .subscribe((data: StatisticsResponse) => {
+        const raw = data.monthlyMoodLevels.map((l) => (l > 0 ? l : null));
+        const newData = raw.every((v) => v === null) ? [] : raw;
 
-      this.monthlyChartConfig = {
-        ...this.monthlyChartConfig,
-        data: {
-          labels,
-          datasets: [{
-            ...this.monthlyChartConfig.data.datasets[0],
-            data: newData,
-          }]
-        }
-      };
+        this.monthlyChartConfig = {
+          ...this.monthlyChartConfig,
+          data: {
+            labels,
+            datasets: [
+              {
+                ...this.monthlyChartConfig.data.datasets[0],
+                data: newData,
+              },
+            ],
+          },
+        };
 
-      setTimeout(() => this.monthlyChart?.update(), 0);
-    });
-}
+        setTimeout(() => this.monthlyChart?.update(), 0);
+      });
+  }
+
   async onChartClick(event: any, type: 'weekly' | 'monthly'): Promise<void> {
     const active = event.active;
     if (!active?.length) return;
+
     const idx = active[0].index;
     let sel: Date;
+
     if (type === 'weekly') {
       const m = this.getDateOfISOWeek(
         this.displayWeekNum,
@@ -311,18 +365,49 @@ loadMonthlyStatistics(): void {
     } else {
       sel = new Date(this.displayMonthYear, this.displayMonth, idx + 1);
     }
+
     const f = this.formatDate(sel);
-    const existing = await firstValueFrom(
-      this.diaryService.getEntryByDate(f).pipe(catchError(() => of(null)))
-    );
+
+    // 🔁 Diferenciar si el usuario es psicólogo o paciente
+    const currentUser = this.authService.getCurrentUser();
+    let existing = null;
+
+    try {
+      if (currentUser?.role === 'PSYCHOLOGIST') {
+        existing = await firstValueFrom(
+          this.diaryService
+            .getEntryForPatientByDate(this.viewingPatientId, f)
+            .pipe(catchError(() => of(null)))
+        );
+      } else {
+        existing = await firstValueFrom(
+          this.diaryService.getEntryByDate(f).pipe(catchError(() => of(null)))
+        );
+      }
+    } catch (e) {
+      console.error('Error al cargar entrada existente:', e);
+    }
+
     const modal = await this.modalController.create({
-      component: RegisterDayModalPage,
-      componentProps: { selectedDate: f, existingEntry: existing || null },
+      component:
+        currentUser?.role === 'PSYCHOLOGIST'
+          ? PublicRegisterModalPage
+          : RegisterDayModalPage,
+      componentProps:
+        currentUser?.role === 'PSYCHOLOGIST'
+          ? {
+              selectedDate: f,
+              patientId: this.viewingPatientId,
+            }
+          : {
+              selectedDate: f,
+              existingEntry: existing || null,
+            },
     });
+
     await modal.present();
   }
 
-  // — Utilidades ISO —
   private getISOWeekNumber(d: Date): number {
     const tmp = new Date(d.valueOf());
     tmp.setHours(0, 0, 0, 0);
@@ -338,20 +423,24 @@ loadMonthlyStatistics(): void {
       )
     );
   }
+
   private getISOWeekYear(d: Date): number {
     const tmp = new Date(d.valueOf());
     tmp.setDate(tmp.getDate() + 3 - ((tmp.getDay() + 6) % 7));
     return tmp.getFullYear();
   }
+
   private weeksInYear(y: number): number {
     return this.getISOWeekNumber(new Date(y, 11, 31));
   }
+
   private getDateOfISOWeek(w: number, y: number): Date {
     const s = new Date(y, 0, 1 + (w - 1) * 7);
     const dow = (s.getDay() + 6) % 7;
     s.setDate(s.getDate() - dow);
     return s;
   }
+
   private updateWeekLabel(): void {
     const a = this.getDateOfISOWeek(this.displayWeekNum, this.displayWeekYear),
       b = new Date(a);
@@ -366,6 +455,7 @@ loadMonthlyStatistics(): void {
       this.displayWeekYear === this.getISOWeekYear(now) &&
       this.displayWeekNum === this.getISOWeekNumber(now);
   }
+
   private updateMonthLabel(): void {
     const dt = new Date(this.displayMonthYear, this.displayMonth);
     let m = dt.toLocaleDateString('es-ES', { month: 'long' });
@@ -376,8 +466,13 @@ loadMonthlyStatistics(): void {
       this.displayMonthYear === now.getFullYear() &&
       this.displayMonth === now.getMonth();
   }
+
   private formatDate(d: Date): string {
     const p = (n: number) => (n < 10 ? `0${n}` : `${n}`);
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

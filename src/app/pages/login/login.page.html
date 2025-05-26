@@ -5,17 +5,18 @@
       <div class="text-4xl text-lavender">Senna</div>
 
       <div>
-        <h2 class="text-xl text-peach font-semibold">Tu camino empieza aquí</h2>
+        <h2 class="text-xl text-salmon font-semibold">Tu camino empieza aquí</h2>
         <p class="text-md text-lavender">Da el primer paso</p>
       </div>
 
       <!-- Formulario login reactivo -->
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-4 text-left">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-4 text-left" autocomplete="off">
         <div class="flex flex-col space-y-1">
           <input
             type="email"
             formControlName="email"
             placeholder="Email"
+            autocomplete="off"
             class="input"
             [ngClass]="{ 'border-red-500': email?.invalid && formSubmitted }"
           />
@@ -23,13 +24,22 @@
         </div>
 
         <div class="flex flex-col space-y-1">
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="Contraseña"
-            class="input"
-            [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }"
-          />
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Contraseña"
+              class="input pr-10"
+              [ngClass]="{ 'border-red-500': password?.invalid && formSubmitted }"
+            />
+            <button
+              type="button"
+              (click)="showPassword = !showPassword"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-lavender"
+            >
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </div>
           <p *ngIf="password?.invalid && formSubmitted" class="error">Contraseña requerida</p>
         </div>
 

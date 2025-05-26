@@ -1,0 +1,134 @@
+<ion-header class="bg-white shadow">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/patient" class="text-lavender"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-lavender font-semibold">Perfil de {{ psychologist?.name }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="psychologist; else loading" fullscreen class="bg-lightPeach font-peachy">
+  <div class="max-w-4xl mx-auto px-4 py-6 pb-36 pt-16">
+    <!-- Perfil -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 flex gap-6 items-center">
+      <img
+        [src]="psychologist?.photoUrl || defaultAvatar"
+        alt="Avatar"
+        class="w-24 h-24 rounded-full object-cover border-2 border-peach shadow"
+      />
+      <div>
+        <h2 class="text-2xl font-bold text-lavender">
+          {{ psychologist?.name }} {{ psychologist?.last_name }}
+        </h2>
+        <p class="text-base text-gray-600">{{ psychologist?.email }}</p>
+        <p class="text-base text-gray-600">
+          {{ psychologist?.phone || 'Teléfono no disponible' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Info profesional -->
+    <div class="mt-6 bg-white rounded-2xl shadow p-6 space-y-2 text-gray-700">
+      <h3 class="text-xl font-semibold text-peach">Información profesional</h3>
+      <p><strong>Especialidad:</strong> {{ psychologist?.profile?.specialty || 'No disponible' }}</p>
+      <p><strong>Descripción:</strong> {{ psychologist?.profile?.description || 'No disponible' }}</p>
+      <p><strong>Ubicación:</strong> {{ psychologist?.profile?.location || 'No disponible' }}</p>
+      <p><strong>Duración:</strong> {{ psychologist?.profile?.consultationDuration }} minutos</p>
+      <p><strong>Precio:</strong> {{ psychologist?.profile?.consultationPrice }} €</p>
+    </div>
+
+    <!-- Valoraciones -->
+    <div class="mt-6 bg-white rounded-2xl shadow p-6 space-y-4">
+      <h3 class="text-xl font-semibold text-peach">Valoraciones</h3>
+
+      <!-- Media -->
+      <div class="flex items-center gap-2 text-yellow-500">
+        <ion-icon
+          *ngFor="let s of [1,2,3,4,5]"
+          [name]="averageRating >= s ? 'star' : 'star-outline'"
+        ></ion-icon>
+        <span class="text-sm text-gray-700 ml-2">
+          ({{ averageRating.toFixed(1) }}/5)
+        </span>
+      </div>
+
+      <!-- Formulario -->
+      <div *ngIf="!hasRated" class="space-y-2">
+        <label class="text-sm font-medium text-gray-700">Tu valoración:</label>
+        <div class="flex space-x-1">
+          <ion-icon
+            *ngFor="let s of [1,2,3,4,5]"
+            [name]="rating >= s ? 'star' : 'star-outline'"
+            class="text-xl"
+            [ngClass]="hasRated ? 'text-gray-300' : 'text-yellow-400 cursor-pointer'"
+            (click)="!hasRated && setRating(s)"
+          ></ion-icon>
+        </div>
+        <textarea
+          [(ngModel)]="comment"
+          placeholder="Deja un comentario..."
+          rows="3"
+          class="w-full border border-peach rounded-xl p-2 text-gray-800 bg-white resize-none"
+          [disabled]="hasRated"
+        ></textarea>
+
+        <ion-button
+          expand="block"
+          class="bg-coral text-white rounded-xl font-semibold"
+          (click)="submitReview()"
+          [disabled]="hasRated || !rating || !comment.trim()"
+        >
+          Enviar valoración
+        </ion-button>
+      </div>
+
+      <!-- Reseñas -->
+      <div *ngFor="let r of visibleReviews" class="border border-lavender rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div class="font-semibold text-gray-800">{{ r.patientName }}</div>
+          <div class="text-yellow-400">
+            <ion-icon
+              *ngFor="let s of [1,2,3,4,5]"
+              [name]="r.rating >= s ? 'star' : 'star-outline'"
+            ></ion-icon>
+          </div>
+        </div>
+        <div class="text-sm text-gray-500">
+          {{ r.createdAt | date: 'dd/MM/yyyy' }}
+        </div>
+        <p class="text-sm text-gray-700 mt-2">{{ r.comment }}</p>
+      </div>
+
+      <!-- Ver más -->
+      <ion-button
+        *ngIf="visibleReviews.length < reviews.length"
+        expand="block"
+        class="bg-lavender text-white rounded-xl font-semibold mt-4"
+        (click)="showMore()"
+      >
+        Ver más valoraciones
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
+
+<ng-template #loading>
+  <div class="text-center p-8 text-gray-500">Cargando perfil...</div>
+</ng-template>
+
+<ion-footer
+  *ngIf="psychologist"
+  class="bg-white border-t border-peach shadow-inner fixed bottom-0 left-0 right-0 z-50"
+>
+  <ion-toolbar class="p-4">
+    <div class="flex justify-center">
+      <ion-button
+        expand="block"
+        class="bg-salmon text-white font-bold rounded-full text-lg px-6 py-2"
+        (click)="goToPsychologistSchedule(psychologist.id_user)"
+      >
+        Solicitar cita con {{ psychologist.name }}
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

@@ -16,48 +16,55 @@ export class SearchPsychologistPage implements OnInit {
   constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit() {
+    console.log('Componente search cargado');
+
     this.loadPsychologists();
   }
 
   loadPsychologists() {
-    this.userService.getPsychologists().subscribe((data) => {
-      this.psychologists = data;
+    console.log('Cargando psicólogos...');
+    this.userService.getPsychologists().subscribe({
+      next: (data) => {
+        console.log('Datos recibidos:', data);
+        this.psychologists = data.filter(p => p.active); 
+      },
+      error: (err) => {
+        console.error('Error al obtener psicólogos:', err);
+      }
     });
   }
-
   normalizeText(text: string): string {
     return text
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');  // elimina acentos
+      .replace(/[̀-ͯ]/g, ''); // elimina acentos
   }
 
-  search() {
-    const normalizedSearch = this.normalizeText(this.searchTerm);
-    const normalizedLocation = this.normalizeText(this.locationTerm);
+ 
+search() {
+  const normalizedSearch = this.normalizeText(this.searchTerm);
+  const normalizedLocation = this.normalizeText(this.locationTerm);
 
-    if (normalizedSearch || normalizedLocation) {
-      this.userService.getPsychologists().subscribe((data) => {
-        this.psychologists = data.filter((psy) => {
-          const name = this.normalizeText(`${psy.name} ${psy.last_name}`);
-          const specialty = this.normalizeText(psy.specialty || '');
-          const location = this.normalizeText(psy.location || '');
+  this.userService.getPsychologists().subscribe((data) => {
+    this.psychologists = data
+      .filter(p => p.active) // Solo activos
+      .filter((psy) => {
+        const name = this.normalizeText(`${psy.name} ${psy.last_name}`);
+        const specialty = this.normalizeText(psy.profile?.specialty || '');
+        const location = this.normalizeText(psy.profile?.location || '');
 
-          const matchesSpecialtyOrName =
-            !normalizedSearch ||
-            name.includes(normalizedSearch) ||
-            specialty.includes(normalizedSearch);
+        const matchesSpecialtyOrName =
+          !normalizedSearch ||
+          name.includes(normalizedSearch) ||
+          specialty.includes(normalizedSearch);
 
-          const matchesLocation =
-            !normalizedLocation || location.includes(normalizedLocation);
+        const matchesLocation =
+          !normalizedLocation || location.includes(normalizedLocation);
 
-          return matchesSpecialtyOrName && matchesLocation;
-        });
+        return matchesSpecialtyOrName && matchesLocation;
       });
-    } else {
-      this.loadPsychologists();
-    }
-  }
+  });
+}
 
   onInputChange() {
     if (!this.searchTerm.trim() && !this.locationTerm.trim()) {
@@ -67,7 +74,7 @@ export class SearchPsychologistPage implements OnInit {
     }
   }
 
-  goToPsychologistSchedule(id_user: number) {
-    this.router.navigate(['/schedule-appointment', id_user]);
+  goToPublicProfile(id_user: number) {
+    this.router.navigate(['/psychologist-public', id_user]);
   }
 }
