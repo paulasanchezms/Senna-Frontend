@@ -14,7 +14,7 @@ export interface Symptom {
 export class SymptomService {
   private baseUrl = window.location.hostname === 'localhost'
     ? 'http://localhost:8080/api/symptoms'
-    : 'https://senna-production-45cb.up.railway.app/api';
+    : 'https://senna-production-45cb.up.railway.app/api/symptoms';
 
   constructor(private http: HttpClient) {}
 

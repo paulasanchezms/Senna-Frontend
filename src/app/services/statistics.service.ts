@@ -17,7 +17,7 @@ export interface StatisticsResponse {
 export class StatisticsService {
   private baseUrl = window.location.hostname === 'localhost'
     ? 'http://localhost:8080/api/statistics'
-    : 'https://senna-production-45cb.up.railway.app/api';
+    : 'https://senna-production-45cb.up.railway.app/api/statistics';
 
   constructor(private http: HttpClient) {}
 

@@ -11,7 +11,7 @@ export class AppointmentService {
 
   private baseUrl = window.location.hostname === 'localhost'
     ? 'http://localhost:8080/api/appointments'
-    : 'https://senna-production-45cb.up.railway.app/api';
+    : 'https://senna-production-45cb.up.railway.app/api/appointments';
 
   constructor(private http: HttpClient) {}
 
