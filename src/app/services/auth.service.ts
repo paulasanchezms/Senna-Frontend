@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface AuthRequest {
   email: string;
@@ -15,16 +16,9 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl: string;
+  private baseUrl: string = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient) {
-    // Detectamos si estamos en localhost o en producción
-    if (window.location.hostname === 'localhost') {
-      this.baseUrl = 'http://localhost:8080/api/auth';
-    } else {
-      this.baseUrl = 'https://senna-production-45cb.up.railway.app/api/auth';
-    }
-  }
+  constructor(private http: HttpClient) {}
 
   /** Registro de paciente → POST /api/auth/register */
   register(data: any): Observable<AuthResponse> {
@@ -62,7 +56,6 @@ export class AuthService {
     }
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      // Ajusta la clave al claim que uses, e.g. 'sub' o 'userId'
       return payload.userId ?? (payload.sub ? +payload.sub : null);
     } catch (e) {
       console.error('Error al decodificar JWT', e);
@@ -75,7 +68,7 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('authToken');
+    return !!this.getToken();
   }
 
   getRole(): string | null {
@@ -83,7 +76,6 @@ export class AuthService {
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log('Payload del token:', payload); 
       return payload.role ?? null;
     } catch (e) {
       console.error('Error decodificando token', e);

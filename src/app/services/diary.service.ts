@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface DiaryEntryDTO {
   date: string;
@@ -37,14 +38,10 @@ export interface UserResponseDTO {
   providedIn: 'root',
 })
 export class DiaryService {
-  private readonly apiRoot =
-    window.location.hostname === 'localhost'
-      ? 'http://localhost:8080/api'
-      : 'https://senna-production-45cb.up.railway.app/api';
+  private readonly baseUrl = `${environment.apiUrl}/diary`;
+  private readonly moodsUrl = `${environment.apiUrl}/moods`;
+  private readonly symptomsUrl = `${environment.apiUrl}/symptoms`;
 
-  private baseUrl = `${this.apiRoot}/diary`;
-  private moodsUrl = `${this.apiRoot}/moods`;
-  private symptomsUrl = `${this.apiRoot}/symptoms`;
   constructor(private http: HttpClient) {}
 
   getAllEntries(): Observable<DiaryEntryResponseDTO[]> {
@@ -59,14 +56,8 @@ export class DiaryService {
     return this.http.post<DiaryEntryResponseDTO>(this.baseUrl, entry);
   }
 
-  updateEntry(
-    id: number,
-    entry: DiaryEntryDTO
-  ): Observable<DiaryEntryResponseDTO> {
-    return this.http.put<DiaryEntryResponseDTO>(
-      `${this.baseUrl}/entry/${id}`,
-      entry
-    );
+  updateEntry(id: number, entry: DiaryEntryDTO): Observable<DiaryEntryResponseDTO> {
+    return this.http.put<DiaryEntryResponseDTO>(`${this.baseUrl}/entry/${id}`, entry);
   }
 
   deleteEntry(id: number): Observable<void> {
@@ -82,8 +73,6 @@ export class DiaryService {
   }
 
   getEntryForPatientByDate(patientId: number, date: string): Observable<any> {
-    return this.http.get<any>(
-      `${this.baseUrl}/psychologist/patient/${patientId}?date=${date}`
-    );
+    return this.http.get<any>(`${this.baseUrl}/psychologist/patient/${patientId}?date=${date}`);
   }
 }

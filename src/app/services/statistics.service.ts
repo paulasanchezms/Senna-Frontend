@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface StatisticsResponse {
   totalEntries: number;
@@ -15,9 +16,7 @@ export interface StatisticsResponse {
   providedIn: 'root'
 })
 export class StatisticsService {
-  private baseUrl = window.location.hostname === 'localhost'
-    ? 'http://localhost:8080/api/statistics'
-    : 'https://senna-production-45cb.up.railway.app/api/statistics';
+  private baseUrl = `${environment.apiUrl}/statistics`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'https://senna-production-45cb.up.railway.app/api'
 };
