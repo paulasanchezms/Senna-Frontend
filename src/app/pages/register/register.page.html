@@ -1,56 +1,127 @@
-<ion-content class="h-screen w-screen bg-lightPeach md:bg-white font-peachy px-4">
+<ion-content
+  class="h-screen w-screen bg-lightPeach md:bg-white font-peachy px-4"
+>
   <div class="flex items-center justify-center h-full w-full">
-    <div class="w-full md:max-w-md md:bg-lightPeach md:rounded-2xl md:shadow-xl md:p-8 p-6 space-y-6 text-center">
-
+    <div
+      class="w-full md:max-w-md md:bg-lightPeach md:rounded-2xl md:shadow-xl md:p-8 p-6 space-y-6 text-center"
+    >
       <div class="text-4xl text-lavender">Senna</div>
 
       <div>
         <h2 class="text-xl text-salmon font-semibold">Crea tu cuenta</h2>
-        <p class="text-md text-lavender">EL camino hacia el bienestar comienza aquí</p>
+        <p class="text-md text-lavender">
+          EL camino hacia el bienestar comienza aquí
+        </p>
       </div>
 
       <!-- Formulario reactivo -->
-      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-4 text-left">
-
+      <form
+        [formGroup]="registerForm"
+        (ngSubmit)="onRegister()"
+        class="space-y-4 text-left"
+      >
         <div class="flex flex-col space-y-1">
-          <input type="text" formControlName="name" placeholder="Nombre" class="input"
-            [ngClass]="{ 'border-red-500': name?.invalid && (name?.touched || name?.dirty) }" />
-          <p *ngIf="name?.invalid && (name?.touched || name?.dirty)" class="error">Nombre requerido</p>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Nombre"
+            class="input"
+            [ngClass]="{ 'border-red-500': name?.invalid && (name?.touched || name?.dirty) }"
+          />
+          <p
+            *ngIf="name?.invalid && (name?.touched || name?.dirty)"
+            class="error"
+          >
+            Nombre requerido
+          </p>
         </div>
 
         <div class="flex flex-col space-y-1">
-          <input type="text" formControlName="last_name" placeholder="Apellidos" class="input"
-            [ngClass]="{ 'border-red-500': last_name?.invalid && (last_name?.touched || last_name?.dirty) }" />
-          <p *ngIf="last_name?.invalid && (last_name?.touched || last_name?.dirty)" class="error">Apellidos requeridos</p>
+          <input
+            type="text"
+            formControlName="last_name"
+            placeholder="Apellidos"
+            class="input"
+            [ngClass]="{ 'border-red-500': last_name?.invalid && (last_name?.touched || last_name?.dirty) }"
+          />
+          <p
+            *ngIf="last_name?.invalid && (last_name?.touched || last_name?.dirty)"
+            class="error"
+          >
+            Apellidos requeridos
+          </p>
         </div>
 
         <div class="flex flex-col space-y-1">
-          <input type="email" formControlName="email" placeholder="Email" class="input"
-            [ngClass]="{ 'border-red-500': email?.invalid && (email?.touched || email?.dirty) }" />
-          <p *ngIf="email?.invalid && (email?.touched || email?.dirty)" class="error">Correo inválido</p>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Email"
+            class="input"
+            [ngClass]="{ 'border-red-500': email?.invalid && (email?.touched || email?.dirty) }"
+          />
+          <p
+            *ngIf="email?.invalid && (email?.touched || email?.dirty)"
+            class="error"
+          >
+            Correo inválido
+          </p>
         </div>
 
+        <!-- Contraseña -->
         <div class="flex flex-col space-y-1">
-          <input type="password" formControlName="password" placeholder="Contraseña" class="input"
-            [ngClass]="{ 'border-red-500': password?.invalid && (password?.touched || password?.dirty) }" />
-          <p *ngIf="password?.invalid && (password?.touched || password?.dirty)" class="error">
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Contraseña"
+              class="input pr-10"
+              [ngClass]="{
+        'border-red-500': password?.invalid && (password?.touched || password?.dirty)
+      }"
+            />
+            <button
+              type="button"
+              (click)="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-lavender"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              ></ion-icon>
+            </button>
+          </div>
+          <p
+            *ngIf="password?.invalid && (password?.touched || password?.dirty)"
+            class="error"
+          >
             Mínimo 6 caracteres, mayúscula, número y símbolo
           </p>
         </div>
 
         <!-- Confirmar contraseña -->
-        <div class="flex flex-col space-y-1 ">
-          <input
-            type="password"
-            formControlName="confirmPassword"
-            placeholder="Confirmar contraseña"
-            class="input"
-            [ngClass]="{
-              'border-red-500':
-                (registerForm.hasError('passwordsMismatch') && confirmPassword?.touched) ||
-                (confirmPassword?.invalid && (confirmPassword?.touched || confirmPassword?.dirty))
-            }"
-          />
+        <div class="flex flex-col space-y-1">
+          <div class="relative">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="Confirmar contraseña"
+              class="input pr-10"
+              [ngClass]="{
+        'border-red-500':
+          (registerForm.hasError('passwordsMismatch') && confirmPassword?.touched) ||
+          (confirmPassword?.invalid && (confirmPassword?.touched || confirmPassword?.dirty))
+      }"
+            />
+            <button
+              type="button"
+              (click)="showConfirmPassword = !showConfirmPassword"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-lavender"
+            >
+              <ion-icon
+                [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+              ></ion-icon>
+            </button>
+          </div>
           <p
             *ngIf="confirmPassword?.invalid && (confirmPassword?.touched || confirmPassword?.dirty)"
             class="text-sm text-red-500"
@@ -68,24 +139,33 @@
         <div class="flex items-center gap-2 col-span-2">
           <ion-checkbox
             [checked]="termsAccepted?.value"
-            (ionChange)="termsAccepted?.setValue($event.detail.checked)">
+            (ionChange)="termsAccepted?.setValue($event.detail.checked)"
+          >
           </ion-checkbox>
           <label class="text-gray-500">
             Acepto los
-            <a (click)="openTermsModal()" class="text-lavender underline cursor-pointer">
+            <a
+              (click)="openTermsModal()"
+              class="text-lavender underline cursor-pointer"
+            >
               términos y condiciones
             </a>
           </label>
         </div>
-        <p *ngIf="termsAccepted?.invalid && (termsAccepted?.touched || termsAccepted?.dirty)" class="error text-red-500 text-sm">
+        <p
+          *ngIf="termsAccepted?.invalid && (termsAccepted?.touched || termsAccepted?.dirty)"
+          class="error text-red-500 text-sm"
+        >
           Debes aceptar los términos y condiciones
         </p>
 
         <!-- Botón -->
         <div class="col-span-2">
-          <button type="submit"
+          <button
+            type="submit"
             [disabled]="!registerForm.valid"
-            class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition disabled:opacity-50 disabled:cursor-not-allowed">
+            class="w-full py-3 rounded-full bg-salmon text-white font-semibold hover:bg-coral transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Registrarse
           </button>
           <p *ngIf="message" class="text-red-500 text-center text-sm mt-2">
@@ -104,12 +184,16 @@
       <!-- Link a registro profesional -->
       <p class="text-sm text-lavender">
         ¿Eres profesional?
-        <a routerLink="/register/psychologist" class="font-medium underline">Regístrate aquí</a>
+        <a routerLink="/register/psychologist" class="font-medium underline"
+          >Regístrate aquí</a
+        >
       </p>
       <!-- Link a login -->
       <p class="text-sm text-lavender">
         ¿Ya tienes una cuenta?
-        <a routerLink="/login" class="font-medium underline">Inicia sesión aquí</a>
+        <a routerLink="/login" class="font-medium underline"
+          >Inicia sesión aquí</a
+        >
       </p>
     </div>
   </div>

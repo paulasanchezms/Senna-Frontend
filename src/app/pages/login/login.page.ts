@@ -14,11 +14,11 @@ export class LoginPage implements OnInit {
   loginForm!: FormGroup;
   formSubmitted = false;
   message: string = '';
-
+  showPassword: boolean = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private userService: UserService, // ← Inyectado
+    private userService: UserService,
     private router: Router
   ) {}
 
