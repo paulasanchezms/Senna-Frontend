@@ -14,7 +14,8 @@ import { ActivatedRoute } from '@angular/router';
 import { PublicRegisterModalPage } from '../public-register-modal/public-register-modal.page';
 import { Location } from '@angular/common';
 import { UserService } from 'src/app/services/user.service';
-
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 
 @Component({
@@ -50,6 +51,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
   viewingPatientId!: number;
   isPsychologist = false;
   
+  @ViewChild('pdfContent', { static: false }) pdfContent!: any;
 
   weeklyChartConfig: ChartConfiguration<'line'> = {
     type: 'line',
@@ -474,5 +476,23 @@ export class StatisticsPage implements OnInit, AfterViewInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  downloadPDF(): void {
+    const content = this.pdfContent.nativeElement;
+  
+    html2canvas(content, { scrollY: -window.scrollY }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+  
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`estadisticas_${new Date().toISOString().slice(0, 10)}.pdf`);
+    }).catch(err => {
+      console.error('Error al generar PDF:', err);
+    });
   }
 }
