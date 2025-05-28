@@ -1,28 +1,44 @@
 <!-- SOLO si el usuario es PSYCHOLOGIST -->
-<ion-header *ngIf="isPsychologist" class="bg-white shadow-md border-b border-gray-200">
-  <ion-toolbar class="px-6 py-3 flex items-center justify-between">
+<ion-header
+  *ngIf="isPsychologist"
+  class="bg-white shadow-md border-b border-gray-200"
+>
+  <ion-toolbar class="flex items-center justify-between">
     <ion-buttons slot="start">
-      <ion-button fill="clear" class="text-peach text-base font-semibold" (click)="goBack()">
-        <ion-icon name="arrow-back-outline" slot="start" class="text-lg mr-1 text-lavender"></ion-icon> 
+      <ion-button
+        fill="clear"
+        class="text-peach text-base font-semibold"
+        (click)="goBack()"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          slot="start"
+          class="text-lg mr-1 text-lavender"
+        ></ion-icon>
       </ion-button>
     </ion-buttons>
-
-    <ion-title class="text-lavender text-xl font-bold font-peachy text-center w-full">
-      Estadísticas de {{ patient?.name }} {{ patient?.last_name }}
-    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="bg-lightPeach font-peachy" fullscreen="true">
   <div
-  class="max-w-5xl mx-auto px-4 space-y-12"
-  [ngClass]="{
+    #pdfContent
+    class="max-w-5xl mx-auto px-4 space-y-12"
+    [ngClass]="{
     'pt-20 pb-6': isPsychologist,   
     'pt-6 pb-36': !isPsychologist 
   }"
->
+  >
+    <div *ngIf="isPsychologist" class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-salmon">
+        Estadísticas de {{ patient?.name }} {{ patient?.last_name }}
+      </h2>
+    </div>
     <!-- Título para PACIENTE-->
-    <h2 *ngIf="!isPsychologist" class="text-4xl font-bold text-salmon tracking-wide border-b-2 border-salmon text-center mb-6">
+    <h2
+      *ngIf="!isPsychologist"
+      class="text-4xl font-bold text-salmon tracking-wide border-b-2 border-salmon text-center mb-6"
+    >
       Estadísticas
     </h2>
 
@@ -31,7 +47,11 @@
       <h3 class="text-xl font-bold text-lavender">Estadísticas semanales</h3>
       <div class="flex items-center mb-2">
         <span class="text-lg font-semibold text-salmon">{{ weekLabel }}</span>
-        <ion-button fill="clear" class="text-salmon ml-2" (click)="showWeekPicker = !showWeekPicker">
+        <ion-button
+          fill="clear"
+          class="text-salmon ml-2"
+          (click)="showWeekPicker = !showWeekPicker"
+        >
           <ion-icon name="chevron-down-outline"></ion-icon>
         </ion-button>
       </div>
@@ -64,7 +84,11 @@
       <h3 class="text-xl font-bold text-lavender">Estadísticas mensuales</h3>
       <div class="flex items-center mb-2">
         <span class="text-lg font-semibold text-salmon">{{ monthLabel }}</span>
-        <ion-button fill="clear" class="text-salmon ml-2" (click)="showMonthPicker = !showMonthPicker">
+        <ion-button
+          fill="clear"
+          class="text-salmon ml-2"
+          (click)="showMonthPicker = !showMonthPicker"
+        >
           <ion-icon name="chevron-down-outline"></ion-icon>
         </ion-button>
       </div>
@@ -90,5 +114,20 @@
         ></canvas>
       </div>
     </div>
+
+    <ion-button
+      *ngIf="isPsychologist"
+      fill="solid"
+      color="lavender"
+      (click)="downloadPDF()"
+      class="mt-6 px-6 py-2 bg-lavender rounded-full shadow-md font-semibold text-white text-base"
+    >
+      <ion-icon
+        name="download-outline"
+        slot="start"
+        class="text-lg mr-2 mx-2"
+      ></ion-icon>
+      Descargar PDF
+    </ion-button>
   </div>
 </ion-content>
