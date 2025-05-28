@@ -68,14 +68,14 @@
             fill="solid"
             size="small"
             class="bg-mint text-green-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-green-200"
-            (click)="approve(psy.id_user)">
+            (click)="confirmApprove(psy.id_user)">
             Aprobar
           </ion-button>
           <ion-button
             fill="solid"
             size="small"
             class="bg-peach text-red-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-red-200"
-            (click)="reject(psy.id_user)">
+            (click)="confirmReject(psy.id_user)">
             Rechazar
           </ion-button>
         </div>
@@ -110,7 +110,7 @@
             fill="solid"
             size="small"
             class="bg-peach text-red-900 font-semibold rounded-full px-4 py-1 text-sm hover:bg-red-200"
-            (click)="ban(user.id_user)">
+            (click)="confirmBan(user.id_user)">
             Banear
           </ion-button>
         </div>

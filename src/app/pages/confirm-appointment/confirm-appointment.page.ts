@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AppointmentDTO } from 'src/app/models/appointment';
 import { AppointmentService } from 'src/app/services/appointment.service';
 import { UserResponseDTO } from 'src/app/models/user';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   standalone: false,
@@ -22,7 +23,8 @@ export class ConfirmAppointmentPage implements OnInit {
 
   constructor(
     private router: Router,
-    private appointmentService: AppointmentService
+    private appointmentService: AppointmentService,
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -44,12 +46,22 @@ export class ConfirmAppointmentPage implements OnInit {
   finalize() {
     this.appointmentService.scheduleAppointment(this.appointment).subscribe({
       next: () => {
-        alert('Cita reservada con éxito');
-        this.router.navigate(['/patient/home']);
+        this.alertCtrl.create({
+          header: 'Solicitud enviada',
+          message: 'Tu solicitud de cita ha sido enviada correctamente. Recibirás una confirmación cuando el profesional la acepte.',
+          buttons: [{
+            text: 'Entendido',
+            handler: () => this.router.navigate(['/patient/home'])
+          }]
+        }).then(alert => alert.present());
       },
       error: err => {
         console.error('Error al confirmar la cita:', err);
-        alert('Error al confirmar la cita. Intenta de nuevo.');
+        this.alertCtrl.create({
+          header: 'Error',
+          message: 'No se pudo enviar la solicitud de cita. Por favor, intenta de nuevo.',
+          buttons: ['Aceptar']
+        }).then(alert => alert.present());
       }
     });
   }

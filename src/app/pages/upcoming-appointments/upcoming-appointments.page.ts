@@ -91,7 +91,6 @@ export class UpcomingAppointmentsPage implements OnInit {
 
   cancelAppointment(id: number) {
     this.appointmentService.cancelAppointment(id).subscribe(() => {
-      // Volvemos a cargar citas tras cancelar
       this.loadAppointments();
     });
   }
@@ -115,7 +114,6 @@ export class UpcomingAppointmentsPage implements OnInit {
 
   cancelAllAppointmentsWithPsychologist(psychologistId: number) {
     this.appointmentService.cancelAllWithPsychologist(psychologistId).subscribe(() => {
-      // Recargar tras cancelar todas
       this.loadAppointments();
     });
   }
