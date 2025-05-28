@@ -7,6 +7,7 @@ import { AdminService } from '../../services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserResponseDTO } from 'src/app/models/user';
 import { PsychologistProfileModalPage } from '../psychologist-profile-modal/psychologist-profile-modal.page';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   standalone: false,
@@ -19,7 +20,6 @@ export class AdminPage implements OnInit {
   selectedTab: string = 'pending';
   loading: boolean = false;
 
-  // Listas reactivas
   pendingPsychologists$ = new ReplaySubject<UserResponseDTO[]>(1);
   activeUsers$ = new ReplaySubject<UserResponseDTO[]>(1);
 
@@ -29,7 +29,8 @@ export class AdminPage implements OnInit {
     private router: Router,
     private modalController: ModalController,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertCtrl: AlertController 
   ) {}
 
   ngOnInit() {
@@ -94,6 +95,21 @@ export class AdminPage implements OnInit {
     });
   }
 
+  confirmApprove(id: number) {
+    this.alertCtrl.create({
+      header: 'Aprobar psicólogo',
+      message: '¿Estás seguro/a de que quieres aprobar a este profesional?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Sí, aprobar',
+          handler: () => this.approve(id)
+        }
+      ]
+    }).then(alert => alert.present());
+  }
+
+
   reject(id: number) {
     this.adminService.rejectPsychologist(id).subscribe(() => {
       this.presentToast('Psicólogo rechazado');
@@ -103,6 +119,20 @@ export class AdminPage implements OnInit {
         this.cdr.detectChanges();
       }).unsubscribe();
     });
+  }
+
+  confirmReject(id: number) {
+    this.alertCtrl.create({
+      header: 'Rechazar psicólogo',
+      message: '¿Seguro que quieres rechazar esta solicitud?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Sí, rechazar',
+          handler: () => this.reject(id)
+        }
+      ]
+    }).then(alert => alert.present());
   }
 
   ban(id: number) {
@@ -116,6 +146,20 @@ export class AdminPage implements OnInit {
     });
   }
 
+  confirmBan(id: number) {
+    this.alertCtrl.create({
+      header: 'Banear usuario',
+      message: '¿Estás seguro/a de que quieres banear permanentemente a este usuario?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Sí, banear',
+          handler: () => this.ban(id)
+        }
+      ]
+    }).then(alert => alert.present());
+  }
+  
   async viewProfile(psychologist: UserResponseDTO) {
     const modal = await this.modalController.create({
       component: PsychologistProfileModalPage,

@@ -13,7 +13,7 @@ export class HomePage implements OnInit {
   name: string = 'Usuario';
   today: Date = new Date();
   weekDays: Date[] = [];
-  registeredDates: string[] = []; // formato: 'YYYY-MM-DD'
+  registeredDates: string[] = []; 
   selectedDay: Date = this.today;
 
   constructor(
