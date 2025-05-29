@@ -1,13 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController, AlertController } from '@ionic/angular';
 
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserResponseDTO } from 'src/app/models/user';
 import { PsychologistProfileModalPage } from '../psychologist-profile-modal/psychologist-profile-modal.page';
-import { AlertController } from '@ionic/angular';
 
 @Component({
   standalone: false,
@@ -20,8 +19,13 @@ export class AdminPage implements OnInit {
   selectedTab: string = 'pending';
   loading: boolean = false;
 
+  // Subjects para los async pipes
   pendingPsychologists$ = new ReplaySubject<UserResponseDTO[]>(1);
   activeUsers$ = new ReplaySubject<UserResponseDTO[]>(1);
+
+  // Copias locales para manipulación de datos
+  pendingPsychologists: UserResponseDTO[] = [];
+  activeUsers: UserResponseDTO[] = [];
 
   constructor(
     private adminService: AdminService,
@@ -29,8 +33,7 @@ export class AdminPage implements OnInit {
     private router: Router,
     private modalController: ModalController,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    private alertCtrl: AlertController 
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -46,15 +49,14 @@ export class AdminPage implements OnInit {
     this.loading = true;
     this.adminService.getPendingPsychologists().subscribe({
       next: (res) => {
-        const filtered = res.filter(p =>
+        this.pendingPsychologists = res.filter(p =>
           p.profile?.specialty &&
           p.profile?.location &&
           p.profile?.description &&
           p.profile?.document
         );
-        this.pendingPsychologists$.next([...filtered]);
+        this.pendingPsychologists$.next([...this.pendingPsychologists]);
         this.loading = false;
-        this.cdr.detectChanges(); // opcional, para forzar render si necesario
       },
       error: () => {
         this.presentToast('Error al cargar psicólogos pendientes');
@@ -66,9 +68,8 @@ export class AdminPage implements OnInit {
   loadActiveUsers() {
     this.adminService.getAllActiveUsers().subscribe({
       next: (res) => {
-        const filtered = res.filter(u => u.role !== 'ADMIN');
-        this.activeUsers$.next([...filtered]);
-        this.cdr.detectChanges(); // opcional
+        this.activeUsers = res.filter(u => u.role !== 'ADMIN');
+        this.activeUsers$.next([...this.activeUsers]);
       },
       error: () => {
         this.presentToast('Error al cargar usuarios activos');
@@ -79,19 +80,13 @@ export class AdminPage implements OnInit {
   approve(id: number) {
     this.adminService.approvePsychologist(id).subscribe(() => {
       this.presentToast('Psicólogo aprobado');
-
-      this.pendingPsychologists$.subscribe(pending => {
-        this.activeUsers$.subscribe(active => {
-          const approved = pending.find(p => p.id_user === id);
-          if (approved) {
-            const newPending = pending.filter(p => p.id_user !== id);
-            const newActive = [approved, ...active];
-            this.pendingPsychologists$.next([...newPending]);
-            this.activeUsers$.next([...newActive]);
-            this.cdr.detectChanges();
-          }
-        }).unsubscribe();
-      }).unsubscribe();
+      const approved = this.pendingPsychologists.find(p => p.id_user === id);
+      if (approved) {
+        this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
+        this.activeUsers = [approved, ...this.activeUsers];
+        this.pendingPsychologists$.next([...this.pendingPsychologists]);
+        this.activeUsers$.next([...this.activeUsers]);
+      }
     });
   }
 
@@ -109,15 +104,11 @@ export class AdminPage implements OnInit {
     }).then(alert => alert.present());
   }
 
-
   reject(id: number) {
     this.adminService.rejectPsychologist(id).subscribe(() => {
       this.presentToast('Psicólogo rechazado');
-      this.pendingPsychologists$.subscribe(current => {
-        const updated = current.filter(p => p.id_user !== id);
-        this.pendingPsychologists$.next([...updated]);
-        this.cdr.detectChanges();
-      }).unsubscribe();
+      this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
+      this.pendingPsychologists$.next([...this.pendingPsychologists]);
     });
   }
 
@@ -138,11 +129,8 @@ export class AdminPage implements OnInit {
   ban(id: number) {
     this.adminService.banUser(id).subscribe(() => {
       this.presentToast('Usuario baneado');
-      this.activeUsers$.subscribe(current => {
-        const updated = current.filter(u => u.id_user !== id);
-        this.activeUsers$.next([...updated]);
-        this.cdr.detectChanges();
-      }).unsubscribe();
+      this.activeUsers = this.activeUsers.filter(u => u.id_user !== id);
+      this.activeUsers$.next([...this.activeUsers]);
     });
   }
 
@@ -159,7 +147,7 @@ export class AdminPage implements OnInit {
       ]
     }).then(alert => alert.present());
   }
-  
+
   async viewProfile(psychologist: UserResponseDTO) {
     const modal = await this.modalController.create({
       component: PsychologistProfileModalPage,
@@ -186,5 +174,5 @@ export class AdminPage implements OnInit {
   logout() {
     this.authService.logout();
     window.location.href = '/login';
-    }
+  }
 }
