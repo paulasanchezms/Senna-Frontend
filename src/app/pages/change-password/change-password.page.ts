@@ -15,6 +15,8 @@ export class ChangePasswordPage implements OnInit {
   token: string = '';
   email: string = '';
   isTokenValid = false;
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
