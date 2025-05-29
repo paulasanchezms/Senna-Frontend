@@ -124,6 +124,14 @@ const routes: Routes = [
   {
     path: 'terms-patient',
     loadChildren: () => import('./pages/terms-patient/terms-patient.module').then( m => m.TermsPatientPageModule)
+  },
+  {
+    path: 'change-password',
+    loadChildren: () => import('./pages/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
+  },
+  {
+    path: 'forgot-password',
+    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
   }
 ];
 
