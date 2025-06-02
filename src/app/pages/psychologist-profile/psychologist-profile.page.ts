@@ -130,8 +130,8 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
 
   buildForms() {
     this.personalForm = this.fb.group({
-      name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$/)]],
-      last_name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$/)]],
+      name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
+      last_name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
       phone: ['', [Validators.pattern(/^[0-9]{7,15}$/)]]
     });
   
@@ -208,10 +208,6 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   }
 
   async saveProfessional() {
-    if (this.professionalForm.invalid) {
-      this.presentAlert('Revisa los datos del formulario profesional.');
-      return;
-    }
     const data = this.professionalForm.value;
     try {
       await firstValueFrom(this.profileService.updateProfile(this.userId, data));
@@ -411,9 +407,8 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     return !!(this.user && this.profile && !this.profileService.canAccessFeatures(this.user, this.profile));
   }
 
-  async presentAlert(message: string, header: string = 'Error') {
+  async presentAlert(message: string) {
     const alert = await this.alertCtrl.create({
-      header,
       message,
       buttons: ['Aceptar']
     });
