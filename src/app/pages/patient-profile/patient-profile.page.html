@@ -21,27 +21,25 @@
           </label>
         </div>
 
-        <!-- Formulario -->
-        <div class="w-full space-y-4">
-
+        <form [formGroup]="form" class="w-full space-y-4">
           <div>
             <label class="block text-sm font-semibold text-lavender mb-1">Nombre</label>
             <input
               type="text"
-              [(ngModel)]="user.name"
+              formControlName="name"
               class="w-full bg-white border border-peach rounded-xl p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-lavender"
             />
           </div>
-
+        
           <div>
             <label class="block text-sm font-semibold text-lavender mb-1">Apellidos</label>
             <input
               type="text"
-              [(ngModel)]="user.last_name"
+              formControlName="last_name"
               class="w-full bg-white border border-peach rounded-xl p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-lavender"
             />
           </div>
-
+        
           <div>
             <label class="block text-sm font-semibold text-lavender mb-1">Email</label>
             <input
@@ -51,17 +49,18 @@
               class="w-full bg-gray-100 border border-peach text-gray-500 italic p-3 rounded-xl cursor-not-allowed"
             />
           </div>
-
+        
           <div>
             <label class="block text-sm font-semibold text-lavender mb-1">Teléfono</label>
             <input
               type="text"
-              [(ngModel)]="user.phone"
+              formControlName="phone"
+              (keydown)="preventInvalidKeyPress($event)"
               placeholder="No añadido"
               class="w-full bg-white border border-peach rounded-xl p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-lavender"
             />
           </div>
-        </div>
+        </form>
 
         <!-- Botones -->
         <ion-button
