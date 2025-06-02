@@ -67,10 +67,8 @@ export class LoginPage implements OnInit {
           },
         });
       },
-      error: (error) => {
-        this.message =
-          'Error en el inicio de sesión: ' +
-          (error.error?.message || error.message);
+      error: (err) => {
+        this.message = err.message;
       },
     });
   }
