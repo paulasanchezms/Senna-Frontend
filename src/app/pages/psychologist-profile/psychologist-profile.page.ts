@@ -218,6 +218,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     try {
       this.user = await firstValueFrom(this.userService.me());
       this.profile = await firstValueFrom(this.profileService.getProfile(this.userId));
+      this.profileService.updateProfileCompletionStatus(this.profile);
     } catch (err) {
       console.error('Error recargando datos tras la edición', err);
     }
@@ -323,6 +324,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
           this.profileService.updateProfile(this.userId, update).subscribe({
             next: () => {
               this.profile.document = url;
+              this.profileService.updateProfileCompletionStatus(this.profile); 
             },
             error: err => {
               console.error('Error al guardar el documento en el backend', err);
