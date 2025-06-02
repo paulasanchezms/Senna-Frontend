@@ -175,7 +175,7 @@ export class CalendarPage {
 
   ngAfterViewInit() {
     const applyFullCalendarStyles = () => {
-      // 🔸 Estilos para las horas laterales
+      // Estilos para las horas laterales
       const slotLabels = document.querySelectorAll(
         '.fc-timegrid-slot-label-cushion'
       );
@@ -187,7 +187,7 @@ export class CalendarPage {
         element.style.setProperty('font-weight', '600', 'important');
       });
 
-      // 🔸 Estilo para el título
+      // Estilo para el título
       const calendarTitle = document.querySelector('.fc-toolbar-title');
       if (calendarTitle) {
         const titleEl = calendarTitle as HTMLElement;
@@ -254,7 +254,6 @@ export class CalendarPage {
     return dates;
   }
 
-  // 2. WorkingHourModalPage.ts - forzar toggle activo si hay horario por defecto y bloquear si no puede trabajar
   loadHoursForDate(date: string) {
     this.customWhService
       .getCustomHours(this.userId, date)
@@ -288,7 +287,7 @@ export class CalendarPage {
     this.alertCtrl
       .create({
         header: 'Cancelar cita',
-        message: '¿Estás segura de que deseas cancelar esta cita?',
+        message: '¿Deseas cancelar esta cita?',
         buttons: [
           {
             text: 'No',
@@ -300,7 +299,7 @@ export class CalendarPage {
               this.appointmentService
                 .cancelAppointment(appointmentId)
                 .subscribe(() => {
-                  this.loadAppointments(); // recarga citas y quita del calendario
+                  this.loadAppointments(); 
                 });
             },
           },
