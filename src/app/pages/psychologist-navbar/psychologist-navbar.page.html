@@ -44,9 +44,14 @@
           routerLink="/psychologist-profile"
           routerLinkActive="bg-lavender text-white"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="px-3 py-1 rounded-md text-base text-salmon hover:bg-lavender hover:text-white transition font-semibold"
+          class="relative px-3 py-1 rounded-md text-base text-salmon hover:bg-lavender hover:text-white transition font-semibold"
         >
           Perfil
+          <ion-icon
+            *ngIf="showProfileWarning"
+            name="alert-circle"
+            class="absolute -top-1 -right-3 text-yellow-500 text-lg"
+          ></ion-icon>
         </a>
         <a
           *ngIf="isAdmin"
@@ -104,10 +109,16 @@
       >
       <a
         routerLink="/psychologist-profile"
-        class="block text-salmon hover:text-lavender font-medium"
+        class="relative block text-salmon hover:text-lavender font-medium"
         (click)="closeMenu()"
-        >Perfil</a
       >
+        Perfil
+        <ion-icon
+          *ngIf="showProfileWarning"
+          name="alert-circle"
+          class="absolute top-0 left-20 text-yellow-500 text-lg"
+        ></ion-icon>
+      </a>
       <a
         *ngIf="isAdmin"
         routerLink="/admin"

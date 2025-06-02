@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppointmentService } from 'src/app/services/appointment.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { PsychologistProfileService } from 'src/app/services/psychologist-profile.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   standalone: false,
@@ -10,32 +12,54 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './psychologist-navbar.page.html',
   styleUrls: ['./psychologist-navbar.page.scss']
 })
-export class PsychologistNavbarPage implements OnInit, OnDestroy{
+export class PsychologistNavbarPage implements OnInit, OnDestroy {
   isMenuOpen = false;
   isAdmin = false;
   pendingCount: number = 0;
-  private subscription!: Subscription;
+  showProfileWarning: boolean = false;
+
+  private pendingSub!: Subscription;
+  private profileStatusSub!: Subscription;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private appointmentService: AppointmentService
-  ) {
-    const role = this.authService.getRole();
-    this.isAdmin = role === 'ADMIN';
-  }
-
+    private appointmentService: AppointmentService,
+    private userService: UserService,
+    private profileService: PsychologistProfileService
+  ) {}
 
   ngOnInit(): void {
+    // Actualizar contador de solicitudes pendientes
     this.appointmentService.fetchAndUpdatePendingCount();
+    this.pendingSub = this.appointmentService
+      .getPendingCountObservable()
+      .subscribe(count => {
+        this.pendingCount = count;
+      });
 
-    this.subscription = this.appointmentService.getPendingCountObservable().subscribe(count => {
-      this.pendingCount = count;
-    });
+    // Revisar rol
+    const role = this.authService.getRole();
+    this.isAdmin = role === 'ADMIN';
+
+    // Cargar perfil y suscribirse a los cambios en su completitud
+    if (role === 'PSYCHOLOGIST') {
+      this.profileStatusSub = this.profileService.profileCompletionStatus$.subscribe(complete => {
+        this.showProfileWarning = !complete;
+      });
+
+      // Inicializar estado una vez al inicio
+      this.userService.me().subscribe(user => {
+        this.profileService.getProfile(user.id_user).subscribe(profile => {
+          this.profileService.updateProfileCompletionStatus(profile);
+        });
+      });
+    }
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.pendingSub?.unsubscribe();
+    this.profileStatusSub?.unsubscribe();
   }
 
   toggleMenu() {
@@ -49,5 +73,5 @@ export class PsychologistNavbarPage implements OnInit, OnDestroy{
   logout() {
     this.authService.logout();
     window.location.href = '/login';
-    }
+  }
 }

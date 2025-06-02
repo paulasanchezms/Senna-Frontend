@@ -1,6 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { UserService } from '../../services/user.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';import { UserService } from '../../services/user.service';
 import { PsychologistProfileService } from '../../services/psychologist-profile.service';
 import { UserResponseDTO } from '../../models/user';
 import { PsychologistProfile } from '../../models/psychologist-profile';
@@ -8,6 +7,7 @@ import { WorkingHourDTO } from 'src/app/models/working-hour';
 import { firstValueFrom } from 'rxjs';
 import { ReviewService } from 'src/app/services/review.service';
 import { ReviewDTO } from 'src/app/models/review';
+import { AlertController } from '@ionic/angular';
 
 declare var google: any;
 
@@ -49,7 +49,8 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     private userService: UserService,
     private profileService: PsychologistProfileService,
     private fb: FormBuilder,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -129,18 +130,18 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
 
   buildForms() {
     this.personalForm = this.fb.group({
-      name: [''],
-      last_name: [''],
-      phone: ['']
+      name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$/)]],
+      last_name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$/)]],
+      phone: ['', [Validators.pattern(/^[0-9]{7,15}$/)]]
     });
-
+  
     this.professionalForm = this.fb.group({
-      specialty: [''],
-      location: [''],
-      consultationDuration: [0],
-      consultationPrice: [0],
-      document: [''],
-      description: ['']
+      specialty: ['', Validators.required],
+      location: ['', Validators.required],
+      consultationDuration: [0, [Validators.required, Validators.min(1)]],
+      consultationPrice: [0, [Validators.required, Validators.min(1)]],
+      document: ['', Validators.required],
+      description: ['', Validators.required]
     });
   }
 
@@ -192,24 +193,32 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   }
 
   async savePersonal() {
+    if (this.personalForm.invalid) {
+      this.presentAlert('Revisa los datos del formulario personal.');
+      return;
+    }
     const data = this.personalForm.value;
     try {
       await firstValueFrom(this.userService.updateMe(data));
       await this.exitEditModeAndReload();
     } catch (err) {
       console.error('Error al guardar datos personales', err);
-      alert('No se pudo guardar. Intenta nuevamente.');
+      this.presentAlert('No se pudo guardar. Intenta nuevamente.');
     }
   }
 
   async saveProfessional() {
+    if (this.professionalForm.invalid) {
+      this.presentAlert('Revisa los datos del formulario profesional.');
+      return;
+    }
     const data = this.professionalForm.value;
     try {
       await firstValueFrom(this.profileService.updateProfile(this.userId, data));
       await this.exitEditModeAndReload();
     } catch (err) {
       console.error('Error al guardar datos profesionales', err);
-      alert('No se pudo guardar. Intenta nuevamente.');
+      this.presentAlert('No se pudo guardar. Intenta nuevamente.');
     }
   }
 
@@ -218,6 +227,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     try {
       this.user = await firstValueFrom(this.userService.me());
       this.profile = await firstValueFrom(this.profileService.getProfile(this.userId));
+      this.profileService.updateProfileCompletionStatus(this.profile);
     } catch (err) {
       console.error('Error recargando datos tras la edición', err);
     }
@@ -239,15 +249,15 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
       const aE = this.scheduleForm.value[`afternoonEnd_${d}`];
 
       if (mS && mE && mS > mE) {
-        alert(`Horario inválido: Mañana de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
+        this.presentAlert(`Horario inválido: Mañana de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
         return;
       }
       if (aS && aE && aS > aE) {
-        alert(`Horario inválido: Tarde de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
+        this.presentAlert(`Horario inválido: Tarde de ${this.days[d]} tiene hora de inicio mayor que la de fin`);
         return;
       }
       if (mS && mE && aS && aE && mE > aS) {
-        alert(`Horario inválido: Mañana y tarde de ${this.days[d]} se solapan`);
+        this.presentAlert(`Horario inválido: Mañana y tarde de ${this.days[d]} se solapan`);
         return;
       }
 
@@ -257,10 +267,9 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
 
     try {
       await firstValueFrom(this.profileService.replaceWorkingHours(this.userId, dtos));
-      alert('Horario guardado con éxito');
+      this.presentAlert('Horario guardado con éxito');
     } catch (err) {
-      console.error('Error guardando horario', err);
-      alert('No se pudo guardar el horario. Intenta nuevamente.');
+      this.presentAlert('No se pudo guardar el horario. Intenta nuevamente.');
     }
   }
 
@@ -294,16 +303,15 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
         this.previewUrl = e.target.result;
       };
       reader.readAsDataURL(file);
-
+  
       this.userService.uploadToImgBB(file).subscribe({
         next: (url: string) => {
           this.userService.updateMe({ photoUrl: url }).subscribe(() => {
             this.user.photoUrl = url;
           });
         },
-        error: err => {
-          console.error('Error al subir la imagen de perfil', err);
-          alert('No se pudo subir la imagen. Intenta nuevamente.');
+        error: async err => {
+          await this.presentAlert('No se pudo subir la imagen. Intenta nuevamente.');
         }
       });
     }
@@ -314,25 +322,24 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     if (file) {
       this.documentFile = file;
       this.uploadedDocumentName = file.name;
-
+  
       this.userService.uploadToImgBB(file).subscribe({
         next: (url: string) => {
           this.professionalForm.patchValue({ document: url });
-
+  
           const update = { ...this.professionalForm.value, document: url };
           this.profileService.updateProfile(this.userId, update).subscribe({
             next: () => {
               this.profile.document = url;
+              this.profileService.updateProfileCompletionStatus(this.profile); 
             },
-            error: err => {
-              console.error('Error al guardar el documento en el backend', err);
-              alert('No se pudo guardar el documento. Intenta nuevamente.');
+            error: async err => {
+              await this.presentAlert('No se pudo guardar el documento. Intenta nuevamente.');
             }
           });
         },
-        error: err => {
-          console.error('Error al subir el documento', err);
-          alert('No se pudo subir el documento. Intenta nuevamente.');
+        error: async err => {
+          await this.presentAlert('No se pudo subir el documento. Intenta nuevamente.');
         }
       });
     }
@@ -402,5 +409,14 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
   
   get isAccessBlocked(): boolean {
     return !!(this.user && this.profile && !this.profileService.canAccessFeatures(this.user, this.profile));
+  }
+
+  async presentAlert(message: string, header: string = 'Error') {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['Aceptar']
+    });
+    await alert.present();
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export interface AuthRequest {
@@ -41,6 +41,13 @@ export class AuthService {
     return this.http.post<AuthResponse>(
       `${this.baseUrl}/login`,
       data
+    ).pipe(
+      catchError((error: any) => {
+        const customMessage = error.status === 403
+          ? 'Correo o contraseña incorrectos'
+          : 'Error inesperado al iniciar sesión';
+        return throwError(() => new Error(customMessage));
+      })
     );
   }
 

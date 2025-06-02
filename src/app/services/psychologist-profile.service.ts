@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { PsychologistProfile } from '../models/psychologist-profile';
 import { WorkingHourDTO } from '../models/working-hour';
 import { environment } from 'src/environments/environment';
@@ -11,20 +11,17 @@ import { environment } from 'src/environments/environment';
 export class PsychologistProfileService {
   private baseUrl = `${environment.apiUrl}`;
 
+  private profileCompletionStatus = new BehaviorSubject<boolean>(true);
+  profileCompletionStatus$ = this.profileCompletionStatus.asObservable();
+
   constructor(private http: HttpClient) {}
 
-  /**
-   * Obtiene el perfil completo del psicólogo (incluye consultationDuration, price, etc.).
-   */
   getProfile(userId: number): Observable<PsychologistProfile> {
     return this.http.get<PsychologistProfile>(
       `${this.baseUrl}/psychologists/${userId}/profile`
     );
   }
 
-  /**
-   * Actualiza el perfil profesional del psicólogo.
-   */
   updateProfile(userId: number, data: Partial<PsychologistProfile>): Observable<PsychologistProfile> {
     return this.http.put<PsychologistProfile>(
       `${this.baseUrl}/psychologists/${userId}/profile`,
@@ -65,9 +62,6 @@ export class PsychologistProfileService {
     );
   }
 
-  /**
-   * Comprueba si el perfil del psicólogo está completo.
-   */
   isProfileComplete(profile: PsychologistProfile): boolean {
     return !!(
       profile.specialty &&
@@ -79,9 +73,11 @@ export class PsychologistProfileService {
     );
   }
 
-  /**
-   * Devuelve true si el usuario está activo y aprobado por el administrador.
-   */
+  updateProfileCompletionStatus(profile: PsychologistProfile): void {
+    const complete = this.isProfileComplete(profile);
+    this.profileCompletionStatus.next(complete);
+  }
+
   canAccessFeatures(user: { active: boolean }, profile: PsychologistProfile): boolean {
     return user.active && this.isProfileComplete(profile);
   }
