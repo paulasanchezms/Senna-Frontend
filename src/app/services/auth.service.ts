@@ -20,19 +20,23 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  /** Registro de paciente → POST /api/auth/register */
+  /** Registro de paciente */
   register(data: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
-      `${this.baseUrl}/register`,
-      data
+    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, data).pipe(
+      catchError((error: any) => {
+        const message = error.error?.message || 'Ocurrió un error inesperado durante el registro.';
+        return throwError(() => new Error(message));
+      })
     );
   }
 
-  /** Registro de psicólogo → POST /api/auth/register/psychologist */
+  /** Registro de psicólogo*/
   registerPsychologist(data: FormData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
-      `${this.baseUrl}/register/psychologist`,
-      data
+    return this.http.post<AuthResponse>(`${this.baseUrl}/register/psychologist`, data).pipe(
+      catchError((error: any) => {
+        const message = error.error?.message || 'No se pudo registrar el perfil profesional.';
+        return throwError(() => new Error(message));
+      })
     );
   }
 
