@@ -50,6 +50,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
 
   viewingPatientId!: number;
   isPsychologist = false;
+  selectedMonthValue: string | null = null;
   
   @ViewChild('pdfContent', { static: false }) pdfContent!: any;
 
@@ -241,11 +242,17 @@ export class StatisticsPage implements OnInit, AfterViewInit {
 
   onMonthPickerChange(val: string | string[] | null | undefined): void {
     if (!val || Array.isArray(val)) return;
+  
     const d = new Date(val);
     this.displayMonthYear = d.getFullYear();
     this.displayMonth = d.getMonth();
+  
+    this.selectedMonthValue = val;
     this.updateMonthLabel();
     this.loadMonthlyStatistics();
+  
+    // Cerrar manualmente el picker
+    this.showMonthPicker = false;
   }
 
   prevWeek(): void {
@@ -370,7 +377,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
 
     const f = this.formatDate(sel);
 
-    // 🔁 Diferenciar si el usuario es psicólogo o paciente
+    // Diferenciar si el usuario es psicólogo o paciente
     const currentUser = this.authService.getCurrentUser();
     let existing = null;
 
@@ -494,5 +501,16 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     }).catch(err => {
       console.error('Error al generar PDF:', err);
     });
+  }
+
+  resetMonthPicker(): void {
+    this.selectedMonthValue = this.getMonthValueString();
+    this.showMonthPicker = true;
+  }
+
+  getMonthValueString(): string {
+    const m = this.displayMonth + 1;
+    const paddedMonth = m < 10 ? `0${m}` : `${m}`;
+    return `${this.displayMonthYear}-${paddedMonth}`;
   }
 }
