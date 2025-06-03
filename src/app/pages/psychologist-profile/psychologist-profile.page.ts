@@ -132,7 +132,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.personalForm = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
       last_name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
-      phone: ['', [Validators.pattern(/^[0-9]{7,15}$/)]]
+      phone: ['', [Validators.pattern(/^[0-9]{9,15}$/)]]
     });
   
     this.professionalForm = this.fb.group({
