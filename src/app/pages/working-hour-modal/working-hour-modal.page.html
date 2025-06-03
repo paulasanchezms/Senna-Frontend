@@ -1,48 +1,72 @@
-<ion-header class="flex justify-between items-center px-4 py-2 bg-white shadow rounded-t-lg">
-  <h2 class="font-bold text-lg text-peach">
-    Configura tu horario - {{ selectedDate | date:'fullDate':'':'es' }}
-  </h2>
-  <ion-button fill="clear" (click)="close()" class="p-0 m-0">
-    <ion-icon name="close" size="large"></ion-icon>
-  </ion-button>
-</ion-header>
-
-<ion-content class="p-4 bg-white space-y-4 rounded-b-lg">
-  
-  <p class="text-xs text-gray-500 italic mt-1">
+<ion-header class="bg-lightPeach p-4 shadow-lg border-gray-200">
+  <div class="flex justify-between  items-center">
+    <h2 class="text-xl font-bold text-salmon leading-tight">
+      Configura tu horario
+    </h2>
+    <ion-button fill="clear" (click)="close()" class="text-peach p-0 m-0">
+      <ion-icon name="close" size="large"></ion-icon>
+    </ion-button>
+  </div>
+  <p class="text-xs text-gray-500 italic mt-1 ml-1">
     {{ isCustomDate
       ? 'Estás editando un horario personalizado para este día.'
       : 'Estás usando tu horario habitual de los ' + days[dayOfWeek].toLowerCase() + '.' }}
   </p>
+  <p class="text-sm text-gray-700 mt-2 ml-1 font-medium">
+    {{ selectedDate | date:'fullDate':'':'es' }}
+  </p>
+</ion-header>
 
+<ion-content class="bg-[#fafafa] rounded-b-2xl px-5 pt-6 pb-8 space-y-5">
+  <div class=" space-x-3 p-8 mb-4">
+    <h3 class="text-lg font-semibold text-gray-800">Selecciona tu horario</h3>
   <!-- Toggle para trabajar este día -->
-  <div class="flex items-center gap-2 mt-2">
+  <div class="flex items-center space-x-3 p-4">
     <ion-toggle [(ngModel)]="isDayEnabled" class="text-peach"></ion-toggle>
-    <label class="text-sm font-medium text-gray-700">Trabaja este día</label>
+    <label class="text-base font-medium text-gray-700">Trabaja este día</label>
   </div>
 
-  <!-- Lista editable de franjas -->
-  <div *ngIf="isDayEnabled" class="space-y-2">
-    <div *ngFor="let hour of workingHoursForDay; let i = index" class="flex items-center space-x-2">
-      <ion-input type="time" [(ngModel)]="hour.startTime"
-                 class="border bg-lightPeach rounded px-2 py-1 flex-1 text-center text-sm"></ion-input>
-      <ion-input type="time" [(ngModel)]="hour.endTime"
-                 class="border bg-lightPeach rounded px-2 py-1 flex-1 text-center text-sm"></ion-input>
-      <ion-button fill="clear" (click)="deleteHour(hour)" class="text-red-500 text-lg">
-        <ion-icon name="trash"></ion-icon>
+  <!-- Lista de franjas horarias -->
+  <div *ngIf="isDayEnabled" class="space-y-4">
+    <div *ngFor="let hour of workingHoursForDay; let i = index"
+         class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3 transition-all duration-200">
+
+      <ion-input
+        type="time"
+        [(ngModel)]="hour.startTime"
+        class="flex-1 text-center text-sm rounded-md px-2 py-2 border border-gray-300 focus:border-peach">
+      </ion-input>
+
+      <span class="text-gray-600 text-sm font-medium">–</span>
+
+      <ion-input
+        type="time"
+        [(ngModel)]="hour.endTime"
+        class="flex-1 text-center text-sm rounded-md px-2 py-2 border border-gray-300 focus:border-peach">
+      </ion-input>
+
+      <ion-button fill="clear" color="danger" size="small" (click)="deleteHour(hour)">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
       </ion-button>
     </div>
 
-    <!-- Botón añadir nueva franja -->
-    <ion-button fill="clear"
-      (click)="addEmptyRow()"
-      class="border border-dashed border-lavender text-lavender rounded-lg py-2 w-full text-sm font-semibold">
+    <!-- Botón para añadir nueva franja -->
+    <ion-button fill="outline"
+      class="w-full text-lavender border border-dashed border-lavender rounded-xl py-2 font-semibold text-sm"
+      (click)="addEmptyRow()">
       + Añadir nueva franja
     </ion-button>
   </div>
 
-  <!-- Botón guardar todas -->
-  <ion-button expand="block" class="bg-lavender text-white rounded-lg py-3 font-semibold" (click)="saveAll()">
+  <!-- Botón guardar -->
+   <div class="flex justify-center mt-6">
+  <ion-button expand="block"
+              class="bg-salmon w-60 text-white rounded-xl font-semibold py-3 shadow-md transition-transform duration-200 hover:scale-[1.02]"
+              (click)="saveAll()">
     Guardar cambios
   </ion-button>
+   </div>
+</div>
+
+
 </ion-content>
