@@ -10,19 +10,19 @@ export class WorkingHourCustomService {
 
   constructor(private http: HttpClient) {}
 
-  getCustomHours(profileId: number, date: string): Observable<WorkingHourCustomDTO[]> {
+  getCustomHours(userId: number, date: string): Observable<WorkingHourCustomDTO[]> {
     return this.http.get<WorkingHourCustomDTO[]>(
-      `${this.baseUrl}?profileId=${profileId}&date=${date}`
+      `${this.baseUrl}?userId=${userId}&date=${date}`
     );
   }
 
   replaceCustomHours(
-    profileId: number,
+    userId: number,
     date: string,
     hours: WorkingHourCustomDTO[]
   ): Observable<void> {
     return this.http.post<void>(
-      `${this.baseUrl}?profileId=${profileId}&date=${date}`,
+      `${this.baseUrl}?userId=${userId}&date=${date}`,
       hours
     );
   }
