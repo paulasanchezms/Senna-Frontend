@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReplaySubject } from 'rxjs';
 import { ModalController, ToastController, AlertController } from '@ionic/angular';
 
 import { AdminService } from '../../services/admin.service';
@@ -19,11 +18,6 @@ export class AdminPage implements OnInit {
   selectedTab: string = 'pending';
   loading: boolean = false;
 
-  // Subjects para los async pipes
-  pendingPsychologists$ = new ReplaySubject<UserResponseDTO[]>(1);
-  activeUsers$ = new ReplaySubject<UserResponseDTO[]>(1);
-
-  // Copias locales para manipulación de datos
   pendingPsychologists: UserResponseDTO[] = [];
   activeUsers: UserResponseDTO[] = [];
 
@@ -55,7 +49,6 @@ export class AdminPage implements OnInit {
           p.profile?.description &&
           p.profile?.document
         );
-        this.pendingPsychologists$.next([...this.pendingPsychologists]);
         this.loading = false;
       },
       error: () => {
@@ -69,7 +62,6 @@ export class AdminPage implements OnInit {
     this.adminService.getAllActiveUsers().subscribe({
       next: (res) => {
         this.activeUsers = res.filter(u => u.role !== 'ADMIN');
-        this.activeUsers$.next([...this.activeUsers]);
       },
       error: () => {
         this.presentToast('Error al cargar usuarios activos');
@@ -78,16 +70,38 @@ export class AdminPage implements OnInit {
   }
 
   approve(id: number) {
-    this.adminService.approvePsychologist(id).subscribe(() => {
-      this.presentToast('Psicólogo aprobado');
-      const approved = this.pendingPsychologists.find(p => p.id_user === id);
-      if (approved) {
-        this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
-        this.activeUsers = [approved, ...this.activeUsers];
-        this.pendingPsychologists$.next([...this.pendingPsychologists]);
-        this.activeUsers$.next([...this.activeUsers]);
+    this.adminService.approvePsychologist(id).subscribe({
+      next: () => {
+        this.presentToast('Psicólogo aprobado');
+        this.updateUIAfterApproval(id);
+      },
+      error: (error) => {
+        console.error('Error en approve:', error);
+
+        setTimeout(() => {
+          this.loadAllData();
+        }, 1000);
+        
+        this.presentToast('Verificando estado de la solicitud...');
       }
     });
+  }
+
+  // Método auxiliar para actualizar la UI después de aprobar
+  private updateUIAfterApproval(id: number) {
+    // Encontrar el psicólogo aprobado
+    const approvedPsychologist = this.pendingPsychologists.find(p => p.id_user === id);
+    
+    if (approvedPsychologist) {
+      // Remover de pendientes
+      this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
+      
+      // Agregar a activos
+      const existsInActive = this.activeUsers.some(u => u.id_user === id);
+      if (!existsInActive) {
+        this.activeUsers.push(approvedPsychologist);
+      }
+    }
   }
 
   confirmApprove(id: number) {
@@ -105,11 +119,28 @@ export class AdminPage implements OnInit {
   }
 
   reject(id: number) {
-    this.adminService.rejectPsychologist(id).subscribe(() => {
-      this.presentToast('Psicólogo rechazado');
-      this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
-      this.pendingPsychologists$.next([...this.pendingPsychologists]);
+    this.adminService.rejectPsychologist(id).subscribe({
+      next: () => {
+        this.presentToast('Psicólogo rechazado');
+        this.updateUIAfterRejection(id);
+      },
+      error: (error) => {
+        console.error('Error en reject:', error);
+        
+        // Verificar si realmente se rechazó recargando los datos
+        setTimeout(() => {
+          this.loadPendingPsychologists();
+        }, 1000);
+        
+        this.presentToast('Verificando estado de la solicitud...');
+      }
     });
+  }
+
+  // Método auxiliar para actualizar la UI después de rechazar
+  private updateUIAfterRejection(id: number) {
+    // Remover de la lista de pendientes inmediatamente
+    this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
   }
 
   confirmReject(id: number) {
@@ -127,11 +158,28 @@ export class AdminPage implements OnInit {
   }
 
   ban(id: number) {
-    this.adminService.banUser(id).subscribe(() => {
-      this.presentToast('Usuario baneado');
-      this.activeUsers = this.activeUsers.filter(u => u.id_user !== id);
-      this.activeUsers$.next([...this.activeUsers]);
+    this.adminService.banUser(id).subscribe({
+      next: () => {
+        this.presentToast('Usuario baneado');
+        this.updateUIAfterBan(id);
+      },
+      error: (error) => {
+        console.error('Error en ban:', error);
+        
+        // Verificar si realmente se baneó recargando los datos
+        setTimeout(() => {
+          this.loadActiveUsers();
+        }, 1000);
+        
+        this.presentToast('Verificando estado del usuario...');
+      }
     });
+  }
+
+  // Método auxiliar para actualizar la UI después de banear
+  private updateUIAfterBan(id: number) {
+    // Remover de la lista de activos inmediatamente
+    this.activeUsers = this.activeUsers.filter(u => u.id_user !== id);
   }
 
   confirmBan(id: number) {
@@ -174,5 +222,9 @@ export class AdminPage implements OnInit {
   logout() {
     this.authService.logout();
     window.location.href = '/login';
+  }
+
+  trackById(index: number, item: UserResponseDTO): number {
+    return item.id_user;
   }
 }
