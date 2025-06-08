@@ -1,4 +1,3 @@
-// models/review.ts
 export interface ReviewDTO {
   id: number;
   rating: number;

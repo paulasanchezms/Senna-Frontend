@@ -1,7 +1,7 @@
 import { WorkingHourDTO } from "../services/working-hour.service";
 
 export interface PsychologistProfile {
-    consultationDuration: number;    // en minutos
+    consultationDuration: number;  
     consultationPrice: number;       
     specialty: string;
     location: string;
