@@ -70,10 +70,12 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.tryInitAutocomplete();
   }
 
+  // Devuelve si el modo edición está activo
   get editMode(): boolean {
     return this._editMode;
   }
 
+  // Activa/desactiva el modo edición y rellena formularios con los datos actuales
   set editMode(value: boolean) {
     this._editMode = value;
 
@@ -99,10 +101,12 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.tryInitAutocomplete();
   }
 
+  // Devuelve la pestaña actualmente activa
   get activeTab(): 'personal' | 'professional' {
     return this._activeTab;
   }
 
+  // Cambia de pestaña y actualiza los formularios si está en modo edición
   set activeTab(value: 'personal' | 'professional') {
     this._activeTab = value;
 
@@ -128,6 +132,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.tryInitAutocomplete();
   }
 
+  // Construye formularios de datos personales y profesionales con validaciones
   buildForms() {
     this.personalForm = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
@@ -145,6 +150,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     });
   }
 
+  // Construye el formulario de horarios con campos para mañana y tarde
   buildScheduleForm() {
     const group: any = {};
     for (let d = 0; d < 7; d++) {
@@ -157,6 +163,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     this.scheduleForm = this.fb.group(group);
   }
 
+  // Carga el perfil profesional del usuario y lo aplica al formulario
   loadProfile() {
     this.profileService.getProfile(this.userId).subscribe(profile => {
       this.profile = profile;
@@ -164,6 +171,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     });
   }
 
+  // Carga el perfil y las franjas horarias del psicólogo y rellena el formulario de horarios
   async loadProfileAndHours() {
     try {
       const profile = await firstValueFrom(this.profileService.getProfile(this.userId));
@@ -192,6 +200,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
+  // Guarda los datos personales del usuario si el formulario es válido
   async savePersonal() {
     if (this.personalForm.invalid) {
       this.presentAlert('Revisa los datos del formulario personal.');
@@ -206,7 +215,8 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
       this.presentAlert('No se pudo guardar. Intenta nuevamente.');
     }
   }
-
+    
+  // Guarda los datos profesionales del perfil si el formulario es válido
   async saveProfessional() {
     const data = this.professionalForm.value;
     try {
@@ -218,6 +228,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
+    // Sale del modo edición y recarga los datos del usuario y perfil
   async exitEditModeAndReload() {
     this._editMode = false;
     try {
@@ -229,10 +240,12 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
+  // Cancela la edición y recarga los datos originales
   onCancelEdit() {
     this.exitEditModeAndReload();
   }
 
+  // Guarda las franjas horarias definidas, validando solapamientos
   async saveSchedule() {
     const dtos: WorkingHourDTO[] = [];
 
@@ -269,6 +282,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
+  // Inicia el autocompletado de ubicación si está en modo edición y pestaña profesional
   tryInitAutocomplete() {
     setTimeout(() => {
       if (this.editMode && this.activeTab === 'professional' && this.locationInput) {
@@ -277,6 +291,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }, 200);
   }
 
+  // Configura Google Places Autocomplete en el campo de ubicación
   initAutocomplete() {
     const autocomplete = new google.maps.places.Autocomplete(this.locationInput.nativeElement, {
       types: ['geocode'],
@@ -290,6 +305,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     });
   }
 
+  // Procesa la imagen seleccionada, la sube a ImgBB y actualiza la foto de perfil
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -313,6 +329,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
+  // Sube el documento seleccionado, actualiza el perfil y guarda los cambios
   onDocumentSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -341,6 +358,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     }
   }
 
+  // Agrupa las franjas horarias por día para mostrarlas organizadamente
   get groupedWorkingHours(): { day: string, slots: { start: string, end: string }[] }[] {
     const daysMap: { [key: number]: string } = {
       0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves',
@@ -361,6 +379,7 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     return Object.entries(grouped).map(([day, slots]) => ({ day, slots }));
   }
 
+  // Carga las valoraciones del psicólogo y calcula la media
   loadReviews() {
     if (!this.user?.id_user) return;
     this.reviewService.getReviews(this.user.id_user).subscribe({
@@ -378,18 +397,21 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     });
   }
   
+  // Convierte fechas al formato ISO
   parseDateString(dateStr: string): string {
-    if (dateStr.includes('T')) return dateStr; // ya es ISO
+    if (dateStr.includes('T')) return dateStr; 
     const [datePart, timePart] = dateStr.split(' ');
     const [day, month, year] = datePart.split('/');
     return new Date(`${year}-${month}-${day}T${timePart}`).toISOString();
   }
 
+  // Muestra más valoraciones al usuario (paginación)
   showMoreReviews() {
     const next = this.visibleReviews.length + this.pageSize;
     this.visibleReviews = this.reviews.slice(0, next);
   }
 
+  // Calcula la media de puntuaciones a partir de las valoraciones
   calculateAverageRating() {
     if (this.reviews.length === 0) {
       this.averageRating = 0;
@@ -398,15 +420,18 @@ export class PsychologistProfilePage implements OnInit, AfterViewInit {
     const total = this.reviews.reduce((sum, r) => sum + r.rating, 0);
     this.averageRating = total / this.reviews.length;
   }
-  
+
+  // Devuelve true si el perfil está incompleto (para mostrar alerta)
   get shouldShowIncompleteAlert(): boolean {
     return !!(this.profile && !this.profileService.isProfileComplete(this.profile));
   }
-  
+
+  // Devuelve true si el acceso del psicólogo debe estar bloqueado
   get isAccessBlocked(): boolean {
     return !!(this.user && this.profile && !this.profileService.canAccessFeatures(this.user, this.profile));
   }
 
+  // Muestra una alerta con el mensaje proporcionado
   async presentAlert(message: string) {
     const alert = await this.alertCtrl.create({
       message,

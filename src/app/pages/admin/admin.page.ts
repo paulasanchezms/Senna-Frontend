@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController, ToastController, AlertController } from '@ionic/angular';
+import {
+  ModalController,
+  ToastController,
+  AlertController,
+} from '@ionic/angular';
 
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -11,10 +15,9 @@ import { PsychologistProfileModalPage } from '../psychologist-profile-modal/psyc
   standalone: false,
   selector: 'app-admin',
   templateUrl: './admin.page.html',
-  styleUrls: ['./admin.page.scss']
+  styleUrls: ['./admin.page.scss'],
 })
 export class AdminPage implements OnInit {
-
   selectedTab: string = 'pending';
   loading: boolean = false;
 
@@ -30,45 +33,51 @@ export class AdminPage implements OnInit {
     private alertCtrl: AlertController
   ) {}
 
+  // Carga inicial de datos al entrar a la página
   ngOnInit() {
     this.loadAllData();
   }
 
+  // Carga todos los datos necesarios: pendientes y activos
   loadAllData() {
     this.loadPendingPsychologists();
     this.loadActiveUsers();
   }
 
+  // Carga psicólogos con solicitud pendiente que tengan su perfil completo
   loadPendingPsychologists() {
     this.loading = true;
     this.adminService.getPendingPsychologists().subscribe({
       next: (res) => {
-        this.pendingPsychologists = res.filter(p =>
-          p.profile?.specialty &&
-          p.profile?.location &&
-          p.profile?.description &&
-          p.profile?.document
+        this.pendingPsychologists = res.filter(
+          (p) =>
+            p.profile?.specialty &&
+            p.profile?.location &&
+            p.profile?.description &&
+            p.profile?.document
         );
         this.loading = false;
       },
       error: () => {
         this.presentToast('Error al cargar psicólogos pendientes');
         this.loading = false;
-      }
+      },
     });
   }
 
+  // Carga todos los usuarios activos (excluyendo administradores)
   loadActiveUsers() {
     this.adminService.getAllActiveUsers().subscribe({
       next: (res) => {
-        this.activeUsers = res.filter(u => u.role !== 'ADMIN');
+        this.activeUsers = res.filter((u) => u.role !== 'ADMIN');
       },
       error: () => {
         this.presentToast('Error al cargar usuarios activos');
-      }
+      },
     });
   }
 
+  // Aprueba a un psicólogo pendiente y actualiza la interfaz
   approve(id: number) {
     this.adminService.approvePsychologist(id).subscribe({
       next: () => {
@@ -81,43 +90,48 @@ export class AdminPage implements OnInit {
         setTimeout(() => {
           this.loadAllData();
         }, 1000);
-        
+
         this.presentToast('Verificando estado de la solicitud...');
-      }
+      },
     });
   }
 
-  // Método auxiliar para actualizar la UI después de aprobar
+  // Actualiza la lista local tras aprobar
   private updateUIAfterApproval(id: number) {
-    // Encontrar el psicólogo aprobado
-    const approvedPsychologist = this.pendingPsychologists.find(p => p.id_user === id);
-    
+    const approvedPsychologist = this.pendingPsychologists.find(
+      (p) => p.id_user === id
+    );
+
     if (approvedPsychologist) {
-      // Remover de pendientes
-      this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
-      
-      // Agregar a activos
-      const existsInActive = this.activeUsers.some(u => u.id_user === id);
+      this.pendingPsychologists = this.pendingPsychologists.filter(
+        (p) => p.id_user !== id
+      );
+
+      const existsInActive = this.activeUsers.some((u) => u.id_user === id);
       if (!existsInActive) {
         this.activeUsers.push(approvedPsychologist);
       }
     }
   }
 
+  // Alerta de confirmación para aprobar
   confirmApprove(id: number) {
-    this.alertCtrl.create({
-      header: 'Aprobar psicólogo',
-      message: '¿Estás seguro/a de que quieres aprobar a este profesional?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Sí, aprobar',
-          handler: () => this.approve(id)
-        }
-      ]
-    }).then(alert => alert.present());
+    this.alertCtrl
+      .create({
+        header: 'Aprobar psicólogo',
+        message: '¿Estás seguro/a de que quieres aprobar a este profesional?',
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          {
+            text: 'Sí, aprobar',
+            handler: () => this.approve(id),
+          },
+        ],
+      })
+      .then((alert) => alert.present());
   }
 
+  // Rechaza a un psicólogo y actualiza la lista
   reject(id: number) {
     this.adminService.rejectPsychologist(id).subscribe({
       next: () => {
@@ -126,37 +140,41 @@ export class AdminPage implements OnInit {
       },
       error: (error) => {
         console.error('Error en reject:', error);
-        
-        // Verificar si realmente se rechazó recargando los datos
+
         setTimeout(() => {
           this.loadPendingPsychologists();
         }, 1000);
-        
+
         this.presentToast('Verificando estado de la solicitud...');
-      }
+      },
     });
   }
 
-  // Método auxiliar para actualizar la UI después de rechazar
+  // Actualiza la lista local tras rechazar
   private updateUIAfterRejection(id: number) {
-    // Remover de la lista de pendientes inmediatamente
-    this.pendingPsychologists = this.pendingPsychologists.filter(p => p.id_user !== id);
+    this.pendingPsychologists = this.pendingPsychologists.filter(
+      (p) => p.id_user !== id
+    );
   }
 
+  // Alerta de confirmación para rechazar
   confirmReject(id: number) {
-    this.alertCtrl.create({
-      header: 'Rechazar psicólogo',
-      message: '¿Seguro que quieres rechazar esta solicitud?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Sí, rechazar',
-          handler: () => this.reject(id)
-        }
-      ]
-    }).then(alert => alert.present());
+    this.alertCtrl
+      .create({
+        header: 'Rechazar psicólogo',
+        message: '¿Seguro que quieres rechazar esta solicitud?',
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          {
+            text: 'Sí, rechazar',
+            handler: () => this.reject(id),
+          },
+        ],
+      })
+      .then((alert) => alert.present());
   }
 
+  // Banea a un usuario activo
   ban(id: number) {
     this.adminService.banUser(id).subscribe({
       next: () => {
@@ -165,41 +183,45 @@ export class AdminPage implements OnInit {
       },
       error: (error) => {
         console.error('Error en ban:', error);
-        
+
         // Verificar si realmente se baneó recargando los datos
         setTimeout(() => {
           this.loadActiveUsers();
         }, 1000);
-        
+
         this.presentToast('Verificando estado del usuario...');
-      }
+      },
     });
   }
 
-  // Método auxiliar para actualizar la UI después de banear
+  // Actualiza la lista local tras banear
   private updateUIAfterBan(id: number) {
-    // Remover de la lista de activos inmediatamente
-    this.activeUsers = this.activeUsers.filter(u => u.id_user !== id);
+    this.activeUsers = this.activeUsers.filter((u) => u.id_user !== id);
   }
 
+  // Alerta de confirmación para banear
   confirmBan(id: number) {
-    this.alertCtrl.create({
-      header: 'Banear usuario',
-      message: '¿Estás seguro/a de que quieres banear permanentemente a este usuario?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Sí, banear',
-          handler: () => this.ban(id)
-        }
-      ]
-    }).then(alert => alert.present());
+    this.alertCtrl
+      .create({
+        header: 'Banear usuario',
+        message:
+          '¿Estás seguro/a de que quieres banear permanentemente a este usuario?',
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          {
+            text: 'Sí, banear',
+            handler: () => this.ban(id),
+          },
+        ],
+      })
+      .then((alert) => alert.present());
   }
 
+  // Abre el modal con el perfil del psicólogo
   async viewProfile(psychologist: UserResponseDTO) {
     const modal = await this.modalController.create({
       component: PsychologistProfileModalPage,
-      componentProps: { psychologist }
+      componentProps: { psychologist },
     });
 
     await modal.present();
@@ -210,20 +232,23 @@ export class AdminPage implements OnInit {
     }
   }
 
+  // Muestra un toast con mensaje
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom'
+      position: 'bottom',
     });
     await toast.present();
   }
 
+  // Cierra la sesión
   logout() {
     this.authService.logout();
     window.location.href = '/login';
   }
 
+  // Para trackear los usuarios en la plantilla de manera eficiente
   trackById(index: number, item: UserResponseDTO): number {
     return item.id_user;
   }

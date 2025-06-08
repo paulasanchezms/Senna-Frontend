@@ -49,14 +49,17 @@ export class PublicRegisterModalPage implements OnInit {
     });
   }
 
+  // Devuelve true si un estado emocional (mood) está seleccionado
   isSelectedMood(id: number): boolean {
     return this.moods.some(m => m.id === id);
   }
 
+  // Devuelve true si un síntoma está seleccionado
   isSelectedSymptom(id: number): boolean {
     return this.symptoms.some(s => s.id === id);
   }
 
+  // Cierra el modal sin realizar ninguna acción
   close() {
     this.modalCtrl.dismiss(null, 'cancel');
   }

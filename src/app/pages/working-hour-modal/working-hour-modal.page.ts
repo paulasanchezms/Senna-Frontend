@@ -34,6 +34,7 @@ export class WorkingHourModalPage implements OnInit {
     this.loadHoursForDate(this.selectedDate);
   }
 
+  // Carga las franjas horarias personalizadas si existen, o usa las predeterminadas
   loadHoursForDate(date: string) {
     this.customWhService.getCustomHours(this.userId, date).subscribe(customHours => {
       if (customHours.length > 0) {
@@ -55,6 +56,7 @@ export class WorkingHourModalPage implements OnInit {
     });
   }
 
+  // Añadir una nueva fila vacía para introducir una nueva franja horaria
   addEmptyRow() {
     this.workingHoursForDay.push({
       startTime: '',
@@ -62,10 +64,12 @@ export class WorkingHourModalPage implements OnInit {
     });
   }
 
+  // Elimina una franja horaria del array
   async deleteHour(hour: WorkingHourCustomDTO) {
     this.workingHoursForDay = this.workingHoursForDay.filter(h => h !== hour);
   }
 
+  // Guarda todos los cambios después de validar
   async saveAll() {
     if (!this.selectedDate) return;
 

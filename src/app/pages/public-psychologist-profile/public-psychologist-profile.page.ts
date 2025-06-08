@@ -54,16 +54,19 @@ export class PublicPsychologistProfilePage implements OnInit {
     this.loadReviews();
   }
 
+  // Convierte una fecha en string al formato ISO
   parseDateString(dateStr: string): string {
     const [datePart, timePart] = dateStr.split(' ');
     const [day, month, year] = datePart.split('/');
     return new Date(`${year}-${month}-${day}T${timePart}`).toISOString();
   }
 
+  // Permite seleccionar la puntuación (1-5 estrellas)
   setRating(value: number) {
     if (!this.hasRated) this.rating = value;
   }
 
+  // Envía una nueva reseña
   submitReview() {
     if (!this.rating || !this.comment.trim()) return;
 
@@ -96,6 +99,7 @@ export class PublicPsychologistProfilePage implements OnInit {
       });
   }
 
+  // Carga las reseñas del psicólogo y calcula la media
   loadReviews() {
     this.reviewService.getReviews(this.psychologistId).subscribe({
       next: (res) => {
@@ -123,11 +127,13 @@ export class PublicPsychologistProfilePage implements OnInit {
     });
   }
 
+  // Cargar más reseñas (paginación manual)
   showMore() {
     const next = this.visibleReviews.length + this.pageSize;
     this.visibleReviews = this.reviews.slice(0, next);
   }
 
+  // Calcula la puntuación media de todas las reseñas
   calculateAverageRating() {
     if (!this.reviews.length) {
       this.averageRating = 0;
@@ -137,6 +143,7 @@ export class PublicPsychologistProfilePage implements OnInit {
     this.averageRating = total / this.reviews.length;
   }
 
+  // Redirige a la vista para agendar cita con el psicólogo
   goToPsychologistSchedule(id_user: number) {
     this.router.navigate(['/schedule-appointment', id_user]);
   }

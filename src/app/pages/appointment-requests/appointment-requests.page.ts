@@ -21,6 +21,8 @@ export class AppointmentRequestsPage implements OnInit {
     this.loadPendingAppointments();
   }
 
+
+  // Carga las citas pendientes para el psicólogo autenticado
   loadPendingAppointments() {
     this.appointmentService.getPendingAppointmentsForPsychologist().subscribe({
       next: (appointments) => {
@@ -33,6 +35,7 @@ export class AppointmentRequestsPage implements OnInit {
     });
   }
 
+  // Acepta una cita por su ID y actualiza la lista
   accept(id: number) {
     this.appointmentService.acceptAppointment(id).subscribe({
       next: () => {
@@ -44,6 +47,7 @@ export class AppointmentRequestsPage implements OnInit {
     });
   }
   
+  // Rechaza una cita por su ID y actualiza la lista
   reject(id: number) {
     this.appointmentService.rejectAppointment(id).subscribe({
       next: () => {
@@ -55,6 +59,7 @@ export class AppointmentRequestsPage implements OnInit {
     });
   }
 
+  // Muestra un toast con el mensaje especificado
   async showToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,

@@ -23,6 +23,7 @@ import { WorkingHourCustomDTO } from 'src/app/models/working-hour-custom';
   styleUrls: ['./calendar.page.scss'],
 })
 export class CalendarPage {
+  // Configuración general del calendario FullCalendar
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
     plugins: [timeGridPlugin, interactionPlugin],
@@ -70,6 +71,7 @@ export class CalendarPage {
     private alertCtrl: AlertController
   ) {}
 
+  // Al entrar en la vista, obtener el usuario, sus horarios y sus citas
   ionViewWillEnter() {
     this.userService.me().subscribe({
       next: (user) => {
@@ -81,6 +83,7 @@ export class CalendarPage {
     });
   }
 
+  // Carga las citas confirmadas del psicólogo y las pinta en el calendario
   loadAppointments() {
     this.appointmentService
       .getPsychologistAppointments()
@@ -109,6 +112,7 @@ export class CalendarPage {
       });
   }
 
+  // Carga los horarios semanales por defecto y actualiza el calendario
   loadWorkingHours() {
     this.workingHourService
       .getWorkingHours(this.userId)
@@ -119,6 +123,7 @@ export class CalendarPage {
       });
   }
 
+  // Ajusta los límites horarios visibles del calendario en base a los horarios del psicólogo
   updateCalendarSlotTimes() {
     if (this.allHours.length === 0) {
       this.calendarOptions.slotMinTime = '08:00:00';
@@ -142,12 +147,14 @@ export class CalendarPage {
     };
   }
 
+  // Calcula la hora final de una cita sumando la duración al inicio
   calculateEndTime(start: string, duration: number) {
     const date = new Date(start);
     date.setMinutes(date.getMinutes() + duration);
     return date.toISOString();
   }
 
+  // Al hacer clic en una franja vacía, se abre el modal para definir horario personalizado
   async handleDateClick(info: DateClickArg) {
     console.log('Fecha clicada:', info.date);
     const date = new Date(info.date);
@@ -173,6 +180,7 @@ export class CalendarPage {
     }
   }
 
+  // Estiliza los elementos visuales tras renderizar el calendario
   ngAfterViewInit() {
     const applyFullCalendarStyles = () => {
       // Estilos para las horas laterales
@@ -214,6 +222,7 @@ export class CalendarPage {
     }
   }
 
+  // Pinta los días con horario por defecto o sin él con color de fondo
   highlightWorkingDays() {
     const defaultWorkingDays = new Set(this.allHours.map((h) => h.dayOfWeek));
 
@@ -239,6 +248,7 @@ export class CalendarPage {
     };
   }
 
+  // Devuelve las fechas y el número de día de la semana de la semana actual
   getCurrentWeekDates(): { date: string; dayOfWeek: number }[] {
     const today = new Date();
     const start = today.getDate() - today.getDay();
@@ -254,6 +264,7 @@ export class CalendarPage {
     return dates;
   }
 
+  // Carga franjas personalizadas para una fecha concreta
   loadHoursForDate(date: string) {
     this.customWhService
       .getCustomHours(this.userId, date)
@@ -279,6 +290,7 @@ export class CalendarPage {
       });
   }
 
+  // Al hacer clic en una cita del calendario, muestra una alerta para cancelarla
   handleEventClick(info: any) {
     const appointmentId = info.event.extendedProps?.id;
 

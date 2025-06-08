@@ -38,7 +38,7 @@ export class ForgotPasswordPage {
     });
   }
 
-  // Validator definido como función que retorna función para mantener contexto de `this`
+  // Validador personalizado que revisa el formato del email
   customEmailValidator(): (control: AbstractControl) => ValidationErrors | null {
     return (control: AbstractControl): ValidationErrors | null => {
       const email = control.value;
@@ -49,6 +49,7 @@ export class ForgotPasswordPage {
     };
   }
 
+  // Se ejecuta al enviar el formulario
   onSubmit(): void {
     if (this.recoverForm.valid) {
       const email = this.recoverForm.value.email;
@@ -70,6 +71,7 @@ export class ForgotPasswordPage {
     }
   }
 
+  // Oculta las alertas tras 3.5 segundos
   hideAlertsAfterDelay(): void {
     setTimeout(() => {
       this.showAlert = false;
@@ -78,6 +80,7 @@ export class ForgotPasswordPage {
     }, 3500);
   }
 
+  // Navega a la pantalla de login
   irALogin(): void {
     this.router.navigate(['/login']);
   }

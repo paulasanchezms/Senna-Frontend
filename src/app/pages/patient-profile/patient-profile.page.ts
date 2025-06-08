@@ -28,12 +28,13 @@ export class PatientProfilePage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Se construye el formulario con validaciones
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
       last_name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)]],
       phone: ['', [Validators.pattern(/^[0-9]{9,15}$/)]], 
     });
-  
+    // Se cargan los datos del usuario desde el backend y se rellena el formulario  
     this.userService.me().subscribe({
       next: (data) => {
         this.user = data;
@@ -48,6 +49,7 @@ export class PatientProfilePage implements OnInit {
     });
   }
 
+  // Método que se ejecuta cuando el usuario selecciona una imagen
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (!file) return;
@@ -73,6 +75,7 @@ export class PatientProfilePage implements OnInit {
     });
   }
 
+  // Guardar cambios del formulario
   saveChanges() {
     if (this.form.invalid) {
       this.presentToast('Revisa los datos del formulario.', 'danger');
@@ -97,11 +100,13 @@ export class PatientProfilePage implements OnInit {
     });
   }
 
+  // Cierra sesión del usuario
   logout() {
     this.authService.logout();
     window.location.href = '/login';
   }
 
+  // Muestra un toast informativo en la pantalla
   async presentToast(message: string, color: 'success' | 'danger' = 'success') {
     const toast = await this.toastCtrl.create({
       message,
@@ -112,6 +117,7 @@ export class PatientProfilePage implements OnInit {
     await toast.present();
   }
 
+  // Previene la introducción de caracteres no numéricos en el campo de teléfono
   preventInvalidKeyPress(event: KeyboardEvent) {
     const allowed = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
     const isNumber = /^[0-9]$/.test(event.key);

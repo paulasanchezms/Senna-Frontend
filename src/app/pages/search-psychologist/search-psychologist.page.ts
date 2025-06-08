@@ -21,6 +21,7 @@ export class SearchPsychologistPage implements OnInit {
     this.loadPsychologists();
   }
 
+  // Carga todos los psicólogos activos desde el backend
   loadPsychologists() {
     console.log('Cargando psicólogos...');
     this.userService.getPsychologists().subscribe({
@@ -33,21 +34,23 @@ export class SearchPsychologistPage implements OnInit {
       }
     });
   }
+
+  // Normaliza texto eliminando mayúsculas y acentos para búsquedas más flexibles
   normalizeText(text: string): string {
     return text
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[̀-ͯ]/g, ''); // elimina acentos
+      .replace(/[̀-ͯ]/g, ''); 
   }
 
- 
+// Aplica filtros de búsqueda por nombre/especialidad y ubicación
 search() {
   const normalizedSearch = this.normalizeText(this.searchTerm);
   const normalizedLocation = this.normalizeText(this.locationTerm);
 
   this.userService.getPsychologists().subscribe((data) => {
     this.psychologists = data
-      .filter(p => p.active) // Solo activos
+      .filter(p => p.active)
       .filter((psy) => {
         const name = this.normalizeText(`${psy.name} ${psy.last_name}`);
         const specialty = this.normalizeText(psy.profile?.specialty || '');
@@ -66,6 +69,7 @@ search() {
   });
 }
 
+  // Se ejecuta al escribir en los campos de búsqueda; si están vacíos, recarga todos
   onInputChange() {
     if (!this.searchTerm.trim() && !this.locationTerm.trim()) {
       this.loadPsychologists();
@@ -74,6 +78,7 @@ search() {
     }
   }
 
+  // Navega al perfil público del psicólogo seleccionado
   goToPublicProfile(id_user: number) {
     this.router.navigate(['/psychologist-public', id_user]);
   }

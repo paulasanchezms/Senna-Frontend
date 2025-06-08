@@ -42,6 +42,7 @@ export class ScheduleAppointmentPage {
     this.loadWeeklyAvailability();
   }
 
+  // Cuando se cambia la fecha seleccionada
   onDateChange() {
     if (!this.weeklyAvailability[this.selectedDate]) {
       const selected = new Date(this.selectedDate);
@@ -67,6 +68,7 @@ export class ScheduleAppointmentPage {
     }
   }
 
+  // Filtra las horas disponibles eliminando las que están en el pasado
   refreshAvailableTimes() {
     const allTimes = this.weeklyAvailability[this.selectedDate] || [];
     const now = new Date();
@@ -81,6 +83,7 @@ export class ScheduleAppointmentPage {
     });
   }
 
+  // Carga la información del psicólogo, incluyendo su perfil
   loadPsychologist() {
     this.userService.getPsychologistById(this.psychologistId).subscribe({
       next: (data) => {
@@ -96,6 +99,7 @@ export class ScheduleAppointmentPage {
     });
   }
 
+  // Carga la disponibilidad semanal completa al entrar en la página
   loadWeeklyAvailability() {
     const today = new Date();
     const start = new Date(today);
@@ -120,6 +124,7 @@ export class ScheduleAppointmentPage {
       });
   }
 
+  // Confirma la cita y redirige a la pantalla de confirmación
   confirm() {
     if (!this.selectedDate || !this.selectedTime) {
       alert('Por favor, selecciona día y hora.');
@@ -154,6 +159,7 @@ export class ScheduleAppointmentPage {
     });
   }
 
+  // Calcula la hora de finalización sumando la duración al inicio
   computeEndTime(startTime: string): string {
     if (!startTime) return '';
     const [hh, mm] = startTime.split(':').map((n) => parseInt(n, 10));

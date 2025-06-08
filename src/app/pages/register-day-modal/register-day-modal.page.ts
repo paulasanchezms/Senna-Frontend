@@ -56,6 +56,7 @@ export class RegisterDayModalPage implements OnInit {
     }
   }
 
+  // Marca o desmarca un estado de ánimo
   toggleMood(id: number) {
     const index = this.selectedMoodIds.indexOf(id);
     if (index > -1) {
@@ -65,6 +66,7 @@ export class RegisterDayModalPage implements OnInit {
     }
   }
 
+  // Marca o desmarca un síntoma
   toggleSymptom(id: number) {
     const index = this.selectedSymptomIds.indexOf(id);
     if (index > -1) {
@@ -74,14 +76,17 @@ export class RegisterDayModalPage implements OnInit {
     }
   }
 
+  // Verifica si un estado de ánimo está seleccionado
   isSelectedMood(id: number): boolean {
     return this.selectedMoodIds.includes(id);
   }
 
+  // Verifica si un síntoma está seleccionado
   isSelectedSymptom(id: number): boolean {
     return this.selectedSymptomIds.includes(id);
   }
 
+  // Guarda la entrada diaria
   saveEntry() {
     const entry = {
       date: this.selectedDate,
@@ -105,6 +110,7 @@ export class RegisterDayModalPage implements OnInit {
     });
   }
 
+  // Cierra el modal sin guardar
   close() {
     this.modalCtrl.dismiss(null, 'cancel');
   }

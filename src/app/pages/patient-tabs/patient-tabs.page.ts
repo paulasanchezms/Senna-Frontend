@@ -16,6 +16,7 @@ export class PatientTabsPage implements OnInit {
    
   }
 
+  // Método que se ejecuta al hacer clic en un tab o botón de navegación
   navigateTo(route: string) {
     this.router.navigate([route]);
   }

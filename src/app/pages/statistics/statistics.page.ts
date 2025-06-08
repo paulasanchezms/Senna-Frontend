@@ -53,7 +53,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
   selectedMonthValue: string | null = null;
   
   @ViewChild('pdfContent', { static: false }) pdfContent!: any;
-
+  // Configuración del gráfico semanal
   weeklyChartConfig: ChartConfiguration<'line'> = {
     type: 'line',
     data: {
@@ -111,7 +111,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
       },
     },
   };
-
+  // Configuración del gráfico mensual
   monthlyChartConfig: ChartConfiguration<'line'> = {
     type: 'line',
     data: {
@@ -181,6 +181,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     private userService: UserService 
   ) {}
 
+  // Inicializa la vista, define fechas y obtiene paciente si el usuario es psicólogo
   ngOnInit(): void {
     const currentUser = this.authService.getCurrentUser();
 
@@ -224,6 +225,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     this.updateMonthLabel();
   }
 
+  // Se ejecuta tras renderizar la vista, carga estadísticas
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.loadWeeklyStatistics();
@@ -231,6 +233,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     }, 100); 
   }
 
+  // Cambio en el selector de semana
   onWeekDateChange(val: string | string[] | null | undefined): void {
     if (!val || Array.isArray(val)) return;
     const d = new Date(val);
@@ -240,6 +243,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     this.loadWeeklyStatistics();
   }
 
+  // Cambio en el selector de mes
   onMonthPickerChange(val: string | string[] | null | undefined): void {
     if (!val || Array.isArray(val)) return;
   
@@ -251,10 +255,10 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     this.updateMonthLabel();
     this.loadMonthlyStatistics();
   
-    // Cerrar manualmente el picker
     this.showMonthPicker = false;
   }
 
+  // Navegación por semanas
   prevWeek(): void {
     this.displayWeekNum--;
     if (this.displayWeekNum < 1) {
@@ -275,6 +279,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     this.loadWeeklyStatistics();
   }
 
+  // Navegación por meses
   prevMonth(): void {
     this.displayMonth--;
     if (this.displayMonth < 0) {
@@ -295,6 +300,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
     this.loadMonthlyStatistics();
   }
 
+  // Carga los datos del gráfico semanal desde el backend
   loadWeeklyStatistics(): void {
     const patientId = this.isPsychologist ? this.viewingPatientId : undefined;
 
@@ -321,6 +327,7 @@ export class StatisticsPage implements OnInit, AfterViewInit {
       });
   }
 
+  // Carga los datos del gráfico mensual desde el backend
   loadMonthlyStatistics(): void {
     const lastDay = new Date(
       this.displayMonthYear,
@@ -377,7 +384,6 @@ export class StatisticsPage implements OnInit, AfterViewInit {
 
     const f = this.formatDate(sel);
 
-    // Diferenciar si el usuario es psicólogo o paciente
     const currentUser = this.authService.getCurrentUser();
     let existing = null;
 

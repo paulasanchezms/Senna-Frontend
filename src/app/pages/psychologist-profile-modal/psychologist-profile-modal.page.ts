@@ -19,6 +19,7 @@ export class PsychologistProfileModalPage {
     private modalController: ModalController
   ) {}
 
+  // Aprueba al psicólogo y cierra el modal notificando éxito
   approve() {
     this.adminService.approvePsychologist(this.psychologist.id_user).subscribe(() => {
       this.presentToast('Psicólogo aprobado correctamente');
@@ -26,6 +27,7 @@ export class PsychologistProfileModalPage {
     });
   }
 
+  // Rechaza al psicólogo y cierra el modal notificando éxito
   reject() {
     this.adminService.rejectPsychologist(this.psychologist.id_user).subscribe(() => {
       this.presentToast('Psicólogo rechazado correctamente');
@@ -33,10 +35,12 @@ export class PsychologistProfileModalPage {
     });
   }
 
+  // Cierra el modal sin hacer cambios
   dismissModal() {
     this.modalController.dismiss();
   }
 
+  // Muestra un toast con el mensaje indicado
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message,

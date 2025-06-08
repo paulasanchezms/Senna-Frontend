@@ -27,16 +27,19 @@ export class ChangePasswordPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Inicializa el formulario con validaciones
     this.form = this.fb.group({
       newPassword: ['', [Validators.required, Validators.minLength(6), this.passwordValidator]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
 
+    // Obtiene el token de los parámetros de la URL y valida que sea correcto
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
       if (this.token) {
         this.checkEmailService.validateResetToken(this.token).subscribe(isValid => {
           this.isTokenValid = isValid;
+          // Si es válido, extrae el email del payload del token
           if (isValid) {
             try {
               const payload = JSON.parse(atob(this.token.split('.')[1]));
@@ -53,6 +56,7 @@ export class ChangePasswordPage implements OnInit {
     });
   }
 
+  // Valida que la contraseña tenga al menos una mayúscula, un número y un símbolo
   passwordValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value) return null;
@@ -64,12 +68,14 @@ export class ChangePasswordPage implements OnInit {
     return hasUpper && hasNumber && hasSymbol ? null : { invalidPassword: true };
   }
 
+  // Valida que ambas contraseñas coincidan
   passwordMatchValidator(group: FormGroup): ValidationErrors | null {
     const password = group.get('newPassword')?.value;
     const confirm = group.get('confirmPassword')?.value;
     return password === confirm ? null : { mismatch: true };
   }
 
+  // Muestra un toast con el mensaje y color indicado
   async showToast(message: string, color: string = 'primary') {
     const toast = await this.toastCtrl.create({
       message,
@@ -79,6 +85,7 @@ export class ChangePasswordPage implements OnInit {
     await toast.present();
   }
 
+  // Envía la nueva contraseña si el formulario es válido y el token también
   onSubmit() {
     if (this.form.invalid || !this.isTokenValid) return;
 

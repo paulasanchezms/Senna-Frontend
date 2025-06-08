@@ -62,14 +62,18 @@ export class PsychologistNavbarPage implements OnInit, OnDestroy {
     this.profileStatusSub?.unsubscribe();
   }
 
+  // Abre/cierra el menú lateral
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+
+  // Cierra el menú  
   closeMenu() {
     this.isMenuOpen = false;
   }
 
+  // Cierra sesión y redirige al login
   logout() {
     this.authService.logout();
     window.location.href = '/login';

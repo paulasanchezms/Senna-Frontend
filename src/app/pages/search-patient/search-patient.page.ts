@@ -20,6 +20,7 @@ export class SearchPatientPage implements OnInit {
     this.loadPatients();
   }
 
+  // Carga los pacientes asignados al psicólogo desde el servicio
   loadPatients() {
     this.appointmentService.getPatientsForPsychologist().subscribe({
       next: (res) => {
@@ -30,6 +31,7 @@ export class SearchPatientPage implements OnInit {
     });
   }
 
+  // Filtra la lista según el término de búsqueda (nombre o apellidos)
   onInputChange() {
     const term = this.searchTerm.toLowerCase();
     this.filteredPatients = this.patients.filter(p =>
@@ -37,10 +39,12 @@ export class SearchPatientPage implements OnInit {
     );
   }
 
+  // Se llama al hacer clic en el botón de buscar
   search() {
     this.onInputChange();
   }
 
+  // Navega al perfil público del paciente seleccionado
   goToPatientView(id_user: number) {
     this.router.navigate(['/public-patient-profile', id_user]);
   }

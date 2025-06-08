@@ -28,11 +28,13 @@ export class ConfirmAppointmentPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Se recuperan los datos pasados desde la página anterior mediante el estado de navegación
     const nav = this.router.getCurrentNavigation();
     if (nav?.extras.state) {
       this.appointment = nav.extras.state['appointment'];
       this.psychologist = nav.extras.state['psychologist'];
 
+      // Se separa la fecha y hora para mostrarlo de forma amigable
       const [date, time] = this.appointment.dateTime.split('T');
       this.appointmentSummary = {
         psychologistName: `${this.psychologist.name} ${this.psychologist.last_name}`,
@@ -43,6 +45,7 @@ export class ConfirmAppointmentPage implements OnInit {
     }
   }
 
+  // Confirma la cita y la envía al backend para ser registrada como pendiente
   finalize() {
     this.appointmentService.scheduleAppointment(this.appointment).subscribe({
       next: () => {
@@ -66,6 +69,7 @@ export class ConfirmAppointmentPage implements OnInit {
     });
   }
 
+  // Getter para formatear la hora en formato HH:mm
   get formattedTime(): string {
     return this.appointmentSummary.time?.substring(0, 5) || '';
   }

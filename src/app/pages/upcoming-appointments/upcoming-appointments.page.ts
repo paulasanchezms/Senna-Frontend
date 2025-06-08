@@ -28,6 +28,7 @@ export class UpcomingAppointmentsPage implements OnInit {
     this.loadAppointments();
   }
 
+  // Obtiene todas las citas del paciente y las clasifica en futuras y pasadas
   loadAppointments() {
     this.appointmentService.getPatientAppointments().subscribe({
       next: (appointments) => {
@@ -47,6 +48,7 @@ export class UpcomingAppointmentsPage implements OnInit {
     });
   }
 
+  // Agrupa las citas futuras por psicólogo
   groupUpcomingAppointments() {
     const grouped = new Map<number, {
       psychologistId: number;
@@ -72,6 +74,7 @@ export class UpcomingAppointmentsPage implements OnInit {
     this.upcomingAppointmentsGrouped = Array.from(grouped.values());
   }
 
+  // Muestra una alerta de confirmación antes de cancelar una cita individual
   confirmCancel(appointmentId: number) {
     this.alertCtrl.create({
       header: 'Cancelar cita',
@@ -89,12 +92,14 @@ export class UpcomingAppointmentsPage implements OnInit {
     }).then(alert => alert.present());
   }
 
+  // Cancela una cita individual y recarga las citas
   cancelAppointment(id: number) {
     this.appointmentService.cancelAppointment(id).subscribe(() => {
       this.loadAppointments();
     });
   }
 
+  // Muestra una alerta de confirmación antes de cancelar todas las citas con un psicólogo
   confirmCancelAll(psychologistId: number) {
     this.alertCtrl.create({
       header: 'Cancelar todas las citas',
@@ -112,6 +117,7 @@ export class UpcomingAppointmentsPage implements OnInit {
     }).then(alert => alert.present());
   }
 
+  // Cancela todas las citas con un psicólogo y recarga las citas
   cancelAllAppointmentsWithPsychologist(psychologistId: number) {
     this.appointmentService.cancelAllWithPsychologist(psychologistId).subscribe(() => {
       this.loadAppointments();

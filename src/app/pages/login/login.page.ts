@@ -32,6 +32,7 @@ export class LoginPage implements OnInit {
     this.formSubmitted = false;
   }
 
+  // Método que se ejecuta al hacer submit del formulario
   onLogin(): void {
     this.formSubmitted = true;
     if (this.loginForm.invalid) return;
@@ -73,6 +74,7 @@ export class LoginPage implements OnInit {
     });
   }
 
+  // Getters para mostrar errores en el formulario desde el HTML
   get email() {
     return this.loginForm.get('email');
   }

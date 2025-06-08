@@ -71,6 +71,7 @@ export class RegisterPage implements OnInit {
     this.checkScreenSize();
   }
 
+  // Método para registrar al usuario
   onRegister(): void {
     this.formSubmitted = true;
     if (this.registerForm.invalid) return;
@@ -90,6 +91,7 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  // Valida que la contraseña tenga al menos una mayúscula, número y símbolo
   passwordValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value) return null;
@@ -102,12 +104,14 @@ export class RegisterPage implements OnInit {
     return null;
   }
 
+  // Valida que nombre o apellidos sean texto válido
   textValidator(control: AbstractControl): ValidationErrors | null {
     const trimmed = (control.value || '').trim();
     const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?: [A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/;
     return trimmed && !regex.test(trimmed) ? { invalidText: true } : null;
   }
 
+  // Valida email personalizado: sin espacios ni caracteres especiales inválidos
   customEmailValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value) return null;
@@ -118,6 +122,7 @@ export class RegisterPage implements OnInit {
     return null;
   }
 
+  // Abre el modal con los términos del paciente
   async openTermsModal() {
     const modal = await this.modalController.create({
       component: TermsPatientPage,
@@ -126,15 +131,18 @@ export class RegisterPage implements OnInit {
     await modal.present();
   }
 
+  // Escucha cambios de tamaño de pantalla
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.checkScreenSize();
   }
 
+  // Comprueba si es pantalla móvil
   checkScreenSize() {
     this.isMobile = window.innerWidth <= 768;
   }
 
+  // Getters para facilitar el acceso a los campos desde la plantilla
   get name() {
     return this.registerForm.get('name');
   }
@@ -155,6 +163,7 @@ export class RegisterPage implements OnInit {
     return this.registerForm.get('confirmPassword');
   }
 
+  // Validador para confirmar que ambas contraseñas coinciden
   passwordsMatchValidator(form: AbstractControl): ValidationErrors | null {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;

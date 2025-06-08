@@ -36,7 +36,8 @@ export class PublicPatientProfilePage implements OnInit {
     const currentUser = this.authService.getCurrentUser();
     this.isPsychologist = currentUser?.role === 'PSYCHOLOGIST';
   }
-
+  
+  // Redirige a la página de estadísticas del paciente
   goToStatistics() {
     this.router.navigate(['/statistics'], {
       queryParams: { patientId: this.patientId }

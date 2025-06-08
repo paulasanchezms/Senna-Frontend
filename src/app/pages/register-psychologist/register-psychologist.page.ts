@@ -97,6 +97,7 @@ export class RegisterPsychologistPage implements OnInit {
     }
   }
 
+  // Envía el formulario al backend si es válido
   onRegister(): void {
     this.formSubmitted = true;
     if (this.registerForm.invalid) return;
@@ -143,6 +144,7 @@ export class RegisterPsychologistPage implements OnInit {
     });
   }
 
+  // Valida que la contraseña tenga al menos una mayúscula, un número y un carácter especial
   passwordValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value) return null;
@@ -155,12 +157,14 @@ export class RegisterPsychologistPage implements OnInit {
     return null;
   }
 
+  // Valida que el campo de texto contenga solo letras y espacios
   textValidator(control: AbstractControl): ValidationErrors | null {
     const trimmed = (control.value || '').trim();
     const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?: [A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/;
     return trimmed && !regex.test(trimmed) ? { invalidText: true } : null;
   }
 
+  // Valida el formato del email y evita caracteres no permitidos
   customEmailValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value) return null;
@@ -171,6 +175,7 @@ export class RegisterPsychologistPage implements OnInit {
     return null;
   }
 
+  // Detecta cambios en el tamaño de la ventana para saber si es móvil
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.checkScreenSize();
@@ -180,6 +185,7 @@ export class RegisterPsychologistPage implements OnInit {
     this.isMobile = window.innerWidth <= 768;
   }
 
+  // Getters para acceder fácilmente a los campos del formulario en la plantilla
   get name() {
     return this.registerForm.get('name');
   }
@@ -213,6 +219,7 @@ export class RegisterPsychologistPage implements OnInit {
     return this.registerForm.get('confirmPassword');
   }
 
+  // Abre el modal de términos y condiciones para psicólogos
   async openTermsModal() {
     const modal = await this.modalController.create({
       component: TermsPsychologistPage,
@@ -221,6 +228,7 @@ export class RegisterPsychologistPage implements OnInit {
     await modal.present();
   }
 
+  // Valida que la contraseña y la confirmación coincidan
   passwordsMatchValidator(form: AbstractControl): ValidationErrors | null {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
