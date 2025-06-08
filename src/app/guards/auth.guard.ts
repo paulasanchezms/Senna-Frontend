@@ -9,6 +9,10 @@ export class AuthGuard implements CanActivate {
 
   constructor(private router: Router, private authService: AuthService) {}
 
+    /**
+   * Permite acceder a la ruta solo si hay un token de autenticación en localStorage.
+   * Si no hay token, redirige al login.
+   */
   canActivate(): boolean {
     const token = localStorage.getItem('authToken');
     if (token) {

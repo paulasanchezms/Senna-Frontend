@@ -9,6 +9,10 @@ export class PatientGuard implements CanActivate {
 
   constructor(private authService: AuthService, private router: Router) {}
 
+    /**
+   * Permite acceder a una ruta solo si el rol del usuario es 'PATIENT'.
+   * Si no lo es, redirige a una página de acceso no autorizado.
+   */
   canActivate(): boolean {
     const role = this.authService.getRole();
     console.log('ROLE en PatientGuard:', role);
